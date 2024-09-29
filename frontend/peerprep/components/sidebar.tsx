@@ -41,7 +41,7 @@ export const Sidebar = () => {
                 <BoxIcon name="bxs-message-square-edit" color="primary" />
               }
               className="py-3 my-1 text-primary"
-              href="/questions-management/list"
+              href="/"
               color="primary"
             >
               <span className="text-base">Question Management</span>

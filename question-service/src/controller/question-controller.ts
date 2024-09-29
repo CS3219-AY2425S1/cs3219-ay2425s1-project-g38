@@ -27,7 +27,14 @@ export const questionController = {
       return res.status(400).json({ error: "All fields are required." });
     }
 
-    if (!templateCode /*|| !testCases || !Array.isArray(testCases)*/) {
+    // Enforce a character limit of 80 characters for the title
+    if (title.length > 80) {
+      return res
+        .status(400)
+        .json({ error: "Question title cannot exceed 80 characters." });
+    }
+
+    if (!templateCode || !testCases /*|| !Array.isArray(testCases)*/) {
       return res
         .status(400)
         .json({ error: "Invalid input for template code or test cases" });
@@ -74,9 +81,7 @@ export const questionController = {
       const savedQuestion = await question.save();
       res.status(201).json(savedQuestion);
     } catch (err) {
-      res
-        .status(500)
-        .json({ message: "Failed to create question", error: err });
+      res.status(500).json({ error: "Failed to create question" });
     }
   },
 
@@ -264,7 +269,7 @@ export const questionController = {
         totalPages: Math.ceil(totalQuestions / limit),
       });
     } catch (err) {
-      res.status(500).json({ message: "Failed to get questions", error: err });
+      res.status(500).json({ error: "Failed to get questions" });
     }
   },
 
@@ -279,7 +284,7 @@ export const questionController = {
         res.status(404).json({ message: "Question not found" });
       }
     } catch (err) {
-      res.status(500).json({ message: "Failed to get question", error: err });
+      res.status(500).json({ error: "Failed to get question" });
     }
   },
 
@@ -300,7 +305,14 @@ export const questionController = {
       return res.status(400).json({ error: "All fields are required." });
     }
 
-    if (!templateCode /*|| !testCases || !Array.isArray(testCases)*/) {
+    // Enforce a character limit of 80 characters for the title
+    if (title.length > 80) {
+      return res
+        .status(400)
+        .json({ error: "Question title cannot exceed 80 characters." });
+    }
+
+    if (!templateCode || !testCases /*|| !Array.isArray(testCases)*/) {
       return res
         .status(400)
         .json({ error: "Invalid input for template code or test cases" });
@@ -350,9 +362,7 @@ export const questionController = {
       await question.save();
       res.status(200).json(question);
     } catch (err) {
-      res
-        .status(500)
-        .json({ message: "Failed to update question", error: err });
+      res.status(500).json({ error: "Failed to update question" });
     }
   },
 
@@ -387,9 +397,7 @@ export const questionController = {
       //   res.status(404).json({ message: "Question not found" });
       // }
     } catch (err) {
-      res
-        .status(500)
-        .json({ message: "Failed to delete question", error: err });
+      res.status(500).json({ error: "Failed to delete question" });
     }
   },
 
@@ -401,9 +409,7 @@ export const questionController = {
 
       res.status(200).json({ uniqueCategories });
     } catch (err) {
-      res
-        .status(500)
-        .json({ message: "Failed to get unique categories", error: err });
+      res.status(500).json({ error: "Failed to get unique categories" });
     }
   },
 
@@ -416,8 +422,7 @@ export const questionController = {
       res.status(200).json({ uniqueComplexityLevels });
     } catch (err) {
       res.status(500).json({
-        message: "Failed to get unique complexity levels",
-        error: err,
+        error: "Failed to get unique complexity levels",
       });
     }
   },

@@ -70,6 +70,7 @@ export default function EditQuestionForm({
     useState<string>(initialComplexity);
   const [categories, setCategories] = useState<string[]>(initialCategories);
   const [currentCategory, setCurrentCategory] = useState<string>("");
+  const [warnMessage, setWarnMessage] = useState<string>("");
   const [title, setTitle] = useState<string>(initialTitle);
   const [description, setDescription] = useState<string>(initialDescription);
   const [templateCode, setTemplateCode] = useState<string>(initialTemplateCode);
@@ -152,6 +153,14 @@ export default function EditQuestionForm({
     );
   };
 
+  useEffect(() => {
+    if (categories.length >= 3) {
+      setWarnMessage("You can only add up to 3 categories.");
+    } else {
+      setWarnMessage(""); // Clear the message when less than 3 categories
+    }
+  }, [categories]);
+
   // State to manage test cases (each test case has an input and expected output)
 
   // Handle adding a new test case
@@ -206,7 +215,7 @@ export default function EditQuestionForm({
       !title.trim() ||
       !description.trim() ||
       !categories.length ||
-      !templateCode.length ||
+      !templateCode.trim() ||
       !testCases.every(
         (testCase) =>
           testCase.input.trim() !== "" && testCase.output.trim() !== ""
@@ -246,8 +255,11 @@ export default function EditQuestionForm({
         setSuccessMessage("Question updated successfully!");
         setSuccessModalOpen(true); // Open the success modal
       } else {
-        setErrorMessage("Failed to update the question. Please try again.");
-        setErrorModalOpen(true); // Show error modal with the error message
+        const errorData = await response.json();
+        setErrorMessage(
+          errorData.error || "Failed to update the question. Please try again."
+        );
+        setErrorModalOpen(true);
       }
     } catch (error) {
       console.error("Error updating the question:", error);
@@ -279,6 +291,10 @@ export default function EditQuestionForm({
     }
   };
 
+  const handleCancel = () => {
+    router.push("/");
+  };
+
   return (
     <>
       <div className="flex flex-col gap-4 w-fit">
@@ -292,6 +308,7 @@ export default function EditQuestionForm({
           value={title}
           onValueChange={setTitle}
           isRequired
+          maxLength={80}
         />
         <div className="flex flex-col gap-2 items-start">
           <span className="text-sm">Complexity</span>
@@ -323,6 +340,7 @@ export default function EditQuestionForm({
               onInputChange={setCurrentCategory}
               size="md"
               multiple
+              isDisabled={categories.length >= 3}
             >
               {uniqueCategories && uniqueCategories.length > 0
                 ? uniqueCategories.map((category: string) => (
@@ -332,16 +350,19 @@ export default function EditQuestionForm({
                   ))
                 : null}
             </Autocomplete>
-            <Button
-              radius="full"
-              variant="light"
-              isIconOnly
-              className="text-gray-600 dark:text-gray-200"
-              onPress={addCategory} // Trigger addCategory when button is pressed
-            >
-              <BoxIcon name="bx-plus" size="18px" />
-            </Button>
-            <div className="pt-2">
+            {categories.length < 3 && (
+              <Button
+                radius="full"
+                variant="light"
+                isIconOnly
+                className="text-gray-600 dark:text-gray-200"
+                onPress={addCategory} // Trigger addCategory when button is pressed
+              >
+                <BoxIcon name="bx-plus" size="18px" />
+              </Button>
+            )}
+
+            <div className="pt-2 flex flex-col gap-2 items-start">
               <ScrollShadow
                 orientation="horizontal"
                 className="max-w-[700px] max-h-[70px]"
@@ -360,6 +381,9 @@ export default function EditQuestionForm({
                     : null}
                 </div>
               </ScrollShadow>
+              {warnMessage && (
+                <p className="text-red-500 text-sm">{warnMessage}</p>
+              )}
             </div>
           </div>
         </div>
@@ -439,6 +463,14 @@ export default function EditQuestionForm({
         </div>
         <div className="flex flex-row gap-4 justify-end">
           <Button
+            variant="light"
+            className="pr-5"
+            startContent={<BoxIcon name="bx-x" size="20px" />}
+            onClick={handleCancel}
+          >
+            Cancel
+          </Button>
+          <Button
             color="danger"
             variant="light"
             className="pr-5"
@@ -447,7 +479,7 @@ export default function EditQuestionForm({
           >
             Delete
           </Button>
-          <Button color="secondary" className="pr-5" onClick={updateQuestion}>
+          <Button color="secondary" onClick={updateQuestion}>
             Done
           </Button>
         </div>
@@ -462,7 +494,7 @@ export default function EditQuestionForm({
         isOpen={isSuccessModalOpen}
         onOpenChange={setSuccessModalOpen}
         message={successMessage}
-        onConfirm={() => router.push("/questions-management/list")} // Redirect to list after confirmation
+        onConfirm={() => router.push("/")} // Redirect to list after confirmation
       />
       <ErrorModal
         isOpen={isErrorModalOpen}

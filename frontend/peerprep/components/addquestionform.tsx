@@ -67,6 +67,7 @@ export default function AddQuestionForm({
     useState<string>(initialComplexity);
   const [category, setCategories] = useState<string[]>(initialCategories);
   const [currentCategory, setCurrentCategory] = useState<string>("");
+  const [warnMessage, setWarnMessage] = useState<string>("");
   const [title, setTitle] = useState<string>(initialTitle);
   const [description, setDescription] = useState<string>(initialDescription);
   const [templateCode, setTemplateCode] = useState<string>(initialTemplateCode);
@@ -98,6 +99,14 @@ export default function AddQuestionForm({
       prevCategories.filter((cat) => cat !== category)
     );
   };
+
+  useEffect(() => {
+    if (category.length >= 3) {
+      setWarnMessage("You can only add up to 3 categories.");
+    } else {
+      setWarnMessage(""); // Clear the message when less than 3 categories
+    }
+  }, [category]);
 
   // State to manage test cases (each test case has an input and expected output)
 
@@ -150,7 +159,7 @@ export default function AddQuestionForm({
       !title.trim() ||
       !description.trim() ||
       !category.length ||
-      !templateCode.length ||
+      !templateCode.trim() ||
       !testCases.every(
         (testCase) =>
           testCase.input.trim() !== "" && testCase.output.trim() !== ""
@@ -209,7 +218,7 @@ export default function AddQuestionForm({
   };
 
   const handleCancel = () => {
-    router.push("/questions-management/list");
+    router.push("/");
   };
 
   return (
@@ -225,6 +234,7 @@ export default function AddQuestionForm({
           value={title}
           onValueChange={setTitle}
           isRequired
+          maxLength={80}
         />
         <div className="flex flex-col gap-2 items-start">
           <span className="text-sm">
@@ -258,6 +268,7 @@ export default function AddQuestionForm({
               onInputChange={setCurrentCategory}
               size="md"
               multiple
+              isDisabled={category.length >= 3}
             >
               {uniqueCategories && uniqueCategories.length > 0
                 ? uniqueCategories.map((category: string) => (
@@ -267,16 +278,19 @@ export default function AddQuestionForm({
                   ))
                 : null}
             </Autocomplete>
-            <Button
-              radius="full"
-              variant="light"
-              isIconOnly
-              className="text-gray-600 dark:text-gray-200"
-              onPress={addCategory} // Trigger addCategory when button is pressed
-            >
-              <BoxIcon name="bx-plus" size="18px" />
-            </Button>
-            <div className="pt-2">
+            {category.length < 3 && (
+              <Button
+                radius="full"
+                variant="light"
+                isIconOnly
+                className="text-gray-600 dark:text-gray-200"
+                onPress={addCategory} // Trigger addCategory when button is pressed
+              >
+                <BoxIcon name="bx-plus" size="18px" />
+              </Button>
+            )}
+
+            <div className="pt-2 flex flex-col gap-2 items-start">
               <ScrollShadow
                 orientation="horizontal"
                 className="max-w-[700px] max-h-[70px]"
@@ -295,6 +309,9 @@ export default function AddQuestionForm({
                     : null}
                 </div>
               </ScrollShadow>
+              {warnMessage && (
+                <p className="text-red-500 text-sm">{warnMessage}</p>
+              )}
             </div>
           </div>
         </div>
@@ -396,7 +413,7 @@ export default function AddQuestionForm({
           >
             Cancel
           </Button>
-          <Button color="secondary" className="pr-5" onClick={handleSubmit}>
+          <Button color="secondary" onClick={handleSubmit}>
             Done
           </Button>
         </div>
@@ -405,12 +422,12 @@ export default function AddQuestionForm({
         isOpen={successModalOpen}
         onOpenChange={() => {
           setSuccessModalOpen;
-          router.push("/questions-management/list");
+          router.push("/");
         }}
         message={successMessage}
         onConfirm={() => {
           setSuccessModalOpen(false);
-          router.push("/questions-management/list");
+          router.push("/");
         }}
       />
       <ErrorModal
