@@ -50,7 +50,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8003/api/questions/4",
+					"raw": "http://localhost:8003/api/questions/1",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -80,7 +80,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8003/api/questions/4",
+					"raw": "http://localhost:8003/api/questions/1",
 					"protocol": "http",
 					"host": [
 						"localhost"
