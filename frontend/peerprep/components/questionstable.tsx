@@ -1,10 +1,4 @@
 import {
-  columns,
-  Question,
-  renderCell,
-  complexityOptions,
-} from "@/app/questions-management/list/columns";
-import {
   Table,
   TableHeader,
   TableColumn,
@@ -16,31 +10,40 @@ import {
   Pagination,
   SortDescriptor,
   Input,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownTrigger,
   Spinner,
   Autocomplete,
   AutocompleteItem,
+  SharedSelection,
+  Select,
+  SelectItem,
 } from "@nextui-org/react";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import useSWR from "swr";
+import { env } from "next-runtime-env";
+
 import BoxIcon from "./boxicons";
 import { SearchIcon } from "./icons";
 import { DeleteConfirmationModal } from "./deleteconfirmationmodal";
-import { useRouter } from "next/navigation";
-import { revalidatePath } from "next/cache";
 
-import useSWR from "swr";
 import { capitalize } from "@/utils/utils";
+import {
+  columns,
+  Question,
+  RenderCell,
+  complexityOptions,
+} from "@/app/questions-management/list/columns";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function QuestionsTable() {
+  const NEXT_PUBLIC_QUESTION_SERVICE_URL = env(
+    "NEXT_PUBLIC_QUESTION_SERVICE_URL",
+  );
   const router = useRouter();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [questionToDelete, setQuestionToDelete] = useState<Question | null>(
-    null
+    null,
   );
 
   const handleDelete = (question: Question) => {
@@ -52,10 +55,10 @@ export default function QuestionsTable() {
     if (questionToDelete) {
       try {
         await fetch(
-          `http://localhost:8003/api/questions/${questionToDelete.question_id}`,
+          `${NEXT_PUBLIC_QUESTION_SERVICE_URL}/api/questions/${questionToDelete.question_id}`,
           {
             method: "DELETE",
-          }
+          },
         );
         onOpenChange();
         location.reload();
@@ -68,7 +71,9 @@ export default function QuestionsTable() {
   const [filterValue, setFilterValue] = useState("");
   const hasSearchFilter = Boolean(filterValue);
   const [complexityFilter, setComplexityFilter] = useState<string | null>(null);
-  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [categoryFilter, setCategoryFilter] = useState<
+    string | SharedSelection
+  >(new Set());
   const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
     column: "title",
     direction: "ascending",
@@ -76,19 +81,19 @@ export default function QuestionsTable() {
   const [page, setPage] = React.useState(1);
 
   const { data: questionData, isLoading: questionLoading } = useSWR(
-    `http://localhost:8003/api/questions?${hasSearchFilter ? `title=${filterValue}&` : ""}${complexityFilter !== null ? `complexity=${complexityFilter}&` : ""}${
+    `${NEXT_PUBLIC_QUESTION_SERVICE_URL}/api/questions?${hasSearchFilter ? `title=${filterValue}&` : ""}${complexityFilter !== null ? `complexity=${complexityFilter}&` : ""}${
       categoryFilter !== "all"
         ? Array.from(categoryFilter)
             .map((category) => `category=${encodeURIComponent(category)}`)
             .join("&") + "&"
         : ""
     }${`sort=${sortDescriptor.direction === "descending" ? "-" : ""}${sortDescriptor.column}&`}page=${page}`,
-    fetcher
+    fetcher,
   );
 
   const { data: categoryData, isLoading: categoryLoading } = useSWR(
-    `http://localhost:8003/api/questions/categories/unique`,
-    fetcher
+    `${NEXT_PUBLIC_QUESTION_SERVICE_URL}/api/questions/categories/unique`,
+    fetcher,
   );
 
   const uniqueCategories = React.useMemo(() => {
@@ -144,7 +149,7 @@ export default function QuestionsTable() {
     router.push("/questions-management/add");
   };
 
-  const handleRowAction = (key) => {
+  const handleRowAction = (key: any) => {
     router.push(`/questions-management/edit/${key}`);
   };
 
@@ -163,8 +168,8 @@ export default function QuestionsTable() {
               onValueChange={onSearchChange}
             />
             <Autocomplete
-              placeholder="Select a complexity"
-              className="w-[215px] "
+              className="w-[215px]"
+              placeholder="Select Complexity"
               onSelectionChange={(key) =>
                 handleSetComplexityFilter(key as string | null)
               }
@@ -190,51 +195,34 @@ export default function QuestionsTable() {
                 </AutocompleteItem>
               ))}
             </Autocomplete>
-            <Dropdown>
-              <DropdownTrigger className="hidden sm:flex">
-                <Button
-                  endContent={<BoxIcon name="bx-chevron-down" />}
-                  variant="flat"
-                  className="text-zinc-500 dark:text-zinc-400 text-sm font-light bg-[#f3f4f5] dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-600"
-                >
-                  Category
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu
-                disallowEmptySelection
-                aria-label="Table Columns"
-                closeOnSelect={false}
-                selectedKeys={categoryFilter}
-                selectionMode="multiple"
-                onSelectionChange={setCategoryFilter}
-                itemClasses={{
-                  base: [
-                    "rounded-md",
-                    "text-default-500",
-                    "transition-opacity",
-                    "data-[hover=true]:text-foreground",
-                    "data-[hover=true]:bg-default-100",
-                    "dark:data-[hover=true]:bg-default-50",
-                    "data-[selectable=true]:focus:bg-default-50",
-                    "data-[pressed=true]:opacity-70",
-                    "data-[focus-visible=true]:ring-default-500",
-                  ],
-                }}
-              >
-                {uniqueCategories && uniqueCategories.length > 0
-                  ? uniqueCategories.map((category: string) => (
-                      <DropdownItem key={category}>
-                        {capitalize(category)}
-                      </DropdownItem>
-                    ))
-                  : null}
-              </DropdownMenu>
-            </Dropdown>
+            <Select
+              className="w-[215px]"
+              isLoading={categoryLoading}
+              placeholder="Select Categories"
+              renderValue={(items) => {
+                console.log(items.length, uniqueCategories?.length);
+
+                return items
+                  .map((item) => capitalize(item.key as string))
+                  .join(", ");
+              }}
+              selectedKeys={categoryFilter}
+              selectionMode="multiple"
+              onSelectionChange={setCategoryFilter}
+            >
+              {uniqueCategories && uniqueCategories.length > 0
+                ? uniqueCategories.map((category: string) => (
+                    <SelectItem key={category}>
+                      {capitalize(category)}
+                    </SelectItem>
+                  ))
+                : null}
+            </Select>
           </div>
           <div className="flex flex-row gap-4">
             <Button
-              color="secondary"
               className="pr-5"
+              color="secondary"
               startContent={<BoxIcon name="bx-plus" size="20px" />}
               onClick={handleAddNew}
             >
@@ -263,10 +251,8 @@ export default function QuestionsTable() {
   return (
     <>
       <Table
-        aria-label="Rows actions table example with dynamic content"
         removeWrapper
-        topContent={topContent}
-        topContentPlacement="outside"
+        aria-label="Rows actions table example with dynamic content"
         bottomContent={
           pages > 0 ? (
             <div className="py-2 px-2 flex justify-between items-center">
@@ -301,6 +287,12 @@ export default function QuestionsTable() {
           ) : null
         }
         bottomContentPlacement="outside"
+        checkboxesProps={{
+          classNames: {
+            wrapper:
+              "after:bg-foreground after:text-background text-background",
+          },
+        }}
         classNames={{
           th: [
             "bg-transparent",
@@ -309,17 +301,13 @@ export default function QuestionsTable() {
             "border-divider",
           ],
         }}
-        checkboxesProps={{
-          classNames: {
-            wrapper:
-              "after:bg-foreground after:text-background text-background",
-          },
-        }}
         selectionMode="single"
-        sortDescriptor={sortDescriptor}
-        sortDescritptor={setSortDescriptor}
-        onSortChange={setSortDescriptor}
+        topContent={topContent}
+        topContentPlacement="outside"
         onRowAction={(key) => handleRowAction(key)}
+        sortDescriptor={sortDescriptor}
+        // sortDescritptor={setSortDescriptor}
+        onSortChange={setSortDescriptor}
       >
         <TableHeader columns={columns}>
           {(column) => (
@@ -335,16 +323,16 @@ export default function QuestionsTable() {
           )}
         </TableHeader>
         <TableBody
+          emptyContent={"No questions to display."}
           items={questionData?.questions ?? []}
           loadingContent={<Spinner />}
           loadingState={questionLoadingState}
-          emptyContent={"No questions to display."}
         >
           {(question: Question) => (
             <TableRow key={question.question_id}>
               {(columnKey) => (
                 <TableCell>
-                  {renderCell(question, columnKey, handleDelete)}
+                  {RenderCell(question, columnKey, handleDelete)}
                 </TableCell>
               )}
             </TableRow>
@@ -353,9 +341,9 @@ export default function QuestionsTable() {
       </Table>
       <DeleteConfirmationModal
         isOpen={isOpen}
-        onOpenChange={onOpenChange}
         questionToDelete={questionToDelete}
         onConfirm={deleteQuestion}
+        onOpenChange={onOpenChange}
       />
     </>
   );

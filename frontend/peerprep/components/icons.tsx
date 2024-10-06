@@ -5,13 +5,13 @@ import { fontLogo } from "@/config/fonts";
 
 export const Logo: React.FC = () => (
   <div
+    className={`${fontLogo.variable} text-purple-700 dark:text-indigo-300`}
     style={{
       fontFamily: "var(--font-logo)",
       fontSize: "48px",
       letterSpacing: "-7px",
       margin: 10,
     }}
-    className={`${fontLogo.variable} text-purple-700 dark:text-indigo-300`}
   >
     PeerPrep
   </div>

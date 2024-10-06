@@ -32,10 +32,6 @@ export default function Editor() {
 
   return (
     <ReactQuill
-      theme="snow"
-      value={value}
-      onChange={setValue}
-      modules={module}
       formats={[
         "header",
         "font",
@@ -53,6 +49,10 @@ export default function Editor() {
         "image",
         "video",
       ]}
+      modules={module}
+      theme="snow"
+      value={value}
+      onChange={setValue}
     />
   );
 }

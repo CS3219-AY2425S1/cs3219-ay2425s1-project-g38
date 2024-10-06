@@ -1,7 +1,6 @@
 import { Fira_Code as FontMono, Inter as FontSans } from "next/font/google";
-import { DM_Mono as FontLogo} from "next/font/google";
-import { DM_Sans as FontFun} from "next/font/google";
-
+import { DM_Mono as FontLogo } from "next/font/google";
+import { DM_Sans as FontFun } from "next/font/google";
 
 export const fontSans = FontSans({
   subsets: ["latin"],

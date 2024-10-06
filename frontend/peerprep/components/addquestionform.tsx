@@ -2,38 +2,26 @@ import React, { useEffect, useState } from "react";
 import {
   Input,
   Button,
-  Radio,
-  Dropdown,
-  Textarea,
-  DropdownMenu,
-  DropdownItem,
-  RadioGroup,
   Tab,
   Tabs,
-  Avatar,
   Chip,
-  Select,
-  SelectItem,
   Autocomplete,
   AutocompleteItem,
   ScrollShadow,
-  useDisclosure,
 } from "@nextui-org/react";
-
-import { complexityColorMap } from "@/app/questions-management/list/columns";
-import BoxIcon from "./boxicons";
-import { WysiMarkEditor } from "./wysimarkeditor";
 import useSWR from "swr";
-import { capitalize, languages } from "@/utils/utils";
-import { useParams } from "next/navigation";
 import Editor from "@monaco-editor/react";
-import "prismjs/components/prism-clike";
-import "prismjs/components/prism-javascript";
-import "prismjs/themes/prism.css";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
+import { env } from "next-runtime-env";
+
 import { SuccessModal } from "./succesmodal";
 import { ErrorModal } from "./errormodal";
+import { WysiMarkEditor } from "./wysimarkeditor";
+import BoxIcon from "./boxicons";
+
+import { capitalize, languages } from "@/utils/utils";
+import { complexityColorMap } from "@/app/questions-management/list/columns";
 
 interface AddQuestionFormProps {
   initialTitle?: string;
@@ -54,6 +42,9 @@ export default function AddQuestionForm({
   initialTemplateCode = "/** PUT YOUR TEMPLATE CODE HERE **/",
   initialTestCases = [{ input: "", output: "" }],
 }: AddQuestionFormProps) {
+  const NEXT_PUBLIC_QUESTION_SERVICE_URL = env(
+    "NEXT_PUBLIC_QUESTION_SERVICE_URL",
+  );
   const router = useRouter();
   const { theme } = useTheme();
 
@@ -75,8 +66,8 @@ export default function AddQuestionForm({
     useState<{ input: string; output: string }[]>(initialTestCases);
 
   const { data: categoryData, isLoading: categoryLoading } = useSWR(
-    `http://localhost:8003/api/questions/categories/unique`,
-    fetcher
+    `${NEXT_PUBLIC_QUESTION_SERVICE_URL}/api/questions/categories/unique`,
+    fetcher,
   );
 
   const uniqueCategories = React.useMemo(() => {
@@ -86,8 +77,9 @@ export default function AddQuestionForm({
   // Handle adding a category
   const addCategory = () => {
     const caps = currentCategory.toUpperCase();
+
     if (caps && !category.includes(caps)) {
-      console.log(caps, category);
+      // console.log(caps, category);
       setCategories((prevCategories) => [...prevCategories, caps]);
     }
     setCurrentCategory(""); // Clear the input after adding
@@ -96,7 +88,7 @@ export default function AddQuestionForm({
   // Handle removing a category
   const removeCategory = (category: string) => {
     setCategories((prevCategories) =>
-      prevCategories.filter((cat) => cat !== category)
+      prevCategories.filter((cat) => cat !== category),
     );
   };
 
@@ -118,16 +110,22 @@ export default function AddQuestionForm({
   // Remove a test case by index
   const removeTestCase = (index: number) => {
     const updatedTestCases = testCases.filter((_, i) => i !== index);
+
     setTestCases(updatedTestCases);
   };
 
   // Handle input change for test case
   const handleInputChange = (
     index: number,
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const updatedTestCases = [...testCases];
-    updatedTestCases[index][event.target.name] = event.target.value;
+
+    const { name, value } = event.target;
+
+    if (name === "input" || name === "output") {
+      updatedTestCases[index][name] = value;
+    }
     setTestCases(updatedTestCases);
   };
 
@@ -162,13 +160,14 @@ export default function AddQuestionForm({
       !templateCode.trim() ||
       !testCases.every(
         (testCase) =>
-          testCase.input.trim() !== "" && testCase.output.trim() !== ""
+          testCase.input.trim() !== "" && testCase.output.trim() !== "",
       )
     ) {
       setErrorMessage(
-        "Please fill in all the required fields before submitting."
+        "Please fill in all the required fields before submitting.",
       );
       setErrorModalOpen(true); // Show error modal with the validation message
+
       return;
     }
 
@@ -180,21 +179,24 @@ export default function AddQuestionForm({
       complexity: selectedTab,
       templateCode,
       testCases: testCases.map(
-        (testCase) => `${testCase.input} -> ${testCase.output}`
+        (testCase) => `${testCase.input} -> ${testCase.output}`,
       ),
     };
 
-    console.log(formData);
+    // console.log(formData);
 
     try {
       // Send POST request
-      const response = await fetch("http://localhost:8003/api/questions/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${NEXT_PUBLIC_QUESTION_SERVICE_URL}/api/questions/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData), // Convert data to JSON
         },
-        body: JSON.stringify(formData), // Convert data to JSON
-      });
+      );
 
       if (response.ok) {
         // Show success modal
@@ -203,15 +205,16 @@ export default function AddQuestionForm({
       } else {
         // Show error modal with error response message
         const errorData = await response.json();
+
         setErrorMessage(
-          errorData.error || "Failed to submit the question. Please try again."
+          errorData.error || "Failed to submit the question. Please try again.",
         );
         setErrorModalOpen(true);
       }
     } catch (error) {
       // Show error modal with generic error message
       setErrorMessage(
-        "An error occurred while submitting the question. Please try again later"
+        "An error occurred while submitting the question. Please try again later",
       );
       setErrorModalOpen(true);
     }
@@ -225,28 +228,28 @@ export default function AddQuestionForm({
     <>
       <div className="flex flex-col gap-4 w-fit">
         <Input
-          type="title"
+          isRequired
+          className="w-1/2 text-base"
           label="Title"
           labelPlacement="outside"
+          maxLength={80}
           placeholder="Enter question title"
-          className="w-1/2 text-base"
           size="md"
+          type="title"
           value={title}
           onValueChange={setTitle}
-          isRequired
-          maxLength={80}
         />
         <div className="flex flex-col gap-2 items-start">
           <span className="text-sm">
             Complexity<span className="text-red-500">*</span>
           </span>
           <Tabs
-            variant="bordered"
             color={complexityColorMap[selectedTab]}
-            onSelectionChange={(key) => setSelectedComplexity(key as string)}
-            selectedKey={selectedTab}
             radius="sm"
+            selectedKey={selectedTab}
             size="md"
+            variant="bordered"
+            onSelectionChange={(key) => setSelectedComplexity(key as string)}
           >
             <Tab key="EASY" title="Easy" />
             <Tab key="MEDIUM" title="Medium" />
@@ -258,17 +261,18 @@ export default function AddQuestionForm({
           <div className="flex flex-row gap-2">
             <Autocomplete
               allowsCustomValue
-              label="Press plus to add the category"
-              placeholder="Add a category"
               isRequired
-              variant="flat"
+              multiple
               className="w-[250px] text-left"
               description="You can add new categories too"
               inputValue={currentCategory}
-              onInputChange={setCurrentCategory}
-              size="md"
-              multiple
               isDisabled={category.length >= 3}
+              isLoading={categoryLoading}
+              label="Press plus to add the category"
+              placeholder="Add a category"
+              size="md"
+              variant="flat"
+              onInputChange={setCurrentCategory}
             >
               {uniqueCategories && uniqueCategories.length > 0
                 ? uniqueCategories.map((category: string) => (
@@ -280,10 +284,10 @@ export default function AddQuestionForm({
             </Autocomplete>
             {category.length < 3 && (
               <Button
-                radius="full"
-                variant="light"
                 isIconOnly
                 className="text-gray-600 dark:text-gray-200"
+                radius="full"
+                variant="light"
                 onPress={addCategory} // Trigger addCategory when button is pressed
               >
                 <BoxIcon name="bx-plus" size="18px" />
@@ -292,16 +296,16 @@ export default function AddQuestionForm({
 
             <div className="pt-2 flex flex-col gap-2 items-start">
               <ScrollShadow
-                orientation="horizontal"
                 className="max-w-[700px] max-h-[70px]"
+                orientation="horizontal"
               >
                 <div className="flex flex-row gap-2">
                   {category && category.length > 0
                     ? category.map((category, index) => (
                         <Chip
                           key={index}
-                          onClose={() => removeCategory(category)}
                           size="md"
+                          onClose={() => removeCategory(category)}
                         >
                           {capitalize(category)}
                         </Chip>
@@ -330,10 +334,10 @@ export default function AddQuestionForm({
               Template Code<span className="text-red-500">*</span>
             </span>
             <Autocomplete
-              inputValue={language}
-              onInputChange={handleLanguageInputChange}
               aria-label="Select Language"
               className="w-48"
+              inputValue={language}
+              onInputChange={handleLanguageInputChange}
             >
               {languages.map((lang) => (
                 <AutocompleteItem key={lang} value={lang}>
@@ -345,9 +349,8 @@ export default function AddQuestionForm({
           <Editor
             className="min-h-[250px] w-[250px]"
             defaultLanguage="javascript"
-            language={language}
             defaultValue={templateCode}
-            theme={theme === "dark" ? "vs-dark" : "vs-light"}
+            language={language}
             options={{
               fontSize: 14,
               minimap: {
@@ -355,6 +358,7 @@ export default function AddQuestionForm({
               },
               contextmenu: false,
             }}
+            theme={theme === "dark" ? "vs-dark" : "vs-light"}
             onChange={handleEditorChange}
           />
         </div>
@@ -365,50 +369,50 @@ export default function AddQuestionForm({
           {testCases.map((testCase, index) => (
             <div key={index} className="flex gap-2 items-center">
               <Input
+                className="w-48"
                 name="input"
                 placeholder="Input"
                 value={testCase.input}
                 onChange={(e) => handleInputChange(index, e)}
-                className="w-48"
               />
               <Input
+                className="w-48"
                 name="output"
                 placeholder="Expected Output"
                 value={testCase.output}
                 onChange={(e) => handleInputChange(index, e)}
-                className="w-48"
               />
               {testCases.length > 1 && (
                 <Button
-                  variant="light"
-                  size="sm"
+                  isIconOnly
                   className="rounded-full mx-4"
-                  onClick={() => removeTestCase(index)}
+                  size="sm"
                   startContent={
                     <BoxIcon name=" bxs-minus-circle" size="14px" />
                   }
-                  isIconOnly
+                  variant="light"
+                  onClick={() => removeTestCase(index)}
                 />
               )}
             </div>
           ))}
 
           <Button
-            onClick={addTestCase}
-            variant="flat"
-            className="my-4"
-            size="sm"
             isIconOnly
+            className="my-4"
             radius="full"
+            size="sm"
             startContent={<BoxIcon name="bx-plus" size="14px" />}
+            variant="flat"
+            onClick={addTestCase}
           />
         </div>
         <div className="flex flex-row gap-4 justify-end">
           <Button
-            color="danger"
-            variant="light"
             className="pr-5"
+            color="danger"
             startContent={<BoxIcon name="bx-x" size="20px" />}
+            variant="light"
             onClick={handleCancel}
           >
             Cancel
@@ -420,13 +424,13 @@ export default function AddQuestionForm({
       </div>
       <SuccessModal
         isOpen={successModalOpen}
-        onOpenChange={() => {
-          setSuccessModalOpen;
-          router.push("/");
-        }}
         message={successMessage}
         onConfirm={() => {
           setSuccessModalOpen(false);
+          router.push("/");
+        }}
+        onOpenChange={() => {
+          setSuccessModalOpen;
           router.push("/");
         }}
       />
@@ -434,7 +438,7 @@ export default function AddQuestionForm({
         isOpen={errorModalOpen}
         onOpenChange={setErrorModalOpen}
         errorMessage={errorMessage}
-        onClose={setErrorModalOpen}
+        // onClose={setErrorModalOpen}
       />
     </>
   );

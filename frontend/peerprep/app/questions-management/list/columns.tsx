@@ -1,8 +1,9 @@
 "use client";
-import BoxIcon from "@/components/boxicons";
-import { capitalize } from "@/utils/utils";
 import { Button, Chip } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
+
+import BoxIcon from "@/components/boxicons";
+import { capitalize } from "@/utils/utils";
 
 export type Question = {
   _id: string;
@@ -40,17 +41,17 @@ export const complexityColorMap: Record<
   HARD: "danger",
 };
 
-export const complexityOptions = ["Easy", "Medium", "Hard"];
+export const complexityOptions = ["Easy", "Medium", "Hard"]; // Can consider retrieving this from the backend
 
-export function renderCell(
+export function RenderCell(
   question: Question,
   columnKey: React.Key,
-  handleDelete: (question: Question) => void
+  handleDelete: (question: Question) => void,
 ) {
   const cellValue = question[columnKey as keyof Question];
   const router = useRouter();
 
-  const handleRowAction = (key) => {
+  const handleRowAction = (key: any) => {
     router.push(`/questions-management/edit/${key}`);
   };
 
@@ -86,19 +87,19 @@ export function renderCell(
       return (
         <div className="relative flex items-center gap-4">
           <Button
-            radius="full"
             isIconOnly
-            variant="light"
             className="cursor-pointer text-lg text-default-400 active:opacity-50"
+            radius="full"
+            variant="light"
             onPress={() => handleRowAction(question.question_id)}
           >
             <BoxIcon name="bxs-edit" />
           </Button>
           <Button
-            radius="full"
             isIconOnly
-            variant="light"
             className="cursor-pointer text-lg text-danger active:opacity-50"
+            radius="full"
+            variant="light"
             onPress={() => handleDelete(question)}
           >
             <BoxIcon name="bxs-trash" />

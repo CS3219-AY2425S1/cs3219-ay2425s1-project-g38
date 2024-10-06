@@ -23,12 +23,12 @@ export const Navbar = () => {
           </NextLink>
         </NavbarBrand>
         <div
+          className={`${fontFun.variable} text-black dark:text-white flex items-center`}
           style={{
             fontFamily: "var(--font-fun)",
             fontSize: "20px",
             margin: "10px",
           }}
-          className={`${fontFun.variable} text-black dark:text-white flex items-center`}
         >
           Hello User 👋🏻,
         </div>
@@ -43,12 +43,12 @@ export const Navbar = () => {
           </div>
 
           <Avatar
-            icon={<AvatarIcon />}
-            size="sm"
             classNames={{
               base: "bg-primary h-6 w-6",
               icon: "text-white/80",
             }}
+            icon={<AvatarIcon />}
+            size="sm"
           />
         </NavbarItem>
       </NavbarContent>

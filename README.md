@@ -8,124 +8,175 @@
 - [Johan](https://github.com/delishad21)
 - [Joshua](https://github.com/dloh2236)
 
-## Milestone 2 Submission - Question Service SPA
-
-For viewing questions, we opted for two types of views. The first is a master view presented as a table, allowing users to quickly browse 10 questions per page with essential details. On the backend, we retrieve only the necessary information to keep the query lean for faster response times. Users can navigate through the questions using pagination, which limits the view to 10 questions per page for a cleaner and more user-friendly interface.
-
-
-### Retrieval of Questions (Master view)
-
-   ![unnamed](https://github.com/user-attachments/assets/20dfa280-94c4-440d-851a-991abef8d38d)
-
-#### Table-view Features:
-
-- **Pagination:** Displays 10 questions per page with navigation options to jump to specific pages or use next/previous buttons for smooth browsing.
-- **Search:** A non-case-sensitive search feature allows users to quickly find specific questions.
-- **Filter by Complexity:** Users can filter questions by specific complexity levels (Easy, Medium, Hard).
-- **Filter by Category:** Select one or more categories to filter questions. Questions containing any of the selected categories will appear in the table.
-- **Total Question Count:** Displays the total number of questions based on the applied filters.
-- **Quick Actions:** Users can easily edit or delete a question directly from the table.
-- **Sort by Title:** Sort questions alphabetically by title for easier navigation.
-- **Sort by Complexity:** Sort questions by difficulty level, either increasing or decreasing.
-- **Detailed View:** Click on a question to see more detailed information.
-- **Asynchronous Loading:** All modifications and loading of questions are done asynchronously, fetching 10 questions at a time for optimal performance.
-- **Question Caching:** Previously retrieved questions are cached to enable faster reloading, ensuring quick access to both the list and individual question details.
-
-### Retrieval of Questions (Detailed View) with Form for Editing and Adding Questions
-
-   ![unnamed (1)](https://github.com/user-attachments/assets/ba7feb97-07bd-4df3-8f13-a0908d1ee575)
-
-#### Detailed-View Features:
-
-- **Input Validation:** Ensures that both input and output fields are filled for each test case, and prevents the submission of duplicate question titles.
-- **Multiple Category Selection:** Allows users to tag questions with multiple categories, providing a list of existing categories while also enabling users to create new ones.
-- **Template Code Input with Syntax Highlighting:** Supports syntax highlighting and auto-completion for template code input, with the option to switch between different programming languages for tailored syntax highlighting.
-
-### Confirmation Messages (Modals)
-
-   ![unnamed](https://github.com/user-attachments/assets/6bdeb466-beb1-4251-9703-b1939205cbb0)
-   
-   ![unnamed](https://github.com/user-attachments/assets/21ff6ebe-b2ca-464f-a3d1-488b6970ebd0)
-
-Confirmation messages are shown as pop-up modals to improve user feedback during actions like creating, updating, or deleting a question. These modals provide clear responses, confirming success or asking for deletion confirmation. This approach reduces mistakes, enhances clarity, and offers a smoother user experience.
-
-
-# Setting Up the Project
+# Milestone 3 Submission - Containerization
 
 ## Prerequisites
 
 1. Clone this repository to your local machine.
-2. Ensure you have the following installed:
-   - Node.js (v16.0 or higher) – Download here
-   - npm (comes with Node.js)
-3. Sign up for a MongoDB Atlas account
+2. Ensure you have Docker installed.
+3. (Optional) Sign up for a MongoDB Atlas account
+   - The docker compose file is configured to use a local MongoDB instance by default. If you would like to use a remote MongoDB instance, you can follow the instructions in the ["Remote DB Setup"](#remote-db-setup-mongodb-atlas-optional) section below.
 
-## Remote DB Setup (MongoDB Atlas)
+## Docker Compose for all services (including frontend)
 
-1. Create a Cluster: Set up a new cluster and choose the free tier
+1. Open a terminal and navigate to the root directory of the project.
+2. Duplicate the .env.sample file and rename it to .env
+   - If you wish to, you can modify the values in the .env file
+      | **Variable** | **Description** | **Default Value** |
+      |--------------|-----------------|-------------------|
+      | NEXT_PUBLIC_QUESTION_SERVICE_URL | URL of the question service | http://localhost:8003 |
+      | NEXT_PUBLIC_IMAGE_UPLOAD_KEY | AuthToken for image upload | None, you can get this from https://www.portive.com |
+      | FRONTEND_PORT | Port to run the frontend service | 3000 |
+      | USER_MONGODB_URI | MongoDB URI for the user service | None, commented out. If you are using a remote MongoDB instance, you can key in your connection string here |
+      | USER_MONGO_INITDB_ROOT_USERNAME | MongoDB root username for the user service | userroot |
+      | USER_MONGO_INITDB_ROOT_PASSWORD | MongoDB root password for the user service | userpassword |
+      | USER_PORT | Port to run the user service | 8004 |
+      | JWT_SECRET | Secret for creating JWT signature | you-can-replace-this-with-your-own-secret |
+      | QUESTION_MONGODB_URI | MongoDB URI for the question service | None, commented out. If you are using a remote MongoDB instance, you can key in your connection string here |
+      | QUESTION_MONGO_INITDB_ROOT_USERNAME | MongoDB root username for the question service | questionroot |
+      | QUESTION_MONGO_INITDB_ROOT_PASSWORD | MongoDB root password for the question service | questionpassword |
+      | QUESTION_PORT | Port to run the question service | 8003 |
+3. Run `docker-compose up` to start the services.
+   - If you keyed in remote MongoDB URIs in the .env file, the MongoDB containers will not be started. The services will connect to the remote MongoDB instances instead.
+4. Once the services are up and running, you can access the frontend at `http://localhost:<FRONTEND_PORT>` (default: <http://localhost:3000>)
 
-      ![unnamed](https://github.com/user-attachments/assets/8f539f32-a260-481c-a9a3-2e307ada9e2c)
+## Docker Compose for individual services
 
-2. Create a Database: Click on the "Collections" tab and create a new database with the name “peerprep” and a collection called “questions”.
+If the services are to be run individually (e.g. for deployment on different platforms), you can follow the instructions below.
 
-      ![unnamed](https://github.com/user-attachments/assets/ccc3ec08-6b4e-4a1c-84f2-4517b70b86f4)
-      ![unnamed](https://github.com/user-attachments/assets/371b3a83-c85c-4704-835e-5195f11ae77e)
-      ![unnamed](https://github.com/user-attachments/assets/1c161b4a-1b39-4294-a9eb-629b36f571cc)
-
-3. Network Access: Allow access from your IP address by adding it in the "Network Access" tab. 
-
-      ![unnamed](https://github.com/user-attachments/assets/ec658c5a-6098-4a13-a4bd-7262dd1d8f29)
-
-4. Database User: Create a new database user with read and write access to your database.
-
-      ![unnamed](https://github.com/user-attachments/assets/800d4194-bb83-4411-abc9-d0f3ca51d107)
-      ![unnamed](https://github.com/user-attachments/assets/d7ab1387-af80-44b7-8571-b74530ee320b)
-
-5. Return to the cluster menu and click “connect”, followed by “compass”. Obtain the connection string to the database. Save this for later use in the backend.
-
-      ![unnamed](https://github.com/user-attachments/assets/51f90e13-614f-4bc9-8e06-1ceae9d63b4d)
-      ![unnamed](https://github.com/user-attachments/assets/1e2cea05-7c6f-4d5f-b30a-5365969c1427)
-      ![unnamed](https://github.com/user-attachments/assets/6530e2aa-87ec-44c4-807a-ef587b9935f1)
-
-## Backend Setup
+### Question Service
 
 1. cd into the question-service directory
-2. Install dependencies – Ensure you have Node.js and npm installed on your machine. You can install the project dependencies by running npm install
-3. Set up environment variables – Create a .env file in the question-service directory of the project and include the following environment variable: `MONGODB_URI=<Your MongoDB connection string (obtained earlier)>`
-4. Run the backend server – After setting up the environment variables and MongoDB, you can start the server using npm run dev. This command will start the backend server in development mode and listen for API requests.
+2. Duplicate the .env.sample file and rename it to .env
+   - If you wish to, you can modify the values in the .env file
 
-**Common Issue and Troubleshooting:**
+      | **Variable** | **Description** | **Default Value** |
+      |--------------|-----------------|-------------------|
+      |QUESTION_MONGODB_URI  | MongoDB URI     | None, commented out. If you are using a remote MongoDB instance, you can key in your connection string here |
+      | QUESTION_PORT         | Port to run the service | 8003 |
+      | MONGO_INITDB_ROOT_USERNAME | MongoDB root username | root |
+      | MONGO_INITDB_ROOT_PASSWORD | MongoDB root password | password |
+
+3. Run `docker-compose up` to start the question service.
+   - If you keyed in a remote MongoDB URI in the .env file, the MongoDB container will not be started. The question service will connect to the remote MongoDB instance instead.
+
+**Common Issue and Troubleshooting**
+
 Issue: MongoParseError: URI malformed
 - Solution: Ensure that the MONGODB_URI in your .env file is correctly formatted with the right username, password, and database name.
 
-**Testing of the backend server:**
-You can now test the API endpoints using Postman or any API testing tool. The server should be running on http://localhost:8003/api/questions
-| **Operation**            | **Method** | **Endpoint**                               | **Params/Request Body**                                                                                                                                             |
-|--------------------------|------------|--------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Create a question**     | POST       | `http://localhost:8003/api/questions`      | `{ "title": <string>, "description": <string>, "category": <an array of strings>, "complexity": <string>, "templateCode": <string>, "testCases": <an array of strings> }` |
-| **Update a question**     | PUT        | `http://localhost:8003/api/questions/<id>` | `{ "title": <string>, "description": <string>, "category": <an array of strings>, "complexity": <string>, "templateCode": <string>, "testCases": <an array of strings> }` |
-| **Delete a question**     | DELETE     | `http://localhost:8003/api/questions/<id>` | `id`: refers to the question id (1-indexed)                                                                                                                           |
-| **Retrieve questions (with filter)** | GET        | `http://localhost:8003/api/questions?<params>` | `?title=`, `?category=`, `?page=`, `?complexity=`, `?sort=`. Filters can be stacked. Multiple categories: `?category=Algorithms&category=Arr&category=Database`. Sorting: `?sort=title` (ascending), `?sort=-title` (descending) |
-| **Retrieve a question**   | GET        | `http://localhost:8003/api/questions/<id>` | `id`: refers to the question id (1-indexed)                                                                                                                           |
 
-### Frontend Setup
+### User Service
+
+1. cd into the user-service directory
+2. Duplicate the .env.sample file and rename it to .env
+   - If you wish to, modify the values in the .env file to change the port that the service is hosted on.
+
+      | **Variable** | **Description** | **Default Value** |
+      |--------------|-----------------|-------------------|
+      | USER_MONGODB_URI  | MongoDB URI     | None, commented out. If you are using a remote MongoDB instance, you can key in your connection string here|
+      | MONGO_INITDB_ROOT_USERNAME | MongoDB root username | root |
+      | MONGO_INITDB_ROOT_PASSWORD | MongoDB root password | password |
+      | USER_PORT         | Port to run the service | 8004 |
+      | JWT_SECRET | Secret for creating JWT signature | you-can-replace-this-with-your-own-secret |
+3. Run `docker-compose up` to start the user service.
+   - If you keyed in a remote MongoDB URI in the .env file, the MongoDB container will not be started. The user service will connect to the remote MongoDB instance instead.
+
+### Frontend
+
 1. Navigate to the frontend directory: cd frontend/peerprep
-2. Install dependencies – Ensure you have Node.js and npm installed on your machine. You can install the project dependencies by running npm install
-3. Run the Development Server. Ensure that the backend is running on localhost:8003. Start the development server by running the following command: npm run dev
-4. Once the server is running, open your browser and visit: http://localhost:3000 This will display the application in development mode.
-5. Navigate to the Questions Management Tab. You should be able to use the application as described above.
-6. Using File Upload Feature: To use the Image upload feature in the markdown editor of question descriptions, you will need to get a free upload API key and generate an authToken at https://www.portive.com
+2. Duplicate the .env.sample file and rename it to .env
+   - If you wish to, you can modify the values in the .env file
 
-      ![unnamed](https://github.com/user-attachments/assets/99b5343e-16c3-421f-97e3-7545f56b931b)
-8. After generating the authToken. Navigate to next.config.js in the root directory and add this in at the end of your file:
-   ```
-   module.exports = {
-       env: {
-           imageUploadKey: ‘<YOUR AUTHTOKEN HERE>’,
-       },
-   }
-   ```
-   Now restart the application and you should be able to upload files in the markdown editor.
+      | **Variable** | **Description** | **Default Value** |
+      |--------------|-----------------|-------------------|
+      | NEXT_PUBLIC_QUESTION_SERVICE_URL | URL of the question service | http://localhost:8003 |
+      | NEXT_PUBLIC_IMAGE_UPLOAD_KEY | AuthToken for image upload | None, you can get this from https://www.portive.com |
+      | FRONTEND_PORT | Port to run the frontend service | 3000 |
+3. Run `docker-compose up` to start the frontend service.
 
+## Building your own Docker images
+
+1. cd into the any of the service directories (question-service, user-service, frontend/peerprep)
+2. Run `docker build -t "<image-name>" .` to build the Docker image.
+
+## API Endpoints for User and Question Service
+
+**User Service API Endpoints**
+
+The user service API can be found here: [User Service API](./user-service/README.md)
+
+**Question Service API Endpoints**
+
+The question service API can be found here: [Question Service API](./question-service/README.md)
+
+## Remote DB Setup (MongoDB Atlas) (Optional)
+
+1. Visit the MongoDB Atlas Site [https://www.mongodb.com/atlas](https://www.mongodb.com/atlas) and click on "Try Free"
+
+2. Sign Up/Sign In with your preferred method.
+
+3. You will be greeted with welcome screens. Feel free to skip them till you reach the Dashboard page.
+
+4. Create a Database Deployment by clicking on the green `+ Create` Button:
+
+![alt text](./GuideAssets/Creation.png)
+
+5. Make selections as followings:
+
+- Select Shared Cluster
+- Select `aws` as Provider
+
+![alt text](./GuideAssets/Selection1.png)
+
+- Select `Singapore` for Region
+
+![alt text](./GuideAssets/Selection2.png)
+
+- Select `M0 Sandbox` Cluster (Free Forever - No Card Required)
+
+> Ensure to select M0 Sandbox, else you may be prompted to enter card details and may be charged!
+
+![alt text](./GuideAssets/Selection3.png)
+
+- Leave `Additional Settings` as it is
+
+- Provide a suitable name to the Cluster
+
+![alt text](./GuideAssets/Selection4.png)
+
+6. You will be prompted to set up Security for the database by providing `Username and Password`. Select that option and enter `Username` and `Password`. Please keep this safe as it will be used in User Service later on.
+
+![alt text](./GuideAssets/Security.png)
+
+7. Next, click on `Add my Current IP Address`. This will whiteliste your IP address and allow you to connect to the MongoDB Database.
+
+![alt text](./GuideAssets/Network.png)
+
+8. Click `Finish and Close` and the MongoDB Instance should be up and running.
+
+9. The connection string can be found by clicking on the `Connect` button on the Cluster Overview Page. followed by `Drivers`.
+
+![alt text](./GuideAssets/connection1.png)
+
+![alt text](./GuideAssets/connection2.png)
+
+![alt text](./GuideAssets/connection3.png)
+
+## Whitelisting All IP's
+
+1. Select `Network Access` from the left side pane on Dashboard.
+
+![alt text](./GuideAssets/SidePane.png)
+
+2. Click on the `Add IP Address` Button
+
+![alt text](./GuideAssets/AddIPAddress.png)
+
+3. Select the `ALLOW ACCESS FROM ANYWHERE` Button and Click `Confirm`
+
+![alt text](./GuideAssets/IPWhitelisting.png)
+
+Now, any IP Address can access this Database.
 
 

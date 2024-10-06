@@ -6,22 +6,23 @@ import { useTheme } from "next-themes";
 
 const MDEditor = dynamic(
   () => import("@uiw/react-md-editor").then((mod) => mod.default),
-  { ssr: false }
-);
-const EditerMarkdown = dynamic(
-  () =>
-    import("@uiw/react-md-editor").then((mod) => {
-      return mod.default.Markdown;
-    }),
-  { ssr: false }
+  { ssr: false },
 );
 
+// const EditerMarkdown = dynamic(
+//   () =>
+//     import("@uiw/react-md-editor").then((mod) => {
+//       return mod.default.Markdown;
+//     }),
+//   { ssr: false },
+// );
+
 function MarkdownEditor() {
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState<string | undefined>("");
   const { theme } = useTheme();
 
   return (
-    <div data-color-mode={theme} className="w-full">
+    <div className="w-full" data-color-mode={theme}>
       <MDEditor value={value} onChange={setValue} />
     </div>
   );
