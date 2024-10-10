@@ -1,11 +1,12 @@
 "use client";
 import { useTheme } from "next-themes";
-
-import { Listbox, ListboxItem, ListboxSection } from "@nextui-org/listbox";
-import BoxIcon from "./boxicons";
-import { Button, Divider } from "@nextui-org/react";
-import { siteConfig } from "@/config/site";
+import { Listbox, ListboxItem } from "@nextui-org/listbox";
+import { Button } from "@nextui-org/react";
 import { usePathname } from "next/navigation";
+
+import BoxIcon from "./boxicons";
+
+import { siteConfig } from "@/config/site";
 
 export const Sidebar = () => {
   const { theme } = useTheme();

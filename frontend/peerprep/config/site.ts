@@ -12,7 +12,7 @@ export const siteConfig = {
     {
       label: "Question Management",
       href: "/questions-management",
-      icon: "bxs-message-square-edit"
+      icon: "bxs-message-square-edit",
     },
   ],
 };

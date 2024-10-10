@@ -9,11 +9,9 @@ import {
   AutocompleteItem,
   ScrollShadow,
 } from "@nextui-org/react";
-import useSWR from "swr";
 import Editor from "@monaco-editor/react";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
-import { env } from "next-runtime-env";
 
 import { SuccessModal } from "./succesmodal";
 import { ErrorModal } from "./errormodal";
@@ -22,6 +20,11 @@ import BoxIcon from "./boxicons";
 
 import { capitalize, languages } from "@/utils/utils";
 import { complexityColorMap } from "@/app/(default)/questions-management/columns";
+import {
+  useUniqueCategoriesFetcher,
+  isValidQuestionSubmission,
+  submitQuestion,
+} from "@/services/questionService";
 
 interface AddQuestionFormProps {
   initialTitle?: string;
@@ -32,8 +35,6 @@ interface AddQuestionFormProps {
   initialTestCases?: { input: string; output: string }[];
 }
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
 export default function AddQuestionForm({
   initialTitle = "",
   initialDescription = "# Question description \n Write your question description here! \n You can also insert images!",
@@ -42,9 +43,6 @@ export default function AddQuestionForm({
   initialTemplateCode = "/** PUT YOUR TEMPLATE CODE HERE **/",
   initialTestCases = [{ input: "", output: "" }],
 }: AddQuestionFormProps) {
-  const NEXT_PUBLIC_QUESTION_SERVICE_URL = env(
-    "NEXT_PUBLIC_QUESTION_SERVICE_URL"
-  );
   const router = useRouter();
   const { theme } = useTheme();
 
@@ -65,10 +63,7 @@ export default function AddQuestionForm({
   const [testCases, setTestCases] =
     useState<{ input: string; output: string }[]>(initialTestCases);
 
-  const { data: categoryData, isLoading: categoryLoading } = useSWR(
-    `${NEXT_PUBLIC_QUESTION_SERVICE_URL}/api/questions/categories/unique`,
-    fetcher
-  );
+  const { categoryData, categoryLoading } = useUniqueCategoriesFetcher();
 
   const uniqueCategories = React.useMemo(() => {
     return categoryData?.uniqueCategories;
@@ -88,7 +83,7 @@ export default function AddQuestionForm({
   // Handle removing a category
   const removeCategory = (category: string) => {
     setCategories((prevCategories) =>
-      prevCategories.filter((cat) => cat !== category)
+      prevCategories.filter((cat) => cat !== category),
     );
   };
 
@@ -117,7 +112,7 @@ export default function AddQuestionForm({
   // Handle input change for test case
   const handleInputChange = (
     index: number,
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const updatedTestCases = [...testCases];
 
@@ -154,48 +149,33 @@ export default function AddQuestionForm({
   // Form submission handler
   const handleSubmit = async () => {
     if (
-      !title.trim() ||
-      !description.trim() ||
-      !category.length ||
-      !templateCode.trim() ||
-      !testCases.every(
-        (testCase) =>
-          testCase.input.trim() !== "" && testCase.output.trim() !== ""
+      !isValidQuestionSubmission(
+        title,
+        description,
+        category,
+        templateCode,
+        testCases,
       )
     ) {
       setErrorMessage(
-        "Please fill in all the required fields before submitting."
+        "Please fill in all the required fields before submitting.",
       );
       setErrorModalOpen(true); // Show error modal with the validation message
 
       return;
     }
 
-    // Prepare data to send
-    const formData = {
-      title,
-      description,
-      category: category,
-      complexity: selectedTab,
-      templateCode,
-      testCases: testCases.map(
-        (testCase) => `${testCase.input} -> ${testCase.output}`
-      ),
-    };
-
     // console.log(formData);
 
     try {
       // Send POST request
-      const response = await fetch(
-        `${NEXT_PUBLIC_QUESTION_SERVICE_URL}/api/questions/`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData), // Convert data to JSON
-        }
+      const response = await submitQuestion(
+        title,
+        description,
+        category,
+        selectedTab,
+        templateCode,
+        testCases,
       );
 
       if (response.ok) {
@@ -207,14 +187,14 @@ export default function AddQuestionForm({
         const errorData = await response.json();
 
         setErrorMessage(
-          errorData.error || "Failed to submit the question. Please try again."
+          errorData.error || "Failed to submit the question. Please try again.",
         );
         setErrorModalOpen(true);
       }
     } catch (error) {
       // Show error modal with generic error message
       setErrorMessage(
-        "An error occurred while submitting the question. Please try again later"
+        "An error occurred while submitting the question. Please try again later",
       );
       setErrorModalOpen(true);
     }

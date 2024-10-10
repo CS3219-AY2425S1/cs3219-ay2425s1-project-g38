@@ -34,7 +34,7 @@ export default function QuestionsPage() {
   // setCategoryOptions(Array.from(data?.uniqueCategories));
 
   return (
-    <div>
+    <div className="flex-grow">
       <QuestionsTable />
     </div>
   );

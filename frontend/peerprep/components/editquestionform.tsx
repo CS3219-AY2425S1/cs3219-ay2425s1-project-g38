@@ -10,11 +10,9 @@ import {
   ScrollShadow,
   useDisclosure,
 } from "@nextui-org/react";
-import useSWR from "swr";
 import Editor from "@monaco-editor/react";
 import { useParams, useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
-import { env } from "next-runtime-env";
 
 import { DeleteConfirmationModal } from "./deleteconfirmationmodal";
 import { SuccessModal } from "./succesmodal";
@@ -27,6 +25,13 @@ import {
   complexityColorMap,
   Question,
 } from "@/app/(default)/questions-management/columns";
+import {
+  deleteQuestion,
+  editQuestion,
+  useQuestionDataFetcher,
+  useUniqueCategoriesFetcher,
+  isValidQuestionSubmission,
+} from "@/services/questionService";
 
 interface EditQuestionFormProps {
   initialTitle?: string;
@@ -37,8 +42,6 @@ interface EditQuestionFormProps {
   initialTestCases?: { input: string; output: string }[];
 }
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
 export default function EditQuestionForm({
   initialTitle = "",
   initialDescription = "",
@@ -47,9 +50,6 @@ export default function EditQuestionForm({
   initialTemplateCode = "",
   initialTestCases = [{ input: "", output: "" }],
 }: EditQuestionFormProps) {
-  const NEXT_PUBLIC_QUESTION_SERVICE_URL = env(
-    "NEXT_PUBLIC_QUESTION_SERVICE_URL"
-  );
   const params = useParams();
   const router = useRouter();
   const [language, setLanguage] = useState("javascript");
@@ -72,19 +72,14 @@ export default function EditQuestionForm({
   const [testCases, setTestCases] =
     useState<{ input: string; output: string }[]>(initialTestCases);
   const [questionToDelete, setQuestionToDelete] = useState<Question | null>(
-    null
+    null,
   );
   const [question, setQuestion] = useState<Question | null>(null);
 
-  const { data: categoryData, isLoading: categoryLoading } = useSWR(
-    `${NEXT_PUBLIC_QUESTION_SERVICE_URL}/api/questions/categories/unique`,
-    fetcher
-  );
+  const { categoryData, categoryLoading } = useUniqueCategoriesFetcher();
 
-  const { data: questionData, isLoading: questionLoading } = useSWR(
-    `${NEXT_PUBLIC_QUESTION_SERVICE_URL}/api/questions/${params.id ? params.id : ""}`,
-    fetcher
-  );
+  const questionId = Array.isArray(params.id) ? params.id[0] : params.id;
+  const { questionData, questionLoading } = useQuestionDataFetcher(questionId);
 
   useEffect(() => {
     if (params.id && !questionLoading) {
@@ -101,8 +96,8 @@ export default function EditQuestionForm({
               .map((str) => str.trim());
 
             return { input, output };
-          })
-        ) || []
+          }),
+        ) || [],
       );
       setQuestion(questionData?.question);
     }
@@ -146,7 +141,7 @@ export default function EditQuestionForm({
   // Handle removing a category
   const removeCategory = (category: string) => {
     setCategories((prevCategories) =>
-      prevCategories.filter((cat) => cat !== category)
+      prevCategories.filter((cat) => cat !== category),
     );
   };
 
@@ -175,7 +170,7 @@ export default function EditQuestionForm({
   // Handle input change for test case
   const handleInputChange = (
     index: number,
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const updatedTestCases = [...testCases];
     const { name, value } = event.target;
@@ -207,51 +202,39 @@ export default function EditQuestionForm({
       // Do nothing or handle invalid input case if needed
     }
   };
+
   const handleDelete = () => {
     setQuestionToDelete(question);
     onOpen();
   };
 
-  const updateQuestion = async () => {
+  const handleEdit = async () => {
     if (
-      !title.trim() ||
-      !description.trim() ||
-      !categories.length ||
-      !templateCode.trim() ||
-      !testCases.every(
-        (testCase) =>
-          testCase.input.trim() !== "" && testCase.output.trim() !== ""
+      !isValidQuestionSubmission(
+        title,
+        description,
+        categories,
+        templateCode,
+        testCases,
       )
     ) {
       setErrorMessage(
-        "Please fill in all the required fields before submitting."
+        "Please fill in all the required fields before submitting.",
       );
       setErrorModalOpen(true); // Show error modal with the validation message
 
       return;
     }
 
-    const formData = {
-      title,
-      description,
-      category: categories,
-      complexity: selectedTab,
-      templateCode,
-      testCases: testCases.map(
-        (testCase) => `${testCase.input} -> ${testCase.output}`
-      ),
-    };
-
     try {
-      const response = await fetch(
-        `${NEXT_PUBLIC_QUESTION_SERVICE_URL}/api/questions/${params.id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        }
+      const response = await editQuestion(
+        questionId,
+        title,
+        description,
+        categories,
+        selectedTab,
+        templateCode,
+        testCases,
       );
 
       if (response.ok) {
@@ -261,7 +244,7 @@ export default function EditQuestionForm({
         const errorData = await response.json();
 
         setErrorMessage(
-          errorData.error || "Failed to update the question. Please try again."
+          errorData.error || "Failed to update the question. Please try again.",
         );
         setErrorModalOpen(true);
       }
@@ -272,14 +255,9 @@ export default function EditQuestionForm({
     }
   };
 
-  const deleteQuestion = async () => {
+  const handleConfirmDelete = async () => {
     try {
-      const response = await fetch(
-        `${NEXT_PUBLIC_QUESTION_SERVICE_URL}/api/questions/${params.id}`,
-        {
-          method: "DELETE",
-        }
-      );
+      const response = await deleteQuestion(questionId);
 
       if (response.ok) {
         setSuccessMessage("Question deleted successfully!");
@@ -484,7 +462,7 @@ export default function EditQuestionForm({
           >
             Delete
           </Button>
-          <Button color="secondary" onClick={updateQuestion}>
+          <Button color="secondary" onClick={handleEdit}>
             Done
           </Button>
         </div>
@@ -492,7 +470,7 @@ export default function EditQuestionForm({
       <DeleteConfirmationModal
         isOpen={isOpen}
         questionToDelete={questionToDelete}
-        onConfirm={deleteQuestion}
+        onConfirm={handleConfirmDelete}
         onOpenChange={onOpenChange}
       />
       <SuccessModal
