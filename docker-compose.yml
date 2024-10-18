@@ -2,7 +2,7 @@ version: '3'
 services:
 
   frontend:
-    image: delishad21/g38-frontend:latest
+    image: delishad21/g38-frontend:milestone3
     container_name: g38-frontend
     env_file:
       - .env
@@ -27,7 +27,7 @@ services:
     restart: no
 
   g38-user-service:
-    image: delishad21/g38-user-service:latest
+    image: delishad21/g38-user-service:milestone3
     container_name: user-service
     env_file:
       - .env  # Loads environment variables from .env file
@@ -55,7 +55,7 @@ services:
     restart: no
 
   g38-question-service:
-    image: delishad21/g38-question-service:latest
+    image: delishad21/g38-question-service:milestone3
     container_name: question-service
     env_file:
       - .env  # Loads environment variables from .env file
