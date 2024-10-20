@@ -1,0 +1,94 @@
+version: '3'
+services:
+
+  frontend:
+    image: delishad21/frontend-peerprep:dev
+    container_name: g38-frontend-dev
+    env_file:
+      - .env
+    ports:
+      - "${FRONTEND_PORT}:${FRONTEND_PORT}"
+
+  user-mongodb:
+    image: mongo:latest
+    container_name: user-service-mongodb-dev
+    # expose port for testing purposes or to view database in MongoDB Compass
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./user-mongo-data:/data/db
+    env_file:
+      - .env
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${USER_MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${USER_MONGO_INITDB_ROOT_PASSWORD}
+    entrypoint: ["/usr/local/bin/docker-entrypoint.sh"]
+    command: /bin/sh -c 'if [ -z "$USER_MONGODB_URI" ]; then echo "Starting MongoDB..."; /usr/local/bin/docker-entrypoint.sh mongod; else echo "USER_MONGODB_URI is set. Shutting down."; exit 1; fi'
+    restart: no
+
+  g38-user-service:
+    image: delishad21/user-service:dev
+    container_name: user-service-dev
+    env_file:
+      - .env  # Loads environment variables from .env file
+    environment:
+      - USER_MONGODB_URI=${USER_MONGODB_URI:-mongodb://${USER_MONGO_INITDB_ROOT_USERNAME}:${USER_MONGO_INITDB_ROOT_PASSWORD}@user-mongodb:27017/user-service?authSource=admin}  # Fallback to local MongoDB if MONGODB_URI is not set
+    ports:
+      - "${USER_PORT}:${USER_PORT}"  # Bind port using env variable
+    depends_on:
+      - user-mongodb
+
+  question-mongodb:
+    image: mongo:latest
+    container_name: question-service-mongodb-dev
+    # expose port for testing purposes or to view database in MongoDB Compass
+    ports:
+      - "27018:27017"
+    volumes:
+      - ./question-mongo-data:/data/db
+    env_file:
+      - .env
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${QUESTION_MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${QUESTION_MONGO_INITDB_ROOT_PASSWORD}
+    entrypoint: /bin/sh -c 'if [ -z "$QUESTION_MONGODB_URI" ]; then echo "Starting MongoDB..."; /usr/local/bin/docker-entrypoint.sh mongod; else echo "QUESTION_MONGODB_URI is set. Shutting down."; exit 1; fi'
+    restart: no
+
+  g38-question-service:
+    image: delishad21/question-service:dev
+    container_name: question-service-dev
+    env_file:
+      - .env  # Loads environment variables from .env file
+    environment:
+      - QUESTION_MONGODB_URI=${QUESTION_MONGODB_URI:-mongodb://${QUESTION_MONGO_INITDB_ROOT_USERNAME}:${QUESTION_MONGO_INITDB_ROOT_PASSWORD}@question-mongodb:27017/question-service?authSource=admin}  # Fallback to local MongoDB if MONGODB_URI is not set
+    ports:
+      - "${QUESTION_PORT}:${QUESTION_PORT}"  # Bind port using env variable
+    depends_on:
+      - question-mongodb
+
+  redis:
+    image: redis:latest
+    container_name: redis-container-dev
+    command: redis-server --save 30 1 --loglevel warning
+    volumes:
+      - ./redis-data:/data
+    # expose ports when testing
+    ports:
+      - "6379:6379"
+
+  g38-matching-service:
+    image: delishad21/matching-service:dev
+    container_name: matching-service-dev
+    env_file:
+      - .env  # Loads environment variables from .env file
+    volumes:
+      - ${MATCHING_SERVICE_LOGS_DIR}:/usr/src/app/logs
+    ports:
+      - "${MATCHING_SERVICE_PORT}:${MATCHING_SERVICE_PORT}"  # Bind port using env variable
+    depends_on:
+      - redis
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://localhost:${MATCHING_SERVICE_PORT}/api"]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 5

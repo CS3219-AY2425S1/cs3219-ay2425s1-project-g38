@@ -43,6 +43,7 @@
     "react-dom": "18.3.1",
     "react-quill": "^2.0.0",
     "react-simple-code-editor": "^0.14.1",
+    "socket.io-client": "^4.8.0",
     "swr": "^2.2.5"
   },
   "devDependencies": {

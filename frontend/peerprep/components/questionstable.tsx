@@ -19,12 +19,11 @@ import {
 } from "@nextui-org/react";
 import React, { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import useSWR from "swr";
-import { env } from "next-runtime-env";
 
 import BoxIcon from "./boxicons";
 import { SearchIcon } from "./icons";
 import { DeleteConfirmationModal } from "./deleteconfirmationmodal";
+import { ErrorModal } from "./errormodal";
 
 import { capitalize } from "@/utils/utils";
 import {
@@ -32,37 +31,44 @@ import {
   Question,
   RenderCell,
   complexityOptions,
-} from "@/app/questions-management/list/columns";
-
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+} from "@/app/(default)/questions-management/columns";
+import {
+  deleteQuestion,
+  useQuestionsFetcher,
+  useUniqueCategoriesFetcher,
+} from "@/services/questionService";
 
 export default function QuestionsTable() {
-  const NEXT_PUBLIC_QUESTION_SERVICE_URL = env(
-    "NEXT_PUBLIC_QUESTION_SERVICE_URL",
-  );
+  const [errorMessage, setErrorMessage] = useState<string>("");
   const router = useRouter();
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const {
+    isOpen: isErrorModalOpen,
+    onOpen: onErrorModalOpen,
+    onOpenChange: onErrorModalOpenChange,
+  } = useDisclosure();
+  const {
+    isOpen: isConfirmModalOpen,
+    onOpen: onConfirmModalOpen,
+    onOpenChange: onConfirmModalOpenChange,
+  } = useDisclosure();
   const [questionToDelete, setQuestionToDelete] = useState<Question | null>(
     null,
   );
 
   const handleDelete = (question: Question) => {
     setQuestionToDelete(question);
-    onOpen();
+    onConfirmModalOpen();
   };
 
-  const deleteQuestion = async () => {
+  const handleConfirmDelete = async () => {
     if (questionToDelete) {
       try {
-        await fetch(
-          `${NEXT_PUBLIC_QUESTION_SERVICE_URL}/api/questions/${questionToDelete.question_id}`,
-          {
-            method: "DELETE",
-          },
-        );
-        onOpenChange();
+        await deleteQuestion(`${questionToDelete.question_id}`);
+        onConfirmModalOpenChange();
         location.reload();
       } catch (error) {
+        setErrorMessage("Failed to delete the question, please try again.");
+        onErrorModalOpen();
         console.error("Failed to delete the question", error);
       }
     }
@@ -80,21 +86,15 @@ export default function QuestionsTable() {
   });
   const [page, setPage] = React.useState(1);
 
-  const { data: questionData, isLoading: questionLoading } = useSWR(
-    `${NEXT_PUBLIC_QUESTION_SERVICE_URL}/api/questions?${hasSearchFilter ? `title=${filterValue}&` : ""}${complexityFilter !== null ? `complexity=${complexityFilter}&` : ""}${
-      categoryFilter !== "all"
-        ? Array.from(categoryFilter)
-            .map((category) => `category=${encodeURIComponent(category)}`)
-            .join("&") + "&"
-        : ""
-    }${`sort=${sortDescriptor.direction === "descending" ? "-" : ""}${sortDescriptor.column}&`}page=${page}`,
-    fetcher,
+  const { questionData, questionLoading } = useQuestionsFetcher(
+    filterValue,
+    complexityFilter,
+    categoryFilter,
+    sortDescriptor,
+    page,
   );
 
-  const { data: categoryData, isLoading: categoryLoading } = useSWR(
-    `${NEXT_PUBLIC_QUESTION_SERVICE_URL}/api/questions/categories/unique`,
-    fetcher,
-  );
+  const { categoryData, categoryLoading } = useUniqueCategoriesFetcher();
 
   const uniqueCategories = React.useMemo(() => {
     return categoryData?.uniqueCategories;
@@ -340,10 +340,15 @@ export default function QuestionsTable() {
         </TableBody>
       </Table>
       <DeleteConfirmationModal
-        isOpen={isOpen}
+        isOpen={isConfirmModalOpen}
         questionToDelete={questionToDelete}
-        onConfirm={deleteQuestion}
-        onOpenChange={onOpenChange}
+        onConfirm={handleConfirmDelete}
+        onOpenChange={onConfirmModalOpenChange}
+      />
+      <ErrorModal
+        isOpen={isErrorModalOpen}
+        onOpenChange={onErrorModalOpenChange}
+        errorMessage={errorMessage}
       />
     </>
   );

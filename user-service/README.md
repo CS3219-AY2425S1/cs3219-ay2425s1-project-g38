@@ -76,7 +76,6 @@ This directory contains a [Postman collection](./User-Service%20API.postman_coll
     - Auth Rules:
 
         - Admin users: Can retrieve all users' data. The server verifies the user associated with the JWT token is an admin user and allows access to all users' data.
-
         - Non-admin users: Not allowed access.
 
 - Responses:
@@ -115,7 +114,6 @@ This directory contains a [Postman collection](./User-Service%20API.postman_coll
     - Auth Rules:
 
         - Admin users: Can update any user's data. The server verifies the user associated with the JWT token is an admin user and allows the update of requested user's data.
-
         - Non-admin users: Can only update their own data. The server checks if the user ID in the request URL matches the ID of the user associated with the JWT token. If it matches, the server updates the user's own data.
 
 - Responses:

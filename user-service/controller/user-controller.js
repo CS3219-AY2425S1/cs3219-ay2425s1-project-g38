@@ -12,28 +12,67 @@ import {
   updateUserPrivilegeById as _updateUserPrivilegeById,
 } from "../model/repository.js";
 
+const isValidEmail = (email) =>
+  /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(email);
+
+const isValidUsername = (username) =>
+  /^[a-zA-Z0-9_-]{2,32}$/.test(username); // 2-32 chars, a-z, A-Z, 0-9, _ or -
+
+const isValidPassword = (password) => password.length >= 8; // At least 8 chars
+
 export async function createUser(req, res) {
   try {
     const { username, email, password } = req.body;
-    if (username && email && password) {
-      const existingUser = await _findUserByUsernameOrEmail(username, email);
-      if (existingUser) {
-        return res.status(409).json({ message: "username or email already exists" });
-      }
 
-      const salt = bcrypt.genSaltSync(10);
-      const hashedPassword = bcrypt.hashSync(password, salt);
-      const createdUser = await _createUser(username, email, hashedPassword);
-      return res.status(201).json({
-        message: `Created new user ${username} successfully`,
-        data: formatUserResponse(createdUser),
+    // Check if all fields are provided
+    if (!username || !email || !password) {
+      return res.status(400).json({
+        message: "Username, email, and password are required.",
       });
-    } else {
-      return res.status(400).json({ message: "username and/or email and/or password are missing" });
     }
+
+    // Validate field formats
+    if (!isValidUsername(username)) {
+      return res.status(400).json({
+        message:
+          "Username must be 2-32 characters and can contain a-z, A-Z, 0-9, _ or -.",
+      });
+    }
+
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ message: "Invalid email format." });
+    }
+
+    if (!isValidPassword(password)) {
+      return res.status(400).json({
+        message: "Password must be at least 8 characters long.",
+      });
+    }
+
+    // Check if the username or email already exists
+    const existingUser = await _findUserByUsernameOrEmail(username, email);
+    if (existingUser) {
+      return res
+        .status(409)
+        .json({ message: "Username or email already exists." });
+    }
+
+    // Hash the password
+    const salt = bcrypt.genSaltSync(10);
+    const hashedPassword = bcrypt.hashSync(password, salt);
+
+    // Create the user
+    const createdUser = await _createUser(username, email, hashedPassword);
+
+    return res.status(201).json({
+      message: `Created new user ${username} successfully`,
+      data: formatUserResponse(createdUser),
+    });
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ message: "Unknown error when creating new user!" });
+    return res.status(500).json({
+      message: "Unknown error occurred when creating a new user!",
+    });
   }
 }
 

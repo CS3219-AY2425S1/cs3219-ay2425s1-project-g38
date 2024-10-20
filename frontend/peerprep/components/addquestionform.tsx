@@ -9,11 +9,9 @@ import {
   AutocompleteItem,
   ScrollShadow,
 } from "@nextui-org/react";
-import useSWR from "swr";
 import Editor from "@monaco-editor/react";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
-import { env } from "next-runtime-env";
 
 import { SuccessModal } from "./succesmodal";
 import { ErrorModal } from "./errormodal";
@@ -21,7 +19,12 @@ import { WysiMarkEditor } from "./wysimarkeditor";
 import BoxIcon from "./boxicons";
 
 import { capitalize, languages } from "@/utils/utils";
-import { complexityColorMap } from "@/app/questions-management/list/columns";
+import { complexityColorMap } from "@/app/(default)/questions-management/columns";
+import {
+  useUniqueCategoriesFetcher,
+  isValidQuestionSubmission,
+  submitQuestion,
+} from "@/services/questionService";
 
 interface AddQuestionFormProps {
   initialTitle?: string;
@@ -32,8 +35,6 @@ interface AddQuestionFormProps {
   initialTestCases?: { input: string; output: string }[];
 }
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
 export default function AddQuestionForm({
   initialTitle = "",
   initialDescription = "# Question description \n Write your question description here! \n You can also insert images!",
@@ -42,9 +43,6 @@ export default function AddQuestionForm({
   initialTemplateCode = "/** PUT YOUR TEMPLATE CODE HERE **/",
   initialTestCases = [{ input: "", output: "" }],
 }: AddQuestionFormProps) {
-  const NEXT_PUBLIC_QUESTION_SERVICE_URL = env(
-    "NEXT_PUBLIC_QUESTION_SERVICE_URL",
-  );
   const router = useRouter();
   const { theme } = useTheme();
 
@@ -65,10 +63,7 @@ export default function AddQuestionForm({
   const [testCases, setTestCases] =
     useState<{ input: string; output: string }[]>(initialTestCases);
 
-  const { data: categoryData, isLoading: categoryLoading } = useSWR(
-    `${NEXT_PUBLIC_QUESTION_SERVICE_URL}/api/questions/categories/unique`,
-    fetcher,
-  );
+  const { categoryData, categoryLoading } = useUniqueCategoriesFetcher();
 
   const uniqueCategories = React.useMemo(() => {
     return categoryData?.uniqueCategories;
@@ -154,13 +149,12 @@ export default function AddQuestionForm({
   // Form submission handler
   const handleSubmit = async () => {
     if (
-      !title.trim() ||
-      !description.trim() ||
-      !category.length ||
-      !templateCode.trim() ||
-      !testCases.every(
-        (testCase) =>
-          testCase.input.trim() !== "" && testCase.output.trim() !== "",
+      !isValidQuestionSubmission(
+        title,
+        description,
+        category,
+        templateCode,
+        testCases,
       )
     ) {
       setErrorMessage(
@@ -171,31 +165,17 @@ export default function AddQuestionForm({
       return;
     }
 
-    // Prepare data to send
-    const formData = {
-      title,
-      description,
-      category: category,
-      complexity: selectedTab,
-      templateCode,
-      testCases: testCases.map(
-        (testCase) => `${testCase.input} -> ${testCase.output}`,
-      ),
-    };
-
     // console.log(formData);
 
     try {
       // Send POST request
-      const response = await fetch(
-        `${NEXT_PUBLIC_QUESTION_SERVICE_URL}/api/questions/`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData), // Convert data to JSON
-        },
+      const response = await submitQuestion(
+        title,
+        description,
+        category,
+        selectedTab,
+        templateCode,
+        testCases,
       );
 
       if (response.ok) {
@@ -221,7 +201,7 @@ export default function AddQuestionForm({
   };
 
   const handleCancel = () => {
-    router.push("/");
+    router.push("/questions-management");
   };
 
   return (
@@ -427,11 +407,11 @@ export default function AddQuestionForm({
         message={successMessage}
         onConfirm={() => {
           setSuccessModalOpen(false);
-          router.push("/");
+          router.push("/questions-management");
         }}
         onOpenChange={() => {
           setSuccessModalOpen;
-          router.push("/");
+          router.push("/questions-management");
         }}
       />
       <ErrorModal
