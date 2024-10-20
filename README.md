@@ -8,7 +8,7 @@
 - [Johan](https://github.com/delishad21)
 - [Joshua](https://github.com/dloh2236)
 
-# Milestone 3 Submission - Containerization
+# Milestone 4 Submission - Matching Service
 
 ## Prerequisites
 
@@ -24,6 +24,8 @@
    - If you wish to, you can modify the values in the .env file
       | **Variable** | **Description** | **Default Value** |
       |--------------|-----------------|-------------------|
+      | NEXT_PUBLIC_USER_SERVICE_URL | URL of the user service | http://localhost:8004 |
+      | NEXT_PUBLIC_QUESTION_SERVICE_URL | URL of the question service | http://localhost:8003 |
       | NEXT_PUBLIC_QUESTION_SERVICE_URL | URL of the question service | http://localhost:8003 |
       | NEXT_PUBLIC_IMAGE_UPLOAD_KEY | AuthToken for image upload | None, you can get this from https://www.portive.com |
       | FRONTEND_PORT | Port to run the frontend service | 3000 |
@@ -36,6 +38,12 @@
       | QUESTION_MONGO_INITDB_ROOT_USERNAME | MongoDB root username for the question service | questionroot |
       | QUESTION_MONGO_INITDB_ROOT_PASSWORD | MongoDB root password for the question service | questionpassword |
       | QUESTION_PORT | Port to run the question service | 8003 |
+      | MATCHING_PORT | Port to run the matching service | 8002 |
+      | USER_SERVICE_URL | URL of the user service (for matching) | http://g38-user-service:8004 |
+      | REDIS_URL | URL of the Redis instance | redis://redis:6379 |
+      | MATCHING_SERVICE_LOGS_DIR | Directory to store logs for the matching service | ./logs |
+      | MATCHING_TIMEOUT | Timeout for matching in milliseconds | 10000 |
+
 3. Run `docker-compose up` to start the services.
    - If you keyed in remote MongoDB URIs in the .env file, the MongoDB containers will not be started. The services will connect to the remote MongoDB instances instead.
 4. Once the services are up and running, you can access the frontend at `http://localhost:<FRONTEND_PORT>` (default: <http://localhost:3000>)
@@ -43,6 +51,22 @@
 ## Docker Compose for individual services
 
 If the services are to be run individually (e.g. for deployment on different platforms), you can follow the instructions below.
+
+### Matching Service
+
+1. cd into the matching-service directory
+2. Duplicate the .env.sample file and rename it to .env
+   - If you wish to, you can modify the values in the .env file
+
+      | **Variable** | **Description** | **Default Value** |
+      |--------------|-----------------|-------------------|
+      | MATCHING_PORT | Port to run the service | 8002 |
+      | USER_SERVICE_URL | URL of the user service | http://localhost:8004 |
+      | REDIS_URL | URL of the Redis instance | redis://redis:6379 |
+      | MATCHING_SERVICE_LOGS_DIR | Directory to store logs for the matching service | ./logs |
+      | MATCHING_TIMEOUT | Timeout for matching in milliseconds | 10000 |
+
+3. Run `docker-compose up` to start the matching service.
 
 ### Question Service
 
@@ -99,6 +123,10 @@ Issue: MongoParseError: URI malformed
 
 1. cd into the any of the service directories (question-service, user-service, frontend/peerprep)
 2. Run `docker build -t "<image-name>" .` to build the Docker image.
+
+## Matching Service API
+
+The matching service API can be found here: [Matching Service API](./matching-service/README.md)
 
 ## API Endpoints for User and Question Service
 
