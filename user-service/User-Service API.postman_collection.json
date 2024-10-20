@@ -1,0 +1,310 @@
+{
+	"info": {
+		"_postman_id": "46fd64a8-9010-4f74-bec0-9b36d65a9f34",
+		"name": "User-Service API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27933864"
+	},
+	"item": [
+		{
+			"name": "New User",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"username\": \"SampleUserName\",\r\n  \"email\": \"sample@gmail.com\",\r\n  \"password\": \"SecurePassword\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8004/users",
+					"host": [
+						"localhost"
+					],
+					"port": "8004",
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New User 2",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"username\": \"SampleUserName2\",\r\n  \"email\": \"sample2@gmail.com\",\r\n  \"password\": \"SecurePassword\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8004/users",
+					"host": [
+						"localhost"
+					],
+					"port": "8004",
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"sample@gmail.com\",\r\n  \"password\": \"SecurePassword\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8004/auth/login",
+					"host": [
+						"localhost"
+					],
+					"port": "8004",
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get User",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "authorization",
+						"value": "Bearer 66fae2d31729371fa58d96d4 eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZmFlMmQzMTcyOTM3MWZhNThkOTZkNCIsImlhdCI6MTcyNzcxODUyOCwiZXhwIjoxNzI3ODA0OTI4fQ.l8r7dRvzCrCYDSE9_az6ZOVq7j4eb-TDfepWmyFNWnsBearer ",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"username\": \"SampleUserName\",\r\n  \"email\": \"sample@gmail.com\",\r\n  \"password\": \"SecurePassword\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8004/users/66fae2d31729371fa58d96d4",
+					"host": [
+						"localhost"
+					],
+					"port": "8004",
+					"path": [
+						"users",
+						"66fae2d31729371fa58d96d4"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Users",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZmFlMmQzMTcyOTM3MWZhNThkOTZkNCIsImlhdCI6MTcyNzcxODUyOCwiZXhwIjoxNzI3ODA0OTI4fQ.l8r7dRvzCrCYDSE9_az6ZOVq7j4eb-TDfepWmyFNWns",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"username\": \"SampleUserName\",\r\n  \"email\": \"sample@gmail.com\",\r\n  \"password\": \"SecurePassword\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8004/users",
+					"host": [
+						"localhost"
+					],
+					"port": "8004",
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Edit User",
+			"request": {
+				"auth": {
+					"type": "jwt",
+					"jwt": [
+						{
+							"key": "algorithm",
+							"value": "HS256",
+							"type": "string"
+						},
+						{
+							"key": "isSecretBase64Encoded",
+							"value": false,
+							"type": "boolean"
+						},
+						{
+							"key": "payload",
+							"value": "{}",
+							"type": "string"
+						},
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						},
+						{
+							"key": "headerPrefix",
+							"value": "Bearer",
+							"type": "string"
+						},
+						{
+							"key": "queryParamKey",
+							"value": "token",
+							"type": "string"
+						},
+						{
+							"key": "header",
+							"value": "{}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZmFlMmQzMTcyOTM3MWZhNThkOTZkNCIsImlhdCI6MTcyNzcxODUyOCwiZXhwIjoxNzI3ODA0OTI4fQ.l8r7dRvzCrCYDSE9_az6ZOVq7j4eb-TDfepWmyFNWns",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"username\": \"SampleUserName\",\r\n  \"email\": \"sample@gmail.com\",\r\n  \"password\": \"SecurePassword2\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8004/users/66fae2d31729371fa58d96d4",
+					"host": [
+						"localhost"
+					],
+					"port": "8004",
+					"path": [
+						"users",
+						"66fae2d31729371fa58d96d4"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete User",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZmFlMmQzMTcyOTM3MWZhNThkOTZkNCIsImlhdCI6MTcyNzcxODUyOCwiZXhwIjoxNzI3ODA0OTI4fQ.l8r7dRvzCrCYDSE9_az6ZOVq7j4eb-TDfepWmyFNWns",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"username\": \"SampleUserName2\",\r\n  \"email\": \"sample2@gmail.com\",\r\n  \"password\": \"SecurePassword\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8004/users/66fae6681729371fa58d96e8",
+					"host": [
+						"localhost"
+					],
+					"port": "8004",
+					"path": [
+						"users",
+						"66fae6681729371fa58d96e8"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete User Copy",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZmFlMmQzMTcyOTM3MWZhNThkOTZkNCIsImlhdCI6MTcyNzcxODUyOCwiZXhwIjoxNzI3ODA0OTI4fQ.l8r7dRvzCrCYDSE9_az6ZOVq7j4eb-TDfepWmyFNWns",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8004/auth/verify-token",
+					"host": [
+						"localhost"
+					],
+					"port": "8004",
+					"path": [
+						"auth",
+						"verify-token"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

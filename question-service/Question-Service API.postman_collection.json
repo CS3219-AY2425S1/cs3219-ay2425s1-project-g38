@@ -1,0 +1,425 @@
+{
+  "info": {
+    "_postman_id": "73775186-cee9-4f2d-b8ad-be01ef7406e9",
+    "name": "Question-Service API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "27933864"
+  },
+  "item": [
+    {
+      "name": "Add Question",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"title\": \"Linked List Cycle Detection\",\r\n    \"description\": \"Implement a function to detect if a linked list contains a cycle.\",\r\n    \"category\": [\r\n        \"Data Structures\",\r\n        \"Algorithms\"\r\n    ],\r\n    \"complexity\": \"Easy\",\r\n    \"templateCode\": \"/**\\n * Definition for singly-linked list.\\n * struct ListNode {\\n *     int val;\\n *     ListNode *next;\\n *     ListNode(int x) : val(x), next(NULL) {}\\n * };\\n */\\nclass Solution {\\npublic:\\n    bool hasCycle(ListNode *head) {\\n\\n    }\\n};\",\r\n    \"testCases\": [\r\n        \"1234 -> 1423\"\r\n    ]\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8003/api/questions",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8003",
+          "path": ["api", "questions"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Question",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"title\": \"Linked List Cycle Detection\",\r\n    \"description\": \"Implement a function to detect if a linked list contains a cycle.\",\r\n    \"category\": [\r\n        \"Data Structures\",\r\n        \"Algorithms\"\r\n    ],\r\n    \"complexity\": \"Easy\",\r\n    \"templateCode\": \"/**\\n * Definition for singly-linked list.\\n * struct ListNode {\\n *     int val;\\n *     ListNode *next;\\n *     ListNode(int x) : val(x), next(NULL) {}\\n * };\\n */\\nclass Solution {\\npublic:\\n    bool hasCycle(ListNode *head) {\\n\\n    }\\n};\",\r\n    \"testCases\": [\r\n        \"1234 -> 1423\"\r\n    ]\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8003/api/questions/1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8003",
+          "path": ["api", "questions", "4"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Question",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8003/api/questions/1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8003",
+          "path": ["api", "questions", "4"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Retrieve Questions (with filter)",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8003/api/questions?title=Linked List Cycle Detection&category=DATA STRUCTURES&category=ALGORITHMS&page=1&complexity=EASY&sort=-title",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8003",
+          "path": ["api", "questions"],
+          "query": [
+            {
+              "key": "title",
+              "value": "Linked List Cycle Detection"
+            },
+            {
+              "key": "category",
+              "value": "DATA STRUCTURES"
+            },
+            {
+              "key": "category",
+              "value": "ALGORITHMS"
+            },
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "complexity",
+              "value": "EASY"
+            },
+            {
+              "key": "sort",
+              "value": "-title"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Retrieve a question",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8003/api/questions/1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8003",
+          "path": ["api", "questions", "1"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Retrieve Unique Categories",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8003/api/questions/categories/unique",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8003",
+          "path": ["api", "questions", "categories", "unique"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Retrieve Unique Complexities",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8003/api/questions/categories/unique",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8003",
+          "path": ["api", "questions", "categories", "unique"]
+        }
+      },
+      "response": []
+    }
+  ]
+=======
+	"info": {
+		"_postman_id": "73775186-cee9-4f2d-b8ad-be01ef7406e9",
+		"name": "Question-Service API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27933864"
+	},
+	"item": [
+		{
+			"name": "Add Question",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\": \"Linked List Cycle Detection\",\r\n    \"description\": \"Implement a function to detect if a linked list contains a cycle.\",\r\n    \"category\": [\r\n        \"Data Structures\",\r\n        \"Algorithms\"\r\n    ],\r\n    \"complexity\": \"Easy\",\r\n    \"templateCode\": \"/**\\n * Definition for singly-linked list.\\n * struct ListNode {\\n *     int val;\\n *     ListNode *next;\\n *     ListNode(int x) : val(x), next(NULL) {}\\n * };\\n */\\nclass Solution {\\npublic:\\n    bool hasCycle(ListNode *head) {\\n\\n    }\\n};\",\r\n    \"testCases\": [\r\n        \"1234 -> 1423\"\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8003/api/questions",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8003",
+					"path": [
+						"api",
+						"questions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Question",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\": \"Linked List Cycle Detection\",\r\n    \"description\": \"Implement a function to detect if a linked list contains a cycle.\",\r\n    \"category\": [\r\n        \"Data Structures\",\r\n        \"Algorithms\"\r\n    ],\r\n    \"complexity\": \"Easy\",\r\n    \"templateCode\": \"/**\\n * Definition for singly-linked list.\\n * struct ListNode {\\n *     int val;\\n *     ListNode *next;\\n *     ListNode(int x) : val(x), next(NULL) {}\\n * };\\n */\\nclass Solution {\\npublic:\\n    bool hasCycle(ListNode *head) {\\n\\n    }\\n};\",\r\n    \"testCases\": [\r\n        \"1234 -> 1423\"\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8003/api/questions/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8003",
+					"path": [
+						"api",
+						"questions",
+						"4"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Question",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8003/api/questions/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8003",
+					"path": [
+						"api",
+						"questions",
+						"4"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Retrieve Questions (with filter)",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8003/api/questions?title=Linked List Cycle Detection&category=DATA STRUCTURES&category=ALGORITHMS&page=1&complexity=EASY&sort=-title",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8003",
+					"path": [
+						"api",
+						"questions"
+					],
+					"query": [
+						{
+							"key": "title",
+							"value": "Linked List Cycle Detection"
+						},
+						{
+							"key": "category",
+							"value": "DATA STRUCTURES"
+						},
+						{
+							"key": "category",
+							"value": "ALGORITHMS"
+						},
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "complexity",
+							"value": "EASY"
+						},
+						{
+							"key": "sort",
+							"value": "-title"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Retrieve a question",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8003/api/questions/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8003",
+					"path": [
+						"api",
+						"questions",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Retrieve Unique Categories",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8003/api/questions/categories/unique",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8003",
+					"path": [
+						"api",
+						"questions",
+						"categories",
+						"unique"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Retrieve Unique Complexities",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8003/api/questions/categories/unique",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8003",
+					"path": [
+						"api",
+						"questions",
+						"categories",
+						"unique"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
