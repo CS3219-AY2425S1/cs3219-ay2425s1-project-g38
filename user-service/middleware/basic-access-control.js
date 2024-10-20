@@ -46,3 +46,15 @@ export function verifyIsOwnerOrAdmin(req, res, next) {
 
   return res.status(403).json({ message: "Not authorized to access this resource" });
 }
+
+export function verifyApiKey(req, res, next) {
+  const apiKey = req.header("x-api-key");
+  const validApiKey = process.env.USER_BACKEND_API_KEY;
+  console.log(apiKey);
+
+  if (apiKey && apiKey === validApiKey) {
+    next();
+  } else {
+    res.status(401).json({ message: "Unauthorized" });
+  }
+}

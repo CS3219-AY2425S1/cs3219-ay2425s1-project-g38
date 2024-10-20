@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Button, Select, SelectItem, Spinner } from "@nextui-org/react";
 import {
   Modal,

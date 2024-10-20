@@ -3,46 +3,48 @@
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
 import { useState } from "react";
-import { useRouter } from "next/navigation"; // For redirection
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 import BoxIcon from "@/components/boxicons";
 import { EyeFilledIcon, EyeSlashFilledIcon } from "@/components/icons";
 import PeerprepLogo from "@/components/peerpreplogo";
 import { fontFun, fontLogo } from "@/config/fonts";
+import Toast from "@/components/toast";
+import { useFormState } from "react-dom";
 import { loginUser } from "@/services/userService";
-import Toast from "@/components/toast"; // Import Toast component
 
 export default function SignInPage() {
   const router = useRouter();
   const [isVisible, setIsVisible] = useState(false);
-  const [id, setId] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
   const [toast, setToast] = useState<{ message: string; type: string } | null>(
-    null,
+    null
   );
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, dispatch] = useFormState(loginUser, undefined);
 
   const toggleVisibility = () => setIsVisible(!isVisible);
 
-  const handleContinue = async () => {
-    const response = await loginUser(id, password);
-    const data = await response.json();
+  // const handleContinue = async (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
+  //   const formData = new FormData(e.currentTarget);
+  //   const email = formData.get("email") as string;
+  //   const password = formData.get("password") as string;
 
-    if (response.ok) {
-      setToast({ message: "Login successful!", type: "success" });
-      setId("");
-      setPassword("");
-      localStorage.setItem("accessToken", data.data.accessToken);
-      setTimeout(() => router.push("/home"), 1000);
-    } else {
-      setToast({ message: data.message || "Login failed", type: "error" });
-    }
-  };
+  //   setIsLoading(true);
+  //   const result = await signIn("credentials", {
+  //     email,
+  //     password,
+  //   });
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === "Enter") {
-      handleContinue();
-    }
-  };
+  //   if (result?.error) {
+  //     setToast({ message: result.error, type: "error" });
+  //   } else {
+  //     setToast({ message: "Login successful!", type: "success" });
+  //     setTimeout(() => router.push("/home"), 1000);
+  //   }
+  //   setIsLoading(false);
+  // };
 
   return (
     <div className="flex items-start justify-center mt-20">
@@ -83,9 +85,9 @@ export default function SignInPage() {
           </span>
         </div>
 
-        <div className="flex flex-col gap-5 w-fill">
+        <form action={dispatch} className="flex flex-col gap-5 w-fill">
           <Input
-            value={id}
+            name="id"
             labelPlacement="outside"
             placeholder="Enter your username or email"
             label="Username or email"
@@ -93,22 +95,16 @@ export default function SignInPage() {
             radius="sm"
             size="md"
             className="w-md"
-            onValueChange={setId}
-            onKeyDown={handleKeyDown}
           />
           <Input
-            value={password}
-            onValueChange={setPassword}
+            name="password"
             labelPlacement="outside"
             label="Password"
             variant="faded"
             radius="sm"
             size="md"
             placeholder="Enter your password"
-            classNames={{
-              description: "text-gray-700 dark:text-gray-200",
-            }}
-            className="text-start"
+            type={isVisible ? "text" : "password"}
             endContent={
               <Button
                 isIconOnly
@@ -121,25 +117,22 @@ export default function SignInPage() {
                 {isVisible ? <EyeFilledIcon /> : <EyeSlashFilledIcon />}
               </Button>
             }
-            type={isVisible ? "text" : "password"}
-            onKeyDown={handleKeyDown}
           />
-        </div>
-
-        <button
-          className="transition ease-in-out bg-violet-600 dark:bg-gray-800 hover:-translate-y-0.5 hover:scale-[1.02] active:scale-100 dark:active:bg-gray-900 active:bg-violet-700 duration-300 rounded-md p-1.5 text-sm text-gray-200 mb-8"
-          onClick={handleContinue}
-        >
-          <div className="flex flex-row gap-2 items-center justify-center">
-            <div
-              className={`${fontFun.variable} my-1 font-medium`}
-              style={{ fontFamily: "var(--font-fun)" }}
-            >
-              Continue
+          <button
+            className="transition ease-in-out bg-violet-600 dark:bg-gray-800 hover:-translate-y-0.5 hover:scale-[1.02] active:scale-100 dark:active:bg-gray-900 active:bg-violet-700 duration-300 rounded-md p-1.5 text-sm text-gray-200 mt-8 mb-1"
+            type="submit"
+          >
+            <div className="flex flex-row gap-2 items-center justify-center">
+              <div
+                className={`${fontFun.variable} my-1 font-medium`}
+                style={{ fontFamily: "var(--font-fun)" }}
+              >
+                Continue
+              </div>
+              <BoxIcon name="bxs-right-arrow" size="10px" color="#e5e7eb" />
             </div>
-            <BoxIcon name="bxs-right-arrow" size="10px" color="#e5e7eb" />
-          </div>
-        </button>
+          </button>
+        </form>
       </div>
     </div>
   );

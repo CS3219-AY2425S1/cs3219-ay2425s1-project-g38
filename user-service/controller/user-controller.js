@@ -95,6 +95,33 @@ export async function getUser(req, res) {
   }
 }
 
+export async function checkUserExists(req, res) {
+  try {
+    const { identifier } = req.body;
+
+    if (!identifier) {
+      return res.status(400).json({ message: "Identifier is required." });
+    }
+
+    // Check if identifier is an email or username
+    const isEmail = isValidEmail(identifier);
+    const user = isEmail 
+      ? await _findUserByEmail(identifier) 
+      : await _findUserByUsername(identifier);
+
+    if (user) {
+      return res.status(200).json({ exists: true }); // User exists
+    } else {
+      return res.status(404).json({ exists: false }); // No such user
+    }
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      message: "An error occurred while checking user existence.",
+    });
+  }
+}
+
 export async function getAllUsers(req, res) {
   try {
     const users = await _findAllUsers();
