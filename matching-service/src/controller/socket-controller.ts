@@ -107,9 +107,9 @@ export function handleDeregisterForMatching(socket: Socket) {
         await removeUserFromSearchPool(socket.data.userId);
         writeLogToFile(formatSearchPoolStatus(await getSearchPoolStatus()));
         // Clear timeout
-        if (userTimeouts[socket.data.socketId]) {
-            clearTimeout(userTimeouts[socket.data.socketId]);
-            delete userTimeouts[socket.data.socketId];
+        if (userTimeouts[socket.id]) {
+            clearTimeout(userTimeouts[socket.id]);
+            delete userTimeouts[socket.id];
         }
 
     });
