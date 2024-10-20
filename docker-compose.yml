@@ -27,7 +27,7 @@ services:
     restart: no
 
   g38-user-service:
-    image: delishad21/matching-service:milestone4
+    image: delishad21/user-service:milestone4
     container_name: user-service
     env_file:
       - .env  # Loads environment variables from .env file
