@@ -49,8 +49,8 @@ export function verifyIsOwnerOrAdmin(req, res, next) {
 
 export function verifyApiKey(req, res, next) {
   const apiKey = req.header("x-api-key");
-  const validApiKey = process.env.USER_BACKEND_API_KEY;
-  console.log(apiKey);
+  const validApiKey = process.env.NEXT_PUBLIC_USER_BACKEND_API_KEY;
+  console.log(apiKey, validApiKey);
 
   if (apiKey && apiKey === validApiKey) {
     next();
