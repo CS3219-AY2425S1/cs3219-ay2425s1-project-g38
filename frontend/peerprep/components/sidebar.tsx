@@ -7,13 +7,34 @@ import { usePathname } from "next/navigation";
 import BoxIcon from "./boxicons";
 
 import { siteConfig } from "@/config/site";
+import { logout } from "@/services/userService";
+import { useRouter } from "next/navigation";
+import Toast from "@/components/toast";
+import { useState } from "react";
 
 export const Sidebar = () => {
+  const router = useRouter();
   const { theme } = useTheme();
   const currentPath = usePathname();
+  const [toast, setToast] = useState<{ message: string; type: string } | null>(
+    null
+  );
+
+  const handleSignOut = async () => {
+    setToast({ message: "Signing you out...", type: "danger" });
+    logout();
+    setTimeout(() => router.push("/"), 1000);
+  };
 
   return (
     <div className="h-fit flex flex-col fixed w-fit pr-4 relative">
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type as "success" | "error"}
+          onClose={() => setToast(null)}
+        />
+      )}
       <Listbox
         variant="flat"
         aria-label="Listbox menu with sections"
@@ -52,6 +73,7 @@ export const Sidebar = () => {
       <Button
         className="fixed bottom-5 left-10 flex items-center justify-center bg-transparent text-danger"
         startContent={<BoxIcon name="bx-log-out" color="danger" />}
+        onClick={handleSignOut}
       >
         Sign out
       </Button>

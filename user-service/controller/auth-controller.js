@@ -31,17 +31,23 @@ export async function handleLogin(req, res) {
       return res.status(401).json({ message: "Wrong username/email and/or password" });
     }
 
+    // Set token expiration time (1 day)
+    const tokenExpiryInSeconds = 24 * 60 * 60; // 1 day in seconds
+    const tokenExpiryDate = new Date(Date.now() + tokenExpiryInSeconds * 1000); // Expiry date in milliseconds
+
     // Generate JWT access token
     const accessToken = jwt.sign(
       { id: user.id },
       process.env.JWT_SECRET,
-      { expiresIn: "1d" }
+      { expiresIn: tokenExpiryInSeconds }
     );
 
+    // Respond with token and expiry date
     return res.status(200).json({
       message: "User logged in",
       data: {
         accessToken,
+        tokenExpiry: tokenExpiryDate.toISOString(), // Send expiry in ISO string format
         ...formatUserResponse(user),
       },
     });

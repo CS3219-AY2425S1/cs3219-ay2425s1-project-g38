@@ -1,4 +1,7 @@
+"use server";
+
 import { env } from "next-runtime-env";
+import { cookies } from "next/headers";
 
 const USER_SERVICE_URL = env("NEXT_PUBLIC_USER_SERVICE_URL");
 
@@ -40,5 +43,23 @@ export const loginUser = async (identifier: string, password: string) => {
     body: JSON.stringify(formData),
   });
 
-  return response;
+  const data = await response.json();
+  if (response.ok) {
+    const expires = new Date(data.data.tokenExpiry);
+    cookies().set("session", data.data.accessToken, { expires, httpOnly: true });
+    return true;
+  } else {
+    throw new Error(data.message || "An unknown error occurred during login"); 
+  }
 };
+
+export async function logout() {
+  // Destroy the session
+  cookies().set("session", "", { expires: new Date(0) });
+}
+
+export async function getSession() {
+  const session = cookies().get("session")?.value;
+  if (!session) return null;
+  return session;
+}

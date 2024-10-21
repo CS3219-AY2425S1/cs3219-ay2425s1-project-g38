@@ -18,23 +18,24 @@ export default function SignInPage() {
   const [id, setId] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [toast, setToast] = useState<{ message: string; type: string } | null>(
-    null,
+    null
   );
 
   const toggleVisibility = () => setIsVisible(!isVisible);
 
   const handleContinue = async () => {
-    const response = await loginUser(id, password);
-    const data = await response.json();
-
-    if (response.ok) {
+    try {
+      const isLoggedIn = await loginUser(id, password);
       setToast({ message: "Login successful!", type: "success" });
       setId("");
       setPassword("");
-      localStorage.setItem("accessToken", data.data.accessToken);
       setTimeout(() => router.push("/home"), 1000);
-    } else {
-      setToast({ message: data.message || "Login failed", type: "error" });
+    } catch (error) {
+      const typedError = error as Error;
+      setToast({
+        message: typedError.message || "Login failed",
+        type: "error",
+      });
     }
   };
 
