@@ -14,7 +14,7 @@ import {
   propagateLanguage,
   openModal,
   closeModal,
-  confirmTermination
+  confirmTermination,
 } from "@/services/sessionService";
 import CollabCodeEditor from "../../../../components/collaboration/CollabCodeEditor";
 import { codeOutputInterface } from "@/components/collaboration/Output";
@@ -73,15 +73,20 @@ const App: React.FC = () => {
 
   const handleOpenModal = async () => {
     openModal(setModalVisibility);
-  }
+  };
 
   const handleCloseModal = async () => {
     closeModal(setModalVisibility, setUserConfirmed, setIsFirstToCancel);
-  }
+  };
 
   const handleConfirm = async () => {
-    confirmTermination(isFirstToCancel, router, setUserConfirmed, setModalVisibility);
-  }
+    confirmTermination(
+      isFirstToCancel,
+      router,
+      setUserConfirmed,
+      setModalVisibility
+    );
+  };
 
   useEffect(() => {
     initializeSessionSocket(
@@ -101,14 +106,15 @@ const App: React.FC = () => {
 
     return () => {
       disconnectSocket();
+      doc.destroy();
     };
   }, []);
 
   return (
     <div className="relative flex flex-col h-screen">
-      <CollabNavbar 
-        usersInRoom={usersInRoom} 
-        setUsersInRoom={setUsersInRoom} 
+      <CollabNavbar
+        usersInRoom={usersInRoom}
+        setUsersInRoom={setUsersInRoom}
         isModalVisible={isModalVisible}
         userConfirmed={userConfirmed}
         isCancelled={isCancelled}
@@ -120,7 +126,10 @@ const App: React.FC = () => {
       />
       <div className="flex flex-row w-full h-[90vh] gap-2">
         <div className="flex w-1/2 h-full">
-          <QuestionDisplay question={questionDescription} testCases={questionTestcases} />
+          <QuestionDisplay
+            question={questionDescription}
+            testCases={questionTestcases}
+          />
         </div>
         <div className="flex w-1/2 h-full">
           <CollabCodeEditor

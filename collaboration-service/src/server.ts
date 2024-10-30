@@ -11,6 +11,7 @@ import { initialize } from './controller/editor-controller';
 import { registerEventHandlers } from './routes/editor-routes';
 import { pubClient, subClient } from './utils/redis-helper';
 import { createAdapter } from '@socket.io/redis-adapter';
+import { YSocketIO } from 'y-socket.io/dist/server'
 
 dotenv.config();
 
@@ -42,6 +43,9 @@ io.on('connection', (socket) => {
 });
 
 export { server };
+
+const ysocketio = new YSocketIO(io);
+ysocketio.initialize();
 
 if (require.main === module) {
     dotenv.config();

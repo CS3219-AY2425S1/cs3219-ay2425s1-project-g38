@@ -60,7 +60,7 @@ export const initializeSessionSocket = async (
   socket.on("initialData", (data: any) => {
     console.log("Populating initial data");
     const { sessionData } = data;
-    setLanguage(sessionData.language);
+    setLanguage((sessionData.selectedLanguage).toLowerCase());
     setUsersInRoom(sessionData.usersInRoom);
     setQuestionDescription(sessionData.questionDescription);
     setQuestionTestcases(sessionData.questionTestcases);
@@ -172,7 +172,7 @@ export const propagateLanguage = async (language: string) => {
 export const propagateDocUpdate = async (update: Uint8Array) => {
   if (!socket) return;
   console.log("Propagating document update", update);
-  socket.emit("update", update);
+  // socket.emit("update", update);
 }
 
 export const openModal = async (setModalVisibility: Dispatch<any>) => {
@@ -198,7 +198,7 @@ export const confirmTermination = async (isFirstToCancel: boolean, router: any, 
   if (isFirstToCancel) {
     socket.emit("terminateOne");
   } else {
-    setModalVisibility(false);  
+    setModalVisibility(false);
     socket.emit("terminateSession");
     socket.disconnect();
     router.push("/");

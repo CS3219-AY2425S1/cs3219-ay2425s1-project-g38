@@ -59,6 +59,7 @@
     "swr": "^2.2.5",
     "y-monaco": "^0.1.4",
     "y-protocols": "^1.0.6",
+    "y-socket.io": "^1.1.3",
     "yjs": "^13.6.7"
   },
   "devDependencies": {

@@ -7,7 +7,7 @@ import { useTheme } from "next-themes";
 import { Card } from "@nextui-org/react";
 
 import { SupportedLanguages } from "../../utils/utils";
-import { socket } from "../../services/sessionService";
+import { SocketIOProvider } from "y-socket.io";
 
 import Output, { codeOutputInterface } from "./Output";
 import LanguageSelector from "./LanguageSelector";
@@ -38,14 +38,25 @@ export default function CollabCodeEditor({
   const onMount = async (editor: any) => {
     editorRef.current = editor;
     const model = editor.getModel();
+    const provider = new SocketIOProvider(
+      "http://localhost:8010",
+      "test",
+      yDoc,
+      { autoConnect: true }
+    );
 
     if (model) {
       const MonacoBinding = (await import("y-monaco")).MonacoBinding; // not dynamically importing this causes an error
-      const binding = new MonacoBinding(yText, model, new Set([editor]));
+      const binding = new MonacoBinding(
+        yText,
+        model,
+        new Set([editor]),
+        provider.awareness
+      );
     }
 
     yDoc.on("update", async (update: Uint8Array) => {
-      propagateUpdates(update);
+      // propagateUpdates(update);
     });
   };
 
