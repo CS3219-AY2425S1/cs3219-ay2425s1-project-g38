@@ -45,7 +45,7 @@ export default function CollabCodeEditor({
     }
 
     yDoc.on("update", async (update: Uint8Array) => {
-      propagateUpdates(update);
+      propagateUpdates(Y.encodeStateAsUpdateV2(yDoc));
     });
   };
 

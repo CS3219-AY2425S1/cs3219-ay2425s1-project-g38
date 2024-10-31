@@ -28,6 +28,7 @@
     "@react-aria/ssr": "3.9.4",
     "@react-aria/visually-hidden": "3.8.12",
     "@react-stately/data": "^3.11.6",
+    "@types/cookie": "^0.6.0",
     "@uiw/react-md-editor": "^4.0.4",
     "@wysimark/react": "^3.0.20",
     "axios": "^1.7.7",

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Input,
   Button,
@@ -25,6 +25,7 @@ import {
   isValidQuestionSubmission,
   submitQuestion,
 } from "@/services/questionService";
+import * as Y from "yjs";
 
 interface AddQuestionFormProps {
   initialTitle?: string;
@@ -45,6 +46,30 @@ export default function AddQuestionForm({
 }: AddQuestionFormProps) {
   const router = useRouter();
   const { theme } = useTheme();
+
+  // Yjs setup for saving template code
+  const yDoc = new Y.Doc();
+  const yText = yDoc.getText("code");
+  const editorRef = useRef<any>(null);
+  const [YDocUpdate, setYDocUpdate] = useState<Uint8Array>(
+    Y.encodeStateAsUpdateV2(yDoc)
+  );
+
+  const onMount = async (editor: any) => {
+    editorRef.current = editor;
+    const model = editor.getModel();
+
+    if (model) {
+      const MonacoBinding = (await import("y-monaco")).MonacoBinding; // not dynamically importing this causes an error
+      const binding = new MonacoBinding(yText, model, new Set([editor]));
+    }
+
+    yDoc.on("update", () => {
+      setYDocUpdate(Y.encodeStateAsUpdateV2(yDoc));
+    });
+
+    model.setValue(initialTemplateCode);
+  };
 
   const [successModalOpen, setSuccessModalOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
@@ -83,7 +108,7 @@ export default function AddQuestionForm({
   // Handle removing a category
   const removeCategory = (category: string) => {
     setCategories((prevCategories) =>
-      prevCategories.filter((cat) => cat !== category),
+      prevCategories.filter((cat) => cat !== category)
     );
   };
 
@@ -112,7 +137,7 @@ export default function AddQuestionForm({
   // Handle input change for test case
   const handleInputChange = (
     index: number,
-    event: React.ChangeEvent<HTMLInputElement>,
+    event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const updatedTestCases = [...testCases];
 
@@ -155,11 +180,11 @@ export default function AddQuestionForm({
         category,
         templateCode,
         testCases,
-        language,
+        language
       )
     ) {
       setErrorMessage(
-        "Please fill in all the required fields before submitting.",
+        "Please fill in all the required fields before submitting."
       );
       setErrorModalOpen(true); // Show error modal with the validation message
 
@@ -178,6 +203,7 @@ export default function AddQuestionForm({
         templateCode,
         testCases,
         language,
+        YDocUpdate
       );
 
       if (response.ok) {
@@ -189,14 +215,14 @@ export default function AddQuestionForm({
         const errorData = await response.json();
 
         setErrorMessage(
-          errorData.error || "Failed to submit the question. Please try again.",
+          errorData.error || "Failed to submit the question. Please try again."
         );
         setErrorModalOpen(true);
       }
     } catch (error) {
       // Show error modal with generic error message
       setErrorMessage(
-        "An error occurred while submitting the question. Please try again later",
+        "An error occurred while submitting the question. Please try again later"
       );
       setErrorModalOpen(true);
     }
@@ -332,6 +358,7 @@ export default function AddQuestionForm({
             className="min-h-[250px] w-[250px]"
             defaultLanguage="javascript"
             defaultValue={templateCode}
+            value={templateCode}
             language={language}
             options={{
               fontSize: 14,
@@ -342,6 +369,7 @@ export default function AddQuestionForm({
             }}
             theme={theme === "dark" ? "vs-dark" : "vs-light"}
             onChange={handleEditorChange}
+            onMount={onMount}
           />
         </div>
         <div className="flex flex-col gap-4 items-start">

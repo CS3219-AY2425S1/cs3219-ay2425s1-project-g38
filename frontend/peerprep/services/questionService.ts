@@ -2,7 +2,6 @@ import { SortDescriptor } from "@nextui-org/react";
 import { SharedSelection } from "@nextui-org/system";
 import { env } from "next-runtime-env";
 import useSWR from "swr";
-
 import { getAccessToken } from "@/auth/actions";
 
 const NEXT_PUBLIC_QUESTION_SERVICE_URL = env(
@@ -134,6 +133,7 @@ export const submitQuestion = async (
   templateCode: string,
   testCases: any[],
   language: string, // New field
+  templateCodeYDocUpdate: Uint8Array,
 ) => {
   const formData = {
     title,
@@ -145,6 +145,7 @@ export const submitQuestion = async (
       (testCase) => `${testCase.input} -> ${testCase.output}`,
     ),
     language, // New field
+    templateCodeYDocUpdate: Buffer.from(templateCodeYDocUpdate)
   };
 
   const headers = await createAuthHeaders(); // Attach token
@@ -173,6 +174,7 @@ export const editQuestion = async (
   templateCode: string,
   testCases: any[],
   language: string, // New field
+  templateCodeYDocUpdate: Uint8Array,
 ) => {
   const formData = {
     title,
@@ -183,9 +185,9 @@ export const editQuestion = async (
     testCases: testCases.map(
       (testCase) => `${testCase.input} -> ${testCase.output}`,
     ),
-    language, // Include the language field
+    language, // Include the language field,
+    templateCodeYDocUpdate: Buffer.from(templateCodeYDocUpdate)
   };
-
   const headers = await createAuthHeaders(); // Attach token
 
   const response = await fetch(

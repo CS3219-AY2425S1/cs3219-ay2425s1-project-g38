@@ -37,7 +37,6 @@ export async function initialize(socket: Socket, io: Server) {
         }
 
         const questionDescription = session.questionDescription;
-        const questionTemplateCode = session.questionTemplateCode;
         const questionTestcases = session.questionTestcases;
 
         const yDoc = await getYDocFromRedis(session.session_id);
@@ -46,12 +45,10 @@ export async function initialize(socket: Socket, io: Server) {
 
         if (!yDoc) {
             console.warn(`YDoc not found for session ${session.session_id}. Creating new YDoc with template code`);
-            const newYDoc = new Y.Doc();
-            Y.applyUpdate(newYDoc, new Uint8Array(session.yDoc));
-            addUpdateToYDocInRedis(session.session_id, Y.encodeStateAsUpdate(newYDoc));
-            yDocUpdate = Y.encodeStateAsUpdate(newYDoc);
+            addUpdateToYDocInRedis(session.session_id, new Uint8Array(session.yDoc));
+            yDocUpdate = new Uint8Array(session.yDoc);
         } else {
-            yDocUpdate = Y.encodeStateAsUpdate(yDoc);
+            yDocUpdate = Y.encodeStateAsUpdateV2(yDoc);
         }
 
         const selectedLanguage = await getLanguageFromRedis(session.session_id) || 'javascript';
@@ -75,7 +72,6 @@ export async function initialize(socket: Socket, io: Server) {
             message: 'You have joined the session!',
             sessionData: {
                 questionDescription,
-                questionTemplateCode,
                 questionTestcases,
                 yDocUpdate,
                 selectedLanguage,
@@ -159,7 +155,7 @@ export async function handleDisconnect(socket: Socket, io: Server) {
                 if (yDoc) {
                     Session.findOneAndUpdate(
                         { session_id: roomId },
-                        { active: false, yDoc: Buffer.from(Y.encodeStateAsUpdate(yDoc)) }
+                        { active: false, yDoc: Buffer.from(Y.encodeStateAsUpdateV2(yDoc)) }
                     )
                         .then((doc) => {
                             if (!doc) {

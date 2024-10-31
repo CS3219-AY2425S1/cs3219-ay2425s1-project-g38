@@ -21,6 +21,7 @@ export const questionController = {
       templateCode,
       testCases,
       language,
+      templateCodeYDocUpdate
     } = req.body;
 
     // Check if all fields are provided
@@ -35,7 +36,7 @@ export const questionController = {
         .json({ error: 'Question title cannot exceed 80 characters.' });
     }
 
-    if (!templateCode || !testCases /*|| !Array.isArray(testCases)*/) {
+    if (!templateCode || !testCases /*|| !Array.isArray(testCases)*/ || !templateCodeYDocUpdate) {
       return res
         .status(400)
         .json({ error: 'Invalid input for template code or test cases' });
@@ -119,6 +120,7 @@ export const questionController = {
         templateCode: templateCode,
         testCases: req.body.testCases,
         language: languageUpperCase,
+        templateCodeYDocUpdate: templateCodeYDocUpdate
       });
 
       const savedQuestion = await question.save();
@@ -342,6 +344,7 @@ export const questionController = {
       templateCode,
       testCases,
       language,
+      templateCodeYDocUpdate
     } = req.body;
 
     // Check if all fields are provided
@@ -356,7 +359,7 @@ export const questionController = {
         .json({ error: 'Question title cannot exceed 80 characters.' });
     }
 
-    if (!templateCode || !testCases /*|| !Array.isArray(testCases)*/) {
+    if (!templateCode || !testCases /*|| !Array.isArray(testCases)*/ || !templateCodeYDocUpdate) {
       return res
         .status(400)
         .json({ error: 'Invalid input for template code or test cases' });
@@ -444,6 +447,7 @@ export const questionController = {
       question.templateCode = templateCode || question.templateCode;
       question.testCases = testCases || question.testCases;
       question.language = languageUpperCase /*|| question.language*/;
+      question.templateCodeYDocUpdate = templateCodeYDocUpdate || question.templateCodeYDocUpdate;
 
       await question.save();
       res.status(200).json(question);

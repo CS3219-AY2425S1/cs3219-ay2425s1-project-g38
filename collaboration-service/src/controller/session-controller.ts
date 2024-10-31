@@ -42,33 +42,29 @@ export const sessionController = {
             return res.status(400).json({ message: 'At least one participant is already in another session' });
         }
 
-        const questionTemplateCode: string = questionData.question.templateCode
-        const yDoc = new Y.Doc();
-        const yText = yDoc.getText('code');
-        yText.insert(0, questionTemplateCode);
-
         const questionDescription: string = questionData.question.description
         const questionTestcases: string[] = questionData.question.testCases[0]
 
-        console.log('questionTestcases:', questionTestcases);
-
-        const yDocBuffer = Buffer.from(Y.encodeStateAsUpdate(yDoc));
-
         const sessionId = uuidv4(); // Use UUID for unique session ID
 
-        addUpdateToYDocInRedis(sessionId, yDocBuffer);
-        setLanguageInRedis(sessionId, 'javascript');
+        const questionTemplateCode = questionData.question.templateCodeYDocUpdate
+
+        console.log('templateCodeYDocUpdate:', questionTemplateCode);
+        console.log('questionTemplateCode:', new Uint8Array(questionTemplateCode));
+
+        addUpdateToYDocInRedis(sessionId, questionTemplateCode);
+        setLanguageInRedis(sessionId, questionData.question.language);
 
         const session = new Session({
             session_id: sessionId, // session_id,
             date_created: new Date(),
             participants,
             questionDescription,
-            questionTemplateCode,
+            language: questionData.question.language,
             questionTestcases,
             active: true,
             activeUsers: participants,
-            yDoc: yDocBuffer
+            yDoc: questionTemplateCode,
         });
 
         try {

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Input,
   Button,
@@ -32,6 +32,7 @@ import {
   useUniqueCategoriesFetcher,
   isValidQuestionSubmission,
 } from "@/services/questionService";
+import * as Y from "yjs";
 
 interface EditQuestionFormProps {
   initialTitle?: string;
@@ -52,6 +53,33 @@ export default function EditQuestionForm({
   initialTestCases = [{ input: "", output: "" }],
 }: // initialLanguage = "javascript", // Default language
 EditQuestionFormProps) {
+  // Yjs setup for saving template code
+  const yDoc = new Y.Doc();
+  const yText = yDoc.getText("code");
+  const editorRef = useRef<any>(null);
+  const [YDocUpdate, setYDocUpdate] = useState<Uint8Array>(
+    Y.encodeStateAsUpdateV2(yDoc)
+  );
+
+  const onMount = async (editor: any) => {
+    editorRef.current = editor;
+    const model = editor.getModel();
+
+    if (model) {
+      const MonacoBinding = (await import("y-monaco")).MonacoBinding; // not dynamically importing this causes an error
+      const binding = new MonacoBinding(yText, model, new Set([editor]));
+    }
+
+    model.setValue(initialTemplateCode);
+
+    yDoc.on("update", () => {
+      // console.log("Yjs update");
+      // console.log(yText.toString());
+      // console.log(Y.encodeStateAsUpdateV2(yDoc));
+      setYDocUpdate(Y.encodeStateAsUpdateV2(yDoc));
+    });
+  };
+
   const params = useParams();
   const router = useRouter();
   const [language, setLanguage] = useState("javascript"); // Default language
@@ -74,7 +102,7 @@ EditQuestionFormProps) {
   const [testCases, setTestCases] =
     useState<{ input: string; output: string }[]>(initialTestCases);
   const [questionToDelete, setQuestionToDelete] = useState<Question | null>(
-    null,
+    null
   );
   const [question, setQuestion] = useState<Question | null>(null);
 
@@ -88,7 +116,7 @@ EditQuestionFormProps) {
       setTitle(questionData?.question.title);
       setSelectedComplexity(questionData?.question.complexity);
       setCategories(questionData?.question.category);
-      setLanguage(questionData?.question.language);
+      setLanguage(questionData?.question.language.toLowerCase());
       setDescription(questionData?.question.description);
       setTemplateCode(questionData?.question.templateCode);
       setTestCases(
@@ -99,8 +127,8 @@ EditQuestionFormProps) {
               .map((str) => str.trim());
 
             return { input, output };
-          }),
-        ) || [],
+          })
+        ) || []
       );
       setQuestion(questionData?.question);
     }
@@ -122,6 +150,7 @@ EditQuestionFormProps) {
         theme={theme === "dark" ? "vs-dark" : "vs-light"}
         value={templateCode}
         onChange={handleEditorChange}
+        onMount={onMount}
       />
     );
   }, [language, templateCode, theme]);
@@ -144,7 +173,7 @@ EditQuestionFormProps) {
   // Handle removing a category
   const removeCategory = (category: string) => {
     setCategories((prevCategories) =>
-      prevCategories.filter((cat) => cat !== category),
+      prevCategories.filter((cat) => cat !== category)
     );
   };
 
@@ -173,7 +202,7 @@ EditQuestionFormProps) {
   // Handle input change for test case
   const handleInputChange = (
     index: number,
-    event: React.ChangeEvent<HTMLInputElement>,
+    event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const updatedTestCases = [...testCases];
     const { name, value } = event.target;
@@ -219,11 +248,11 @@ EditQuestionFormProps) {
         categories,
         templateCode,
         testCases,
-        language,
+        language
       )
     ) {
       setErrorMessage(
-        "Please fill in all the required fields before submitting.",
+        "Please fill in all the required fields before submitting."
       );
       setErrorModalOpen(true); // Show error modal with the validation message
 
@@ -240,6 +269,7 @@ EditQuestionFormProps) {
         templateCode,
         testCases,
         language,
+        YDocUpdate
       );
 
       if (response.ok) {
@@ -249,7 +279,7 @@ EditQuestionFormProps) {
         const errorData = await response.json();
 
         setErrorMessage(
-          errorData.error || "Failed to update the question. Please try again.",
+          errorData.error || "Failed to update the question. Please try again."
         );
         setErrorModalOpen(true);
       }

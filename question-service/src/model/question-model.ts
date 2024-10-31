@@ -25,6 +25,7 @@ interface QuestionDocument extends Document {
   // testCases: TestCase[]; // New field for test cases (array of test cases)
   testCases: string[]; // New field for test cases (array of test cases)
   language: string; // New field for programming language
+  templateCodeYDocUpdate: Buffer; // New field for YDoc update
 }
 
 const TestCaseSchema = new Schema<TestCase>({
@@ -82,6 +83,7 @@ const questionSchema: Schema = new Schema({
       "OBJECTIVE-C",
     ], // Define allowed values
   },
+  templateCodeYDocUpdate: { type: Buffer, required: true }, // Adding YDoc update
 });
 
 // Middleware to auto-increment the question_id before saving

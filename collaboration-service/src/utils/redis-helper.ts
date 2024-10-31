@@ -75,7 +75,7 @@ export async function getYDocFromRedis(sessionId: string): Promise<Y.Doc | null>
         if (yDocBuffer) {
             const yDoc = new Y.Doc();
             yDocBuffer.forEach((update) => {
-                Y.applyUpdate(yDoc, new Uint8Array(update));
+                Y.applyUpdateV2(yDoc, new Uint8Array(update));
             });
             console.log(`Loaded YDoc for session ${sessionId} from Redis`);
             return yDoc;

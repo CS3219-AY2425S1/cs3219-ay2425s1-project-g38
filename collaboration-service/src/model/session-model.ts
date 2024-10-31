@@ -5,11 +5,11 @@ interface Session {
     date_created: Date,
     participants: string[],
     questionDescription : string,
-    questionTemplateCode : string,
     questionTestcases : string[],
     active: boolean
     activeUsers: string[],
-    yDoc: Buffer
+    yDoc: Buffer,
+    language: string,
 }
 
 const sessionSchema: Schema = new Schema({
@@ -23,11 +23,11 @@ const sessionSchema: Schema = new Schema({
             message: "A session must have exactly 2 participants.",
         },
     questionDescription: { type: String, required: true },
-    questionTemplateCode: { type: String, required: true },
     questionTestcases: { type: [String], required: true },
     active: { type: Boolean, default: true },
     activeUsers: { type: [String], default: [] },
-    yDoc: { type: Buffer, required: true }
+    yDoc: { type: Buffer, required: true },
+    language: { type: String, required: true },
 });
 
 export default mongoose.model<Session>("Session", sessionSchema);

@@ -96,6 +96,7 @@ const registerEditorEvents = async (updateDoc: (arg0: Uint8Array) => void, setLa
   if (!socket) return;
 
   socket.on("updateContent", (update: any) => {
+    console.log("Received document update", update);
     update = new Uint8Array(update);
     updateDoc(update);
   });
@@ -198,7 +199,7 @@ export const confirmTermination = async (isFirstToCancel: boolean, router: any, 
   if (isFirstToCancel) {
     socket.emit("terminateOne");
   } else {
-    setModalVisibility(false);  
+    setModalVisibility(false);
     socket.emit("terminateSession");
     socket.disconnect();
     router.push("/");

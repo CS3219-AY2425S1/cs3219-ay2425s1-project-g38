@@ -18,7 +18,7 @@ import {
 const USER_SERVICE_URL = env("NEXT_PUBLIC_USER_SERVICE_URL");
 
 export const getSession = async () => {
-  const session = await getIronSession<SessionData>(cookies(), sessionOptions);
+  const session = await getIronSession<SessionData>(cookies() as any, sessionOptions);
 
   if (!session.isLoggedIn) {
     session.isLoggedIn = defaultSession.isLoggedIn;
