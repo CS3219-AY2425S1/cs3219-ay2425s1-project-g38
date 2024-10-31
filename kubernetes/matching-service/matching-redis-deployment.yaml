@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: matching-redis
+spec:
+  serviceName: matching-redis-service
+  replicas: 1
+  selector:
+    matchLabels:
+      app: matching-redis
+  template:
+    metadata:
+      labels:
+        app: matching-redis
+    spec:
+      containers:
+        - name: matching-redis
+          image: redis:latest
+          ports:
+            - containerPort: 6379
+          volumeMounts:
+            - name: matching-redis-data
+              mountPath: /matching-redis-data
+  volumeClaimTemplates:
+    - metadata:
+        name: matching-redis-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi

@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: collab-redis
+spec:
+  serviceName: collab-redis-service
+  replicas: 1
+  selector:
+    matchLabels:
+      app: collab-redis
+  template:
+    metadata:
+      labels:
+        app: collab-redis
+    spec:
+      containers:
+        - name: collab-redis
+          image: redis:latest
+          ports:
+            - containerPort: 6379
+          volumeMounts:
+            - name: collab-redis-data
+              mountPath: /collab-redis-data
+  volumeClaimTemplates:
+    - metadata:
+        name: collab-redis-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi

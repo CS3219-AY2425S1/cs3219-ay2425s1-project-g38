@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+data:
+  ENV: "PROD"
+  USER_SERVICE_URL: "http://user-service:8004"
+  COLLAB_SERVICE_URL: "http://collab-service:8010"
+  QUESTION_SERVICE_URL: "http://question-service:8003"

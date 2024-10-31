@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: collab-service
+  labels:
+    app: collab-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: collab-service
+  template:
+    metadata:
+      labels:
+        app: collab-service
+    spec:
+      containers:
+        - name: collab-service
+          image: delishad21/collaboration-service:dev
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8010
+          envFrom:
+            - configMapRef:
+                name: app-config
+            - configMapRef:
+                name: collab-config
+            - secretRef:
+                name: collab-secrets
