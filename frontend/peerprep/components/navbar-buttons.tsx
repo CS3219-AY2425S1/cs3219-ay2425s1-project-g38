@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+
+import React, { useState } from "react";
 import { Badge } from "@nextui-org/badge"; // Import Badge component if it's in the same folder
 import { Button } from "@nextui-org/button";
 
@@ -18,8 +20,10 @@ export const SettingButton: React.FC = () => {
 };
 
 export const NotificationButton: React.FC = () => {
+  const [isInvisible, setIsInvisible] = useState<boolean>(false);
+
   return (
-    <Badge color="danger" shape="circle">
+    <Badge isInvisible={isInvisible} color="danger" shape="circle">
       <Button isIconOnly className="text-red-500" radius="full" variant="light">
         <BoxIcon name="bxs-bell" />
       </Button>

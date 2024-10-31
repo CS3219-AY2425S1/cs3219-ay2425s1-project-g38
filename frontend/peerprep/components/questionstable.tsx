@@ -52,7 +52,7 @@ export default function QuestionsTable() {
     onOpenChange: onConfirmModalOpenChange,
   } = useDisclosure();
   const [questionToDelete, setQuestionToDelete] = useState<Question | null>(
-    null,
+    null
   );
 
   const handleDelete = (question: Question) => {
@@ -91,7 +91,7 @@ export default function QuestionsTable() {
     complexityFilter,
     categoryFilter,
     sortDescriptor,
-    page,
+    page
   );
 
   const { categoryData, categoryLoading } = useUniqueCategoriesFetcher();
@@ -212,7 +212,7 @@ export default function QuestionsTable() {
             >
               {uniqueCategories && uniqueCategories.length > 0
                 ? uniqueCategories.map((category: string) => (
-                    <SelectItem key={category}>
+                    <SelectItem key={category} className="capitalize">
                       {capitalize(category)}
                     </SelectItem>
                   ))
