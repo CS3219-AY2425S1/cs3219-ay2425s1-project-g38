@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: collab-config
+data:
+  COLLAB_SERVICE_PORT: "8010"
+  COLLAB_REDIS_URL: "redis://collab-redis-service:6379"

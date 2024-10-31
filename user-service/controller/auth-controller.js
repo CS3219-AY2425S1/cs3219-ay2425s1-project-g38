@@ -10,6 +10,10 @@ const isEmail = (input) =>
   /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(input);
 
 export async function handleLogin(req, res) {
+
+  // For demoing Load Balancer
+  console.log("Login Request Received");
+
   const { identifier, password } = req.body;
 
   if (!identifier || !password) {

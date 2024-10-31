@@ -1,0 +1,44 @@
+# ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    # nginx.ingress.kubernetes.io/upstream-hash-by: "$client_ip"
+    nginx.ingress.kubernetes.io/proxy-set-headers: "true"
+    nginx.org/websocket-services: "matching-service, collab-service"
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /users(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: user-service
+                port:
+                  number: 8004
+          - path: /matching(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: matching-service
+                port:
+                  number: 8002
+          - path: /collab(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: collab-service
+                port:
+                  number: 8010
+          - path: /questions(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: question-service
+                port:
+                  number: 8003

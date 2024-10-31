@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: matching-service
+  labels:
+    app: matching-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: matching-service
+  template:
+    metadata:
+      labels:
+        app: matching-service
+    spec:
+      containers:
+        - name: matching-service
+          image: delishad21/matching-service:dev
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8002
+          envFrom:
+            - configMapRef:
+                name: matching-config
+            - configMapRef:
+                name: app-config
+            - secretRef:
+                name: matching-secrets
