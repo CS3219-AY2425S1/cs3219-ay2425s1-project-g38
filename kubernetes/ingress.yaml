@@ -6,7 +6,7 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /$2
     nginx.ingress.kubernetes.io/use-regex: "true"
-    # nginx.ingress.kubernetes.io/upstream-hash-by: "$client_ip"
+    nginx.ingress.kubernetes.io/upstream-hash-by: "$client_ip"
     nginx.ingress.kubernetes.io/proxy-set-headers: "true"
     nginx.org/websocket-services: "matching-service, collab-service"
 spec:
