@@ -20,19 +20,8 @@ const userSocketMap: { [key: string]: string } = {};
 
 export async function initialize(socket: Socket, io: Server) {
 
-    const { userId } = socket.data;
+    const { userId, username } = socket.data;
 
-    const userConnected = await isUserConnected(userId);
-
-    if (userConnected) {
-        console.log('User already connected:', userId);
-        socket.emit('error', 'User already connected');
-        socket.disconnect(true);
-        return;
-    }
-
-    // Store userID to redis
-    await addConnectedUser(userId);
     userSocketMap[userId] = socket.id;
 
     try {
@@ -45,6 +34,19 @@ export async function initialize(socket: Socket, io: Server) {
         if (!session) {
             console.error('No active session found for user', userId);
             socket.emit('error', 'No active session found');
+            socket.disconnect(true);
+            return;
+        }
+
+        // Check if user is already connected
+        let roomSockets = await io.in(session.session_id).fetchSockets();
+        let usersInRoom = roomSockets.map((socket) => socket.data.username);
+
+        const userConnected = username in usersInRoom;
+
+        if (userConnected) {
+            console.log('User already connected:', userId);
+            socket.emit('error', 'User already connected');
             socket.disconnect(true);
             return;
         }
@@ -77,12 +79,10 @@ export async function initialize(socket: Socket, io: Server) {
         socket.data.roomId = roomId;
 
         // Get all sockets in the room
-        const roomSockets = await io.in(session.session_id).fetchSockets();
-        const usersInRoom = roomSockets.map((socket) => socket.data.username);
-
+        roomSockets = await io.in(session.session_id).fetchSockets();
+        usersInRoom = roomSockets.map((socket) => socket.data.username);
         console.log(`User ${userId} joined session ${roomId}`);
 
-        const { username } = socket.data;
         // Emit initial data to the user after they join the room
         socket.emit('initialData', {
             message: 'You have joined the session!',
@@ -172,8 +172,8 @@ export async function handleDisconnect(socket: Socket, io: Server) {
         console.log('user disconnected');
         const roomId = socket.data.roomId;
         if (roomId) {
-            const roomSockets = io.sockets.adapter.rooms.get(roomId);
-            if (!roomSockets || roomSockets.size === 0) {
+            const roomSockets = await io.in(roomId).fetchSockets();
+            if (!roomSockets || roomSockets.length === 0) {
                 // If no sockets left, mark the session as inactive
                 console.log(`Room ${roomId} is empty. Marking session as inactive`);
 
