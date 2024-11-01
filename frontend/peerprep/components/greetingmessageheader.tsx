@@ -30,7 +30,7 @@ export const GreetingMessageHeader = ({ user }: GreetingMessageProps) => {
     );
   }
 
-  if (currentPath === "/questions-management") {
+  if (currentPath.startsWith("/questions-management")) {
     return (
       <div
         className={`${fontFun.variable} text-black dark:text-white flex items-center`}
@@ -45,6 +45,25 @@ export const GreetingMessageHeader = ({ user }: GreetingMessageProps) => {
           {user}
         </p>
         &nbsp;👋🏻,
+      </div>
+    );
+  }
+
+  if (currentPath.startsWith("/settings")) {
+    return (
+      <div
+        className={`${fontFun.variable} text-black dark:text-white flex items-center`}
+        style={{
+          fontFamily: "var(--font-fun)",
+          fontSize: "20px",
+          margin: "10px",
+        }}
+      >
+        Manage your profile&nbsp;
+        <p className="bg-gradient-to-r from-indigo-500 via-violet-500 to-fuchsia-500 bg-clip-text text-transparent font-semibold">
+          {user}
+        </p>
+        &nbsp;⚙️
       </div>
     );
   }

@@ -10,7 +10,7 @@ import { checkUserMatchStatus, leaveMatch } from "@/services/sessionAPI";
 import ReconnectCard from "@/components/reconnectcard";
 import BoxIcon from "@/components/boxicons";
 
-export default function Home() {
+export default function Dashboard() {
   const router = useRouter();
   const [isMatchUIVisible, setIsMatchUIVisible] = useState<boolean>(false);
   const [isUserInMatch, setIsUserInMatch] = useState<boolean>(false);

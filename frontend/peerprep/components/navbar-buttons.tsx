@@ -20,10 +20,15 @@ export const SettingButton: React.FC = () => {
 };
 
 export const NotificationButton: React.FC = () => {
-  const [isInvisible, setIsInvisible] = useState<boolean>(false);
+  const [notificationCount, setNotificationCount] = useState<number>(99);
 
   return (
-    <Badge isInvisible={isInvisible} color="danger" shape="circle">
+    <Badge
+      content={notificationCount}
+      isInvisible={notificationCount === 0}
+      color="danger"
+      shape="circle"
+    >
       <Button isIconOnly className="text-red-500" radius="full" variant="light">
         <BoxIcon name="bxs-bell" />
       </Button>

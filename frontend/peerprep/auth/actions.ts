@@ -62,6 +62,12 @@ export const getUsername = async () => {
   return session.username;
 };
 
+export const getEmail = async () => {
+  const session = await getSession();
+
+  return session.email;
+};
+
 export const isSessionLoggedIn = async () => {
   const session = await getSession();
 
@@ -110,6 +116,7 @@ export const login = async (formData: FormData) => {
       // Set session data
       session.userId = data.data.id; // Get user ID from the response
       session.username = data.data.username; // Get username from the response
+      session.email = data.data.email;
       session.isLoggedIn = true;
       session.accessToken = data.data.accessToken; // Store the access token in the session
       session.isAdmin = data.data.isAdmin; // Check if the user is an admin
@@ -295,6 +302,7 @@ export const verifyCode = async (code: number) => {
         // Set session data
         session.userId = data.data.id; // Get user ID from the response
         session.username = data.data.username; // Get username from the response
+        session.email = data.data.email;
         session.isLoggedIn = true;
         session.accessToken = data.data.accessToken; // Store the access token in the session
         session.isAdmin = data.data.isAdmin; // Check if the user is an admin

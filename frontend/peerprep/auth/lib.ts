@@ -7,6 +7,7 @@ const SECRET_KEY =
 export interface SessionData {
   userId?: string;
   username?: string;
+  email?: string;
   isAdmin: boolean;
   accessToken?: string;
   isLoggedIn: boolean;
