@@ -1,4 +1,5 @@
 import { createClient, defineScript } from 'redis';
+import { Redis } from 'ioredis';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 
@@ -43,4 +44,5 @@ export function getRedisClient() {
     return redisClient;
 }
 
-
+export const pubClient = new Redis( process.env.REDIS_URL || 'redis://localhost:6379');
+export const subClient = pubClient.duplicate();

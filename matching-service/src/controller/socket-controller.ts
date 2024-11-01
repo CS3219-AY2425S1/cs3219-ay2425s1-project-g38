@@ -21,15 +21,6 @@ const MATCHING_TIMEOUT = (() => {
 
 const userTimeouts: { [key: string]: NodeJS.Timeout } = {};
 
-// Initialize Redis adapter for socket.io
-export function initializeSocketIO(io: Server) {
-    const redisClient = getRedisClient();
-    const pubClient = redisClient.duplicate();
-    const subClient = redisClient.duplicate();
-    io.adapter(createAdapter(pubClient, subClient));
-    // allows for multiple instances of the server to communicate with each other
-}
-
 // Handle user registration for matching
 // TODO: Consider race conditions and locking mechanisms
 export function handleRegisterForMatching(socket: Socket, io: Server) {
@@ -61,8 +52,8 @@ export function handleRegisterForMatching(socket: Socket, io: Server) {
                 const socketId2 = status[1].socketId;
 
                 // check if both users are still connected
-                const socket1 = io.sockets.sockets.get(socketId1);
-                const socket2 = io.sockets.sockets.get(socketId2);
+                const socket1: any = (await io.in(socketId1).fetchSockets())[0];
+                const socket2: any = (await io.in(socketId2).fetchSockets())[0];
 
                 if (socket1 && socket2) {
 
@@ -176,9 +167,6 @@ async function initializeMatch(user1Data: any, user2Data: any, socket1: Socket, 
             await addMatchToUserData(user2Data.userId, socket2.handshake.auth.token, user1Data.userId, selectedQuestionId, sessionId);
         } catch (error) {
             console.error("Failed to add match to user data:", error);
-            // TODO: Handle error and revert match initialization?
-            // need to find some way to add match anyway
-            // or maybe should just return error and stop match and revert
         }
 
         // Redirect users to session page on success
@@ -266,14 +254,17 @@ async function addMatchToUserData(userId: string, userToken: string, partnerId: 
 async function initializeMatchOnSessionService(userId1: string, userId2: string, questionId: number): Promise<string> {
     // Initialize match on session service
     const sessionServiceUrl = process.env.COLLAB_SERVICE_URL;
+    const COLLAB_API_KEY = process.env.COLLAB_API_KEY || "collab-api-key";
 
     console.log(`Initializing match on session service with users ${userId1} and ${userId2} for question ${questionId}`);
+    console.log("API KEY", COLLAB_API_KEY);
 
     try {
         const response = await fetch(`${sessionServiceUrl}/api/session/create`, {
             method: 'POST', // Using POST method to create a session
             headers: {
                 'Content-Type': 'application/json', // Set the content type to JSON
+                'x-api-key': COLLAB_API_KEY // Include the API key in the headers
             },
             body: JSON.stringify({
                 participants: [userId1, userId2], // Include user IDs in the request body

@@ -5,8 +5,10 @@ import { getAccessToken } from "../auth/actions";
 import { Dispatch } from "react";
 import { Socket } from "socket.io-client";
 import { codeOutputInterface } from "@/components/collaboration/Output";
+
 import { chatMessage } from "@/utils/utils";
-const NEXT_PUBLIC_COLLAB_SERVICE_URL = env("NEXT_PUBLIC_COLLAB_SERVICE_URL");
+const NEXT_PUBLIC_COLLAB_SERVICE_URL = env("NEXT_PUBLIC_COLLAB_SOCKET_URL") || env("NEXT_PUBLIC_COLLAB_SERVICE_URL");
+const NEXT_PUBLIC_COLLAB_SERVICE_PATH = env("NEXT_PUBLIC_COLLAB_SOCKET_PATH") || "/socket.io";
 
 export let socket: Socket | null = null;
 
@@ -48,6 +50,7 @@ export const initializeSessionSocket = async (
   }
 
   socket = io(NEXT_PUBLIC_COLLAB_SERVICE_URL, {
+    path: NEXT_PUBLIC_COLLAB_SERVICE_PATH,
     auth: { token },
     transports: ["websocket"],
     reconnectionAttempts: 5,

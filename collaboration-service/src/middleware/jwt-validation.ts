@@ -6,6 +6,26 @@ import axios from 'axios';
 dotenv.config();
 
 const USER_SERVICE_URL = process.env.USER_SERVICE_URL || 'http://localhost:8004';
+const API_KEY = process.env.COLLAB_API_KEY;
+
+export async function validateApiKey(req: Request, res: Response, next: NextFunction) {
+    console.log('Validating API key');
+    console.log('API key:', req.headers['x-api-key']);
+    console.log('Expected API key:', API_KEY);
+    const apiKey = req.headers['x-api-key'];
+    if (!apiKey) {
+        console.log('No API key provided');
+        return res.status(401).json({ message: 'Access Denied. No API key provided.' });
+    }
+
+    if (apiKey !== API_KEY) {
+
+        console.log('Invalid API key');
+        return res.status(403).json({ message: 'Access Denied. Invalid API key.' });
+    }
+
+    next();
+}
 
 // Function to validate JWT in HTTP requests
 export async function validateApiJWT(req: Request, res: Response, next: NextFunction) {
