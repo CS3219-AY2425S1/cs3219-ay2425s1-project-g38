@@ -13,9 +13,12 @@ import { ThemeSwitch } from "@/components/theme-switch";
 import { SettingButton, NotificationButton } from "@/components/navbar-buttons";
 import { Logo } from "@/components/icons";
 import { getUsername } from "@/auth/actions";
+import ChatModal from "./chatModal";
+import { chatMessage } from "@/utils/utils";
 
 export interface CollabNavbarProps {
   usersInRoom: string[];
+  username: string;
   setUsersInRoom: React.Dispatch<React.SetStateAction<string[]>>;
   isModalVisible: boolean;
   userConfirmed: boolean;
@@ -25,10 +28,13 @@ export interface CollabNavbarProps {
   handleCloseModal: () => void;
   handleConfirm: () => void;
   setIsCancelled: (isCancelled: boolean) => void;
+  propagateMessage: (message: chatMessage) => void;
+  chatHistory: chatMessage[];
 }
 
 export const CollabNavbar = ({
   usersInRoom,
+  username,
   setUsersInRoom,
   isModalVisible,
   userConfirmed,
@@ -38,6 +44,8 @@ export const CollabNavbar = ({
   handleCloseModal,
   handleConfirm,
   setIsCancelled,
+  propagateMessage,
+  chatHistory
 }: CollabNavbarProps) => {
   return (
     <NextUINavbar maxWidth="full" position="sticky">
@@ -49,15 +57,21 @@ export const CollabNavbar = ({
         </NavbarBrand>
         {/* <GreetingMessageHeader user={user || "User"} /> */}
       </NavbarContent>
-      <NavbarContent className="basis-full" justify="center">
-        <UsersInRoom
-          usersInRoom={usersInRoom}
-          setUsersInRoom={setUsersInRoom}
-        />
-        {/* Add the UsersInRoom component */}
+      <NavbarContent className="basis-full gap-3" justify="center">
+        <div className="flex items-center w-full justify-start gap-3">
+          <UsersInRoom
+            usersInRoom={usersInRoom}
+            setUsersInRoom={setUsersInRoom}
+          />
+          <ChatModal
+            username={username}
+            propagateMessage={propagateMessage}
+            chatHistory={chatHistory}
+          />
+        </div>
       </NavbarContent>
       <NavbarContent className="basis-1/5" justify="center">
-        <TerminateModal 
+        <TerminateModal
           isModalVisible={isModalVisible}
           userConfirmed={userConfirmed}
           isCancelled={isCancelled}
@@ -66,7 +80,7 @@ export const CollabNavbar = ({
           handleCloseModal={handleCloseModal}
           handleConfirm={handleConfirm}
           setIsCancelled={setIsCancelled}
-        /> {/* Add the UsersInRoom component */}
+        />
       </NavbarContent>
       <NavbarContent className="basis-1/5 sm:basis-full" justify="end">
         <NavbarItem className="flex items-center justify-center gap-5">

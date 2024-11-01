@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import {
   Modal,
   ModalContent,
@@ -9,9 +8,6 @@ import {
   ModalFooter,
   Button,
 } from "@nextui-org/react";
-import { useRouter } from "next/navigation";
-
-import { socket } from "../../services/sessionService";
 
 interface TerminateModalProps {
   isModalVisible: boolean;
@@ -43,7 +39,7 @@ export default function TerminateModal({
       <Modal
         isOpen={isModalVisible}
         onClose={closeModal}
-        title="Session Terminated"
+        title=""
         aria-labelledby="Termination Modal"
         aria-describedby="Modal to confirm termination of session"
       >

@@ -34,3 +34,9 @@ export const languages = [
 
 export const delay = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
+
+export interface chatMessage {
+  message: string;
+  sender: string;
+  timestamp: number;
+}
