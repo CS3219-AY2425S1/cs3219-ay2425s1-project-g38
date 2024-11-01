@@ -8,19 +8,40 @@ import {
   isValidQuestionSubmission,
   submitQuestion,
 } from "@/services/questionService";
+import * as Y from "yjs";
 
-export default function AddQuestionForm() {
+interface AddQuestionFormProps {
+  yDoc: Y.Doc;
+}
+
+export default function AddQuestionForm({ yDoc }: AddQuestionFormProps) {
   const router = useRouter();
   const [successModalOpen, setSuccessModalOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [yDocUpdate, setYDocUpdate] = useState<Uint8Array>(new Uint8Array());
 
   const formState = useQuestionForm({
     description:
       "# Question description \n Write your question description here! \n You can also insert images!",
     templateCode: "/** PUT YOUR TEMPLATE CODE HERE **/",
   });
+
+  const onMount = async (editor: any) => {
+    const model = editor.getModel();
+    if (model) {
+      const MonacoBinding = (await import("y-monaco")).MonacoBinding;
+      const yText = yDoc.getText("code");
+      new MonacoBinding(yText, model, new Set([editor]));
+    }
+
+    model.setValue(formState.templateCode);
+
+    yDoc.on("update", () => {
+      setYDocUpdate(Y.encodeStateAsUpdateV2(yDoc));
+    });
+  };
 
   const handleSubmit = async () => {
     if (
@@ -49,7 +70,7 @@ export default function AddQuestionForm() {
         formState.templateCode,
         formState.testCases,
         formState.language,
-        formState.YDocUpdate
+        yDocUpdate
       );
 
       if (response.ok) {
@@ -76,6 +97,7 @@ export default function AddQuestionForm() {
         {...formState}
         onCancel={() => router.push("/questions-management")}
         onSubmit={handleSubmit}
+        onMount={onMount}
       />
       <SuccessModal
         isOpen={successModalOpen}
