@@ -40,25 +40,24 @@ export const UsersInRoom = ({
 
   return (
     <div className="flex justify-start items-center h-full w-3/4">
-      <Card
-        className={`inline-block p-1.5 ${cardBgColor} rounded-lg shadow-inner h-auto max-h-[150px]`}
-      >
-        <div className="flex flex-row items-center gap-2">
-          <h3 className="text-lg font-bold mb-0.75">In session:</h3>
-          <div className="flex flex-wrap gap-1.5">
-            {usersInRoom.map((user, index) => (
-              <div
+      <div className="flex flex-row items-center gap-2">
+        <div className="flex gap-1.5">
+          {usersInRoom.map((user, index) => (
+            <div
               key={index}
-              className="flex items-center justify-center w-8 h-8 bg-purple-600 dark:bg-[#F9F9FC] rounded-full shadow"
+              className="relative flex items-center justify-center w-8 h-8 bg-purple-600 dark:bg-[#F9F9FC] rounded-full shadow group"
             >
               <span className="font-bold text-white text-sm dark:text-[#5633A9]">
                 {user.charAt(0).toUpperCase()}
               </span>
+              {/* Tooltip positioned below */}
+              <div className="absolute top-full mt-1 hidden w-max p-1 text-xs text-white bg-black rounded-md shadow-lg group-hover:block z-10">
+                {user}
+              </div>
             </div>
-            ))}
-          </div>
+          ))}
         </div>
-      </Card>
+      </div>
     </div>
   );
 };

@@ -4,10 +4,10 @@ import { useRef, useState, useEffect } from "react";
 import * as Y from "yjs";
 import { Editor } from "@monaco-editor/react";
 import { useTheme } from "next-themes";
-import { Card } from "@nextui-org/react";
+import { Button, Card } from "@nextui-org/react";
 
 import { SupportedLanguages } from "../../utils/utils";
-import { socket } from "../../services/sessionService";
+import { executeCode } from "../../services/sessionOutputService";
 
 import Output, { codeOutputInterface } from "./Output";
 import LanguageSelector from "./LanguageSelector";
@@ -35,6 +35,25 @@ export default function CollabCodeEditor({
   const yText = yDoc.getText("code");
   const editorRef = useRef<any>(null);
 
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const runCode = async () => {
+    const sourceCode = editorRef.current?.getValue();
+
+    if (!sourceCode) return;
+    try {
+      setIsLoading(true);
+      const { run: result } = await executeCode(language, sourceCode);
+
+      propagateUpdates(undefined, undefined, result);
+    } catch (error: any) {
+      // would only occur if api is down
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const onMount = async (editor: any) => {
     editorRef.current = editor;
     const model = editor.getModel();
@@ -54,11 +73,20 @@ export default function CollabCodeEditor({
   };
 
   return (
-    <div className="flex justify-center items-center h-full w-full">
+    <div className="flex justify-center items-center h-full w-full pt-4">
       <Card className="flex flex-col h-full w-full p-4 gap-4 bg-gray-200 dark:bg-gray-800">
         <div className="flex flex-col w-full h-3/4">
-          <div className="px-4 sm:px-0 mb-2">
+          <div className="flex flex-row px-4 sm:px-0 mb-2">
             <LanguageSelector language={language} onSelect={onSelect} />
+            <Button
+              className="ml-auto"
+              variant="flat"
+              color={`${isCodeError ? "danger" : "success"}`}
+              disabled={isLoading}
+              onClick={runCode}
+            >
+              {isLoading ? "Running" : "Run Code"}
+            </Button>
           </div>
           <div className="flex w-full h-full">
             <Editor

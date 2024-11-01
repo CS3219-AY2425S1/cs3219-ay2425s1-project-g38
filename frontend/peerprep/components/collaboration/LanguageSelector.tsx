@@ -25,9 +25,10 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
 
   return (
     <div className="flex items-center space-x-2">
+      <p className="ml-2">Language:</p>
       <Dropdown>
         <DropdownTrigger>
-          <Button variant="flat" className="text-sm">
+          <Button variant="bordered" className="text-sm">
             {language}
           </Button>
         </DropdownTrigger>
