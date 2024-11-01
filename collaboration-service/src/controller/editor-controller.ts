@@ -1,7 +1,20 @@
 import { Server, Socket } from "socket.io";
 import Session from '../model/session-model';
 import * as Y from 'yjs';
-import { addConnectedUser, addUpdateToYDocInRedis, deleteLanguageFromRedis, deleteYDocFromRedis, getLanguageFromRedis, getYDocFromRedis, isUserConnected, removeConnectedUser, setLanguageInRedis } from "../utils/redis-helper";
+import {
+    addConnectedUser,
+    addUpdateToYDocInRedis,
+    deleteLanguageFromRedis,
+    deleteYDocFromRedis,
+    getLanguageFromRedis,
+    getYDocFromRedis,
+    isUserConnected,
+    removeConnectedUser,
+    setLanguageInRedis,
+    setChatHistoryInRedis,
+    getChatHistoryFromRedis,
+    deleteChatHistoryFromRedis
+} from "../utils/redis-helper";
 
 const userSocketMap: { [key: string]: string } = {};
 
@@ -55,6 +68,8 @@ export async function initialize(socket: Socket, io: Server) {
 
         const roomId = session.session_id; // Use session ID as room ID
 
+        const chatHistory = await getChatHistoryFromRedis(roomId) || [];
+
         // Join the socket to the room
         socket.join(roomId);
 
@@ -67,6 +82,7 @@ export async function initialize(socket: Socket, io: Server) {
 
         console.log(`User ${userId} joined session ${roomId}`);
 
+        const { username } = socket.data;
         // Emit initial data to the user after they join the room
         socket.emit('initialData', {
             message: 'You have joined the session!',
@@ -75,7 +91,9 @@ export async function initialize(socket: Socket, io: Server) {
                 questionTestcases,
                 yDocUpdate,
                 selectedLanguage,
-                usersInRoom
+                usersInRoom,
+                username,
+                chatHistory
             },
         });
 
@@ -138,6 +156,16 @@ export function handleTermination(socket: Socket, io: Server) {
     });
 }
 
+export function handleChat(socket: Socket, io: Server) {
+    socket.on('chatMessage', async (message) => {
+        const roomId = socket.data.roomId;
+        // Store chat history in Redis
+        const stringifiedMessage = JSON.stringify(message);
+        await setChatHistoryInRedis(roomId, stringifiedMessage);
+        io.to(roomId).emit('chatMessage', message);
+    });
+}
+
 export async function handleDisconnect(socket: Socket, io: Server) {
     socket.on('disconnect', async () => {
 
@@ -172,6 +200,12 @@ export async function handleDisconnect(socket: Socket, io: Server) {
                 // Delete the YDoc from Redis
                 deleteYDocFromRedis(roomId);
                 deleteLanguageFromRedis(roomId);
+
+                const chatHistory = await getChatHistoryFromRedis(roomId) || [];
+                if (chatHistory.length > 0) {
+                    // Delete chat history from Redis
+                    deleteChatHistoryFromRedis(roomId);
+                }
 
             } else {
                 const roomSockets = await io.in(roomId).fetchSockets();

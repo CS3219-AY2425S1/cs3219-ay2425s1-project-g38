@@ -29,41 +29,32 @@ export const UsersInRoom = ({
     usersInRoom.length >= 2
       ? theme === "dark"
         ? "bg-gradient-to-br from-[#2055A6] to-[#6F0AD4]"
-        : "bg-gradient-to-br from-[#E0EEFA] to-[#C8BDE3]"
+        : "bg-white border-2 border-purple-500"
       : theme === "dark"
         ? "bg-gray-700"
-        : "bg-gray-200";
+        : "bg-gray-200 border-purple-600";
 
   if (!isThemeReady) {
     return null; // or a loading spinner, or any placeholder
   }
 
   return (
-    <div className="flex justify-start items-center h-full w-full">
+    <div className="flex justify-start items-center h-full w-1/3">
       <Card
         className={`inline-block p-1.5 ${cardBgColor} rounded-lg shadow-inner h-auto max-h-[150px]`}
       >
         <div className="flex flex-row items-center gap-2">
-          <h3 className="text-lg font-bold mb-0.75">Users in Room:</h3>
+          <h3 className="text-lg font-bold mb-0.75">In session:</h3>
           <div className="flex flex-wrap gap-1.5">
             {usersInRoom.map((user, index) => (
-              <Card
-                key={index}
-                className="p-1.5 bg-[#F9F9FC] dark:bg-blue-900 rounded-lg shadow min-h-[30px]"
-              >
-                <ReactMarkdown
-                  components={{
-                    p: ({ node, ...props }) => (
-                      <p
-                        className="font-bold text-[#5633A9] dark:text-white text-sm"
-                        {...props}
-                      />
-                    ),
-                  }}
-                >
-                  {user}
-                </ReactMarkdown>
-              </Card>
+              <div
+              key={index}
+              className="flex items-center justify-center w-8 h-8 bg-purple-600 dark:bg-[#F9F9FC] rounded-full shadow"
+            >
+              <span className="font-bold text-white text-sm dark:text-[#5633A9]">
+                {user.charAt(0).toUpperCase()}
+              </span>
+            </div>
             ))}
           </div>
         </div>

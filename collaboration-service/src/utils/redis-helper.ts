@@ -1,5 +1,6 @@
 import * as Y from 'yjs';
 import Redis from 'ioredis';
+import chatMessage from '../utils/chatMessage';
 
 // Initialize Redis client
 const redisClient = new Redis(process.env.COLLAB_REDIS_URL || 'redis://localhost:6379');
@@ -58,6 +59,55 @@ export async function deleteLanguageFromRedis(sessionId: string) {
         console.log(`Deleted language for session ${sessionId} from Redis`);
     } catch (err) {
         console.error(`Error deleting language from Redis for session ${sessionId}:`, err);
+    }
+}
+
+// Function to store session chat history in Redis
+export async function setChatHistoryInRedis(sessionId: string, message: string) {
+    try {
+        if (!redisClient) {
+            console.error('Redis client is not initialized');
+            return;
+        }
+
+        
+        await redisClient.rpush(`chatHistory:${sessionId}`, message);
+        await redisClient.ltrim(`chatHistory:${sessionId}`, -100, -1); // Keep only the last 100 messages
+        console.log(`Added new message to chat history for session ${sessionId} in Redis`);
+    } catch (err) {
+        console.error(`Error setting chat history in Redis for session ${sessionId}:`, err);
+    }
+}
+
+// Function to retrieve session chat history from Redis
+export async function getChatHistoryFromRedis(sessionId: string): Promise<chatMessage[]> {
+    try {
+        if (!redisClient) {
+            console.error('Redis client is not initialized');
+            return [];
+        }
+
+        const chatHistory = await redisClient.lrange(`chatHistory:${sessionId}`, 0, -1);
+        console.log(`Retrieved chat history for session ${sessionId} from Redis`);
+        return chatHistory.map((message) => JSON.parse(message) as chatMessage);
+    } catch (err) {
+        console.error(`Error retrieving chat history from Redis for session ${sessionId}:`, err);
+        return [];
+    }
+}
+
+// Function to delete session chat history from Redis
+export async function deleteChatHistoryFromRedis(sessionId: string) {
+    try {
+        if (!redisClient) {
+            console.error('Redis client is not initialized');
+            return;
+        }
+
+        await redisClient.del(`chatHistory:${sessionId}`);
+        console.log(`Deleted chat history for session ${sessionId} from Redis`);
+    } catch (err) {
+        console.error(`Error deleting chat history from Redis for session ${sessionId}:`, err);
     }
 }
 
