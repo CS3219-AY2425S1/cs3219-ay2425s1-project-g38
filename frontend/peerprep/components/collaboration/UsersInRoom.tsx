@@ -39,7 +39,7 @@ export const UsersInRoom = ({
   }
 
   return (
-    <div className="flex justify-start items-center h-full w-1/3">
+    <div className="flex justify-start items-center h-full w-3/4">
       <Card
         className={`inline-block p-1.5 ${cardBgColor} rounded-lg shadow-inner h-auto max-h-[150px]`}
       >
