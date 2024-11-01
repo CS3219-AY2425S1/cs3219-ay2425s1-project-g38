@@ -17,22 +17,45 @@ export function useQuestionForm(initialValues: {
   const [templateCode, setTemplateCode] = useState(initialValues.templateCode || "");
   const [testCases, setTestCases] = useState(initialValues.testCases || [{ input: "", output: "" }]);
   const [language, setLanguage] = useState(initialValues.language || "javascript");
+  const [isYDocReady, setIsYDocReady] = useState(false);
+  const [editorModel, setEditorModel] = useState<any>(null);
 
   // Yjs setup
   const yDoc = new Y.Doc();
   const yText = yDoc.getText("code");
   const [YDocUpdate, setYDocUpdate] = useState<Uint8Array>(Y.encodeStateAsUpdateV2(yDoc));
 
-  const onMount = async (editor: any) => {
-    const model = editor.getModel();
-    if (model) {
-      const MonacoBinding = (await import("y-monaco")).MonacoBinding;
-      new MonacoBinding(yText, model, new Set([editor]));
+  const updateDoc = async (update: Uint8Array) => {
+    console.log("Updating YDoc with update", update);
+    Y.applyUpdateV2(yDoc, update);
+    await new Promise((resolve) => setTimeout(resolve, 0)); // Wait for the update to be applied
+    setIsYDocReady(true);
+    console.log("YDoc updated:\n", yText.toString());
+  };
+
+  useEffect(() => {
+    if (editorModel && isYDocReady) {
+      console.log('Monaco editor model is ready, yDoc is ', Y.encodeStateAsUpdateV2(yDoc));
+      const setupMonacoBinding = async () => {
+        const MonacoBinding = (await import('y-monaco')).MonacoBinding;
+        new MonacoBinding(yText, editorModel, new Set([editorModel]));
+      };
+      setupMonacoBinding();
+      console.log('Setting initial template code', yText.toString());
+      editorModel.setValue(yText.toString());
+
+      yDoc.on('update', () => {
+        console.log('YDoc updated, updating YDocUpdate');
+        setYDocUpdate(Y.encodeStateAsUpdateV2(yDoc));
+      });
     }
-    model.setValue(templateCode);
-    yDoc.on("update", () => {
-      setYDocUpdate(Y.encodeStateAsUpdateV2(yDoc));
-    });
+  }, [editorModel, isYDocReady]);
+
+
+  const onMount = async (editor: any) => {
+    console.log("Monaco editor mounted");
+    const model = editor.getModel();
+    setEditorModel(model);
   };
 
   return {
@@ -51,6 +74,8 @@ export function useQuestionForm(initialValues: {
     language,
     setLanguage,
     YDocUpdate,
+    updateDoc,
     onMount,
+    isYDocReady
   };
 } 

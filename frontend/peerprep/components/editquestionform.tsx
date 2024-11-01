@@ -52,8 +52,21 @@ export default function EditQuestionForm() {
         ) || []
       );
       setQuestionToDelete(questionData.question);
+      const buffer = Uint8Array.from(questionData.question.templateCodeYDocUpdate.data);
+      formState.updateDoc(buffer);
     }
-  }, [questionData, questionLoading]);
+
+    return () => {
+      // Cleanup the form state
+      formState.setTitle("");
+      formState.setSelectedComplexity("EASY");
+      formState.setCategories([]);
+      formState.setLanguage("javascript");
+      formState.setDescription("");
+      formState.setTemplateCode("");
+      formState.setTestCases([{ input: "", output: "" }]);
+    }
+  }, [questionData, questionLoading, formState.isYDocReady]);
 
   const handleEdit = async () => {
     if (

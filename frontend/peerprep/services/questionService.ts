@@ -24,6 +24,7 @@ export const useUniqueCategoriesFetcher = () => {
 };
 
 export const useQuestionDataFetcher = (questionId: string) => {
+  // console.log("attempting to fetch question data with id: ", questionId);
   const { data, error, isLoading } = useSWR(
     `${NEXT_PUBLIC_QUESTION_SERVICE_URL}/api/questions/${questionId}`,
     fetcher,

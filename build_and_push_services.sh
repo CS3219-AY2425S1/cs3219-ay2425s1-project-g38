@@ -2,7 +2,7 @@
 
 # Change BASE TAG to your Docker Hub username
 # This script assumes that you have already logged in to Docker Hub using `docker login`
-BASE_TAG="delishad21"
+BASE_TAG="jayllo"
 
 # Check if a tag argument is provided
 if [ -z "$1" ]; then
