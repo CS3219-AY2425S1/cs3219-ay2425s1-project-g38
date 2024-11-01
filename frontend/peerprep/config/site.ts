@@ -9,6 +9,11 @@ export const siteConfig = {
       href: "/",
       icon: "bxs-dashboard",
     },
+    {
+      label: "Settings",
+      href: "/settings",
+      icon: "bx-cog"
+    }
   ],
   adminNavItems: [
     {

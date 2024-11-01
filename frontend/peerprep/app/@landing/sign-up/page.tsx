@@ -12,6 +12,11 @@ import PeerprepLogo from "@/components/peerpreplogo";
 import { fontFun } from "@/config/fonts";
 import { signUp } from "@/auth/actions"; // Import new server functions
 import Toast from "@/components/toast"; // Import the Toast component
+import {
+  validateEmail,
+  validateUsername,
+  validatePassword,
+} from "@/utils/utils";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -22,17 +27,8 @@ export default function SignUpPage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: string } | null>(
-    null,
+    null
   );
-
-  // Validations
-  const validateEmail = (email: string) =>
-    /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(email);
-
-  const validateUsername = (username: string) =>
-    /^[a-zA-Z0-9_-]{2,32}$/.test(username);
-
-  const validatePassword = (password: string) => password.length >= 8;
 
   // Toggle password visibility
   const toggleVisibility = () => setIsVisible(!isVisible);
@@ -69,9 +65,9 @@ export default function SignUpPage() {
         setTimeout(
           () =>
             router.push(
-              `sign-up/email-verification?email=${encodeURIComponent(email)}`,
+              `sign-up/email-verification?email=${encodeURIComponent(email)}`
             ),
-          500,
+          500
         );
       } else {
         setToast({
