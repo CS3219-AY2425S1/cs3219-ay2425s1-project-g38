@@ -65,7 +65,7 @@ export default function ChatModal({
     };
 
     return (
-        <div className="flex justify-start items-center h-full w-full">
+        <div className="flex justify-end items-center h-full w-full">
             <Button className="flex w-full" variant="flat" color="primary" onClick={handleOpenModal}>
                 Chat Here!
             </Button>
