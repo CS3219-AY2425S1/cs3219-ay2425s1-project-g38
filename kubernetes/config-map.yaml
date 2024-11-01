@@ -7,3 +7,4 @@ data:
   USER_SERVICE_URL: "http://user-service:8004"
   COLLAB_SERVICE_URL: "http://collab-service:8010"
   QUESTION_SERVICE_URL: "http://question-service:8003"
+  COLLAB_API_KEY: "collab-api-key"
