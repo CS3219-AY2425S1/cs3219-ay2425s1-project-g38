@@ -19,6 +19,11 @@ export interface CreateUserSessionData {
   ttl?: string;
 }
 
+export interface EmailChangeSessionData {
+  emailToken?: string;
+  ttl?: string;
+}
+
 export const defaultSession: SessionData = {
   isLoggedIn: false,
   isAdmin: false,
@@ -37,6 +42,16 @@ export const sessionOptions: SessionOptions = {
 export const createUserOptions: SessionOptions = {
   password: SECRET_KEY,
   cookieName: "user-creation-session",
+  cookieOptions: {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 3 * 60,
+  },
+};
+
+export const emailChangeOptions: SessionOptions = {
+  password: SECRET_KEY,
+  cookieName: "email-change-session",
   cookieOptions: {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",

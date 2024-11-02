@@ -122,6 +122,32 @@ export async function createUserRequest(req, res) {
   }
 }
 
+export async function updateEmailRequest(req, res) {
+  try {
+    const verifiedUser = req.user;
+    const email = req.body.email;
+
+    const valid = isValidEmail(email);
+    if (!valid) return res.status(400).json({ message: error });
+
+    const verificationCode = Math.floor(100000 + Math.random() * 900000);
+    const expirationDate = new Date(Date.now() + 3 * 60 * 1000);
+    const expiresInSeconds = Math.floor((expirationDate.getTime() - Date.now()) / 1000);
+
+    const emailToken = generateEmailToken(verifiedUser.id, verifiedUser.createdAt, verificationCode, expiresInSeconds);
+
+    await sendVerificationEmail(email, verifiedUser.username, verificationCode);
+
+    return res.status(201).json({
+      message: `Created email udpate request`,
+      data: { token: emailToken, expiry: expirationDate },
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Unknown error occurred when creating a new user!" });
+  }
+}
+
 export async function deleteUserRequest(req, res) {
   try {
     const email = req.params.email;
@@ -199,6 +225,7 @@ export async function getAllUsers(req, res) {
 
 export async function updateUser(req, res) {
   try {
+    console.log(req);
     const { username, email, password } = req.body;
     if (username || email || password) {
       const userId = req.params.id;
@@ -212,11 +239,11 @@ export async function updateUser(req, res) {
       if (username || email) {
         let existingUser = await _findUserByUsername(username);
         if (existingUser && existingUser.id !== userId) {
-          return res.status(409).json({ message: "username already exists" });
+          return res.status(409).json({ message: "Username already exists" });
         }
         existingUser = await _findUserByEmail(email);
         if (existingUser && existingUser.id !== userId) {
-          return res.status(409).json({ message: "email already exists" });
+          return res.status(409).json({ message: "Email already exists" });
         }
       }
 
@@ -225,7 +252,7 @@ export async function updateUser(req, res) {
         const salt = bcrypt.genSaltSync(10);
         hashedPassword = bcrypt.hashSync(password, salt);
       }
-      const updatedUser = await _updateUseconstrById(userId, username, email, hashedPassword);
+      const updatedUser = await _updateUserById(userId, username, email, hashedPassword);
       return res.status(200).json({
         message: `Updated data for user ${userId}`,
         data: formatUserResponse(updatedUser),
@@ -270,6 +297,7 @@ export async function updateUserPrivilege(req, res) {
 export async function deleteUser(req, res) {
   try {
     const userId = req.params.id;
+    console.log(userId);
     if (!isValidObjectId(userId)) {
       return res.status(404).json({ message: `User ${userId} not found` });
     }

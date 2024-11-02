@@ -3,50 +3,153 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import BoxIcon from "@/components/boxicons";
-import { Avatar, Button, Divider, Input } from "@nextui-org/react";
+import {
+  Avatar,
+  Button,
+  Divider,
+  Input,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+} from "@nextui-org/react";
 import { validateEmail, validateUsername } from "@/utils/utils";
 import { ErrorModal } from "@/components/errormodal";
+import { DeleteConfirmationModal } from "@/components/deleteconfirmationmodal";
+import { PasswordConfirmationModal } from "@/components/passwordconfirmationmodal";
+import {
+  editUsername,
+  verifyPassword,
+  editEmailRequest,
+  verifyEmailCode,
+  deleteUser,
+} from "@/auth/actions";
+import { EmailVerificationModal } from "@/components/emailverificationmodal";
+import { ChangePasswordModal } from "@/components/changepasswordmodal";
+import { changePassword } from "@/auth/actions";
+import { DeleteAccountModal } from "@/components/deleteaccountmodal";
+import { useRouter } from "next/navigation";
+import { SuccessModal } from "@/components/succesmodal";
 
-export default function SettingsPage() {
-  // Get initial data from the embedded script
-  const initialData = React.useMemo(() => {
-    if (typeof window === "undefined") return { username: "", email: "" };
-    const script = document.getElementById("user-data");
-    if (script) {
-      return JSON.parse(script.innerHTML);
-    }
-    return { username: "", email: "" };
-  }, []);
+type SettingsPageProps = {
+  username: string;
+  email: string;
+};
 
+export default function SettingsPage({ username, email }: SettingsPageProps) {
   const [formData, setFormData] = React.useState({
-    username: initialData.username || "username",
-    email: initialData.email || "email@email.com",
+    username: username || "username",
+    email: email || "email@email.com",
   });
-
   const [activeSection, setActiveSection] = React.useState("profile");
-  const [isEditing, setIsEditing] = React.useState(false);
+  const [isEditingUsername, setIsEditingUsername] = React.useState(false);
+  const [isEditingEmail, setIsEditingEmail] = React.useState(false);
   const [originalData, setOriginalData] = React.useState(formData);
   const [isErrorModalOpen, setIsErrorModalOpen] = React.useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState("");
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = React.useState(false);
+  const [editTarget, setEditTarget] = React.useState<
+    "username" | "email" | "password" | "delete" | null
+  >(null);
+  const [isEmailVerificationModalOpen, setIsEmailVerificationModalOpen] =
+    React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] =
+    React.useState(false);
+  const router = useRouter();
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = React.useState(false);
+  const [successMessage, setSuccessMessage] = React.useState("");
 
-  const hasChanges = JSON.stringify(formData) !== JSON.stringify(originalData);
+  const hasChanges = (field: "username" | "email") =>
+    formData[field] !== originalData[field];
 
-  const handleEdit = () => {
-    setIsEditing(true);
+  const handleInputChange = (field: "username" | "email", value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handlePasswordConfirm = async (password: string) => {
+    try {
+      const response = await verifyPassword(password);
+      if (response.status === "success") {
+        if (editTarget === "username") {
+          setIsEditingUsername(true);
+        } else if (editTarget === "email") {
+          setIsEditingEmail(true);
+        } else if (editTarget === "password") {
+          setIsChangePasswordModalOpen(true);
+        } else if (editTarget === "delete") {
+          // Actually delete the account after password confirmation
+          const deleteResponse = await deleteUser();
+          if (deleteResponse.status === "success") {
+            setSuccessMessage("Account deleted successfully. Redirecting...");
+            setIsSuccessModalOpen(true);
+            setTimeout(() => router.push("/sign-in"), 1500);
+          } else {
+            setErrorMessage(deleteResponse.message);
+            setIsErrorModalOpen(true);
+          }
+        }
+        setIsPasswordModalOpen(false);
+        setEditTarget(null);
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error("Password verification error:", error);
+      return false;
+    }
+  };
+
+  const handleEdit = (field: "username" | "email") => {
+    setEditTarget(field);
+    setIsPasswordModalOpen(true);
     setOriginalData(formData);
   };
 
-  const handleSave = () => {
-    // Validate inputs before saving
-    if (!validateUsername(formData.username || "username")) {
-      setErrorMessage(
-        "Invalid username format. Username must be 3-20 characters long and contain only letters, numbers, and underscores."
-      );
+  const handleChangePasswordClick = () => {
+    setEditTarget("password");
+    setIsPasswordModalOpen(true);
+  };
+
+  const handleCancel = (field: "username" | "email") => {
+    if (field === "username") {
+      setIsEditingUsername(false);
+      setFormData((prev) => ({ ...prev, username: originalData.username }));
+    } else {
+      setIsEditingEmail(false);
+      setFormData((prev) => ({ ...prev, email: originalData.email }));
+    }
+  };
+
+  const handleUsernameSave = async () => {
+    if (!validateUsername(formData.username)) {
+      setErrorMessage("Invalid username format...");
       setIsErrorModalOpen(true);
       return;
     }
 
-    if (!validateEmail(formData.email || "example@email.com")) {
+    try {
+      const response = await editUsername(formData.username);
+      if (response.status === "success") {
+        setIsEditingUsername(false);
+        setOriginalData(formData);
+        setSuccessMessage("Username updated successfully!");
+        setIsSuccessModalOpen(true);
+      } else {
+        setErrorMessage(response.message);
+        setIsErrorModalOpen(true);
+      }
+    } catch (error) {
+      setErrorMessage("Failed to update username. Please try again.");
+      setIsErrorModalOpen(true);
+    }
+  };
+
+  const handleEmailSave = async () => {
+    setIsLoading(true);
+    if (!validateEmail(formData.email)) {
       setErrorMessage(
         "Invalid email format. Please enter a valid email address."
       );
@@ -54,21 +157,62 @@ export default function SettingsPage() {
       return;
     }
 
-    setIsEditing(false);
-    setOriginalData(formData);
-    // Here you would typically make an API call to save the changes
+    try {
+      const response = await editEmailRequest(formData.email);
+      console.log(response.status);
+      if (response.status === "success") {
+        setIsEmailVerificationModalOpen(true);
+      } else {
+        setErrorMessage(response.message);
+        setIsErrorModalOpen(true);
+      }
+    } catch (error) {
+      setErrorMessage("Failed to update email. Please try again.");
+      setIsErrorModalOpen(true);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleCancel = () => {
-    setIsEditing(false);
-    setFormData(originalData);
+  const handleVerifyEmailCode = async (code: number, newEmail: string) => {
+    try {
+      const response = await verifyEmailCode(code, newEmail);
+      if (response.status === "success") {
+        setIsEmailVerificationModalOpen(false);
+        setIsEditingEmail(false);
+        setOriginalData((prev) => ({ ...prev, email: newEmail }));
+        setSuccessMessage("Email updated successfully!");
+        setIsSuccessModalOpen(true);
+      } else {
+        setErrorMessage(response.message);
+        setIsErrorModalOpen(true);
+      }
+    } catch (error) {
+      setErrorMessage("Failed to verify code. Please try again.");
+      setIsErrorModalOpen(true);
+    }
   };
 
-  const handleInputChange = (key: string, value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [key]: value,
-    }));
+  const handlePasswordChange = async (newPassword: string) => {
+    try {
+      const response = await changePassword(newPassword);
+      if (response.status === "success") {
+        setSuccessMessage("Password updated successfully!");
+        setIsSuccessModalOpen(true);
+      } else {
+        setErrorMessage(response.message);
+        setIsErrorModalOpen(true);
+      }
+    } catch (error) {
+      setErrorMessage("Failed to update password. Please try again.");
+      setIsErrorModalOpen(true);
+    }
+  };
+
+  const handleDeleteConfirm = async () => {
+    setIsDeleteModalOpen(false);
+    setEditTarget("delete"); // New target for delete confirmation
+    setIsPasswordModalOpen(true);
   };
 
   return (
@@ -143,7 +287,7 @@ export default function SettingsPage() {
                         className="transition ease-in-out hover:scale-110 text-white dark:text-black"
                       />
                       <Input
-                        isDisabled={!isEditing}
+                        isDisabled={!isEditingUsername}
                         isInvalid={!validateUsername(formData.username || "")}
                         variant="underlined"
                         className="w-24"
@@ -156,14 +300,38 @@ export default function SettingsPage() {
                         }}
                       />
                     </div>
-                    <Button
-                      variant="light"
-                      color="secondary"
-                      className="font-medium justify-self-end"
-                      onPress={!isEditing ? handleEdit : handleCancel}
-                    >
-                      {!isEditing ? "Edit profile" : "Cancel"}
-                    </Button>
+                    <div className="flex gap-2 justify-self-end">
+                      {isEditingUsername ? (
+                        <>
+                          <Button
+                            variant="light"
+                            color="danger"
+                            className="font-medium"
+                            onPress={() => handleCancel("username")}
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            variant="flat"
+                            color="secondary"
+                            className="font-medium"
+                            isDisabled={!hasChanges("username")}
+                            onPress={() => handleUsernameSave()}
+                          >
+                            Save
+                          </Button>
+                        </>
+                      ) : (
+                        <Button
+                          variant="light"
+                          color="secondary"
+                          className="font-medium"
+                          onPress={() => handleEdit("username")}
+                        >
+                          Edit username
+                        </Button>
+                      )}
+                    </div>
                   </div>
                   <Divider className="my-2" />
                   {/* Email row */}
@@ -172,7 +340,7 @@ export default function SettingsPage() {
                       Email address
                     </span>
                     <Input
-                      isDisabled={!isEditing}
+                      isDisabled={!isEditingEmail}
                       variant="underlined"
                       isInvalid={!validateEmail(formData.email || "")}
                       value={formData.email}
@@ -184,21 +352,41 @@ export default function SettingsPage() {
                         input: ["text-xs"],
                       }}
                     />
-                    <div>{/* Empty space to maintain grid structure */}</div>
+                    <div className="flex gap-2 justify-self-end">
+                      {isEditingEmail ? (
+                        <>
+                          <Button
+                            variant="light"
+                            color="danger"
+                            className="font-medium"
+                            onPress={() => handleCancel("email")}
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            variant="flat"
+                            color="secondary"
+                            className="font-medium"
+                            isDisabled={!hasChanges("email")}
+                            onClick={() => handleEmailSave()}
+                            isLoading={isLoading}
+                          >
+                            Save
+                          </Button>
+                        </>
+                      ) : (
+                        <Button
+                          variant="light"
+                          color="secondary"
+                          className="font-medium"
+                          onPress={() => handleEdit("email")}
+                        >
+                          Edit email
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 </div>
-                {isEditing && (
-                  <div className="absolute bottom-4 right-4">
-                    <Button
-                      color="secondary"
-                      variant="flat"
-                      isDisabled={!hasChanges}
-                      onPress={handleSave}
-                    >
-                      Save
-                    </Button>
-                  </div>
-                )}
               </>
             ) : (
               <>
@@ -211,13 +399,32 @@ export default function SettingsPage() {
                     <Button
                       variant="bordered"
                       color="secondary"
-                      className="text-xs justify-self-end"
+                      className="text-xs justify-self-center"
                       radius="sm"
                       size="sm"
+                      onClick={handleChangePasswordClick}
                     >
                       Change password
                     </Button>
                   </div>
+                </div>
+                <Divider className="my-2" />
+                {/* Delete account row */}
+                <div className="grid grid-cols-3 items-center justify-start w-full">
+                  <span className="text-sm font-semibold text-start">
+                    Delete Account
+                  </span>
+                  <Button
+                    variant="bordered"
+                    color="danger"
+                    className="text-xs justify-self-center"
+                    radius="sm"
+                    size="sm"
+                    onClick={() => setIsDeleteModalOpen(true)}
+                  >
+                    Delete account permanently
+                  </Button>
+                  <div>{/* Empty space to maintain grid structure */}</div>
                 </div>
               </>
             )}
@@ -229,6 +436,32 @@ export default function SettingsPage() {
         isOpen={isErrorModalOpen}
         onOpenChange={setIsErrorModalOpen}
         errorMessage={errorMessage}
+      />
+      <DeleteAccountModal
+        isOpen={isDeleteModalOpen}
+        onOpenChange={setIsDeleteModalOpen}
+        onConfirm={handleDeleteConfirm}
+      />
+      <PasswordConfirmationModal
+        isOpen={isPasswordModalOpen}
+        onOpenChange={setIsPasswordModalOpen}
+        onConfirm={handlePasswordConfirm}
+      />
+      <EmailVerificationModal
+        isOpen={isEmailVerificationModalOpen}
+        onOpenChange={setIsEmailVerificationModalOpen}
+        onVerify={handleVerifyEmailCode}
+        email={formData.email}
+      />
+      <ChangePasswordModal
+        isOpen={isChangePasswordModalOpen}
+        onOpenChange={setIsChangePasswordModalOpen}
+        onConfirm={handlePasswordChange}
+      />
+      <SuccessModal
+        isOpen={isSuccessModalOpen}
+        onOpenChange={setIsSuccessModalOpen}
+        message={successMessage}
       />
     </>
   );

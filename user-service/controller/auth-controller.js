@@ -69,6 +69,23 @@ export async function handleVerifyToken(req, res) {
   }
 }
 
+export async function verifyPassword(req, res) {
+  try {
+    const verifiedUser = req.user;
+    const user = await _findUserByUsername(verifiedUser.username)
+    const password = req.body.password;
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) {
+      return res.status(401).json({ message: "Wrong password" });
+    } else {
+      return res.status(200).json({message: "Password verified!"});
+    }
+  } catch (err) {
+    console.log(err.message);
+    return res.status(500).json({message: err.message});
+  }
+}
+
 export async function confirmUser(req, res) {
   try {
     const verifiedUser = req.user;

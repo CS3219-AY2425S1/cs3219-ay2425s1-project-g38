@@ -13,6 +13,8 @@ import {
   defaultSession,
   CreateUserSessionData,
   createUserOptions,
+  EmailChangeSessionData,
+  emailChangeOptions,
 } from "./lib";
 
 const USER_SERVICE_URL = env("NEXT_PUBLIC_USER_SERVICE_URL");
@@ -44,6 +46,14 @@ export const getCreateUserSession = async () => {
   return session;
 };
 
+export const getEmailChangeSession = async () => {
+  const session = await getIronSession<EmailChangeSessionData>(
+    cookies(),
+    emailChangeOptions,
+  );
+  return session;
+};
+
 export const getAccessToken = async () => {
   const session = await getSession();
 
@@ -52,6 +62,12 @@ export const getAccessToken = async () => {
 
 export const getEmailToken = async () => {
   const session = await getCreateUserSession();
+
+  return session.emailToken;
+};
+
+export const getEmailChangeEmailToken = async () => {
+  const session = await getEmailChangeSession();
 
   return session.emailToken;
 };
@@ -87,6 +103,12 @@ export const isSessionAdmin = async () => {
 
 export const getTimeToExpire = async () => {
   const session = await getCreateUserSession();
+
+  return session.ttl;
+};
+
+export const getEmailChangeTimeToExpire = async () => {
+  const session = await getEmailChangeSession();
 
   return session.ttl;
 };
@@ -139,6 +161,36 @@ export const login = async (formData: FormData) => {
     };
   }
 };
+
+export const verifyPassword = async (enteredPassword: string) => {
+  const token = await getAccessToken();
+
+  try {
+    const response = await fetch(`${USER_SERVICE_URL}/auth/verify-password`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        password: enteredPassword
+      }),
+    });
+
+    if (response.ok) {
+      return { status: "success", message: "Password verified." };
+    } else {
+      const errorData = await response.json();
+      return { status: "error", message: errorData.message || "Error verifying password"};
+    }
+  } catch(err) {
+    console.error("Login error:", err);
+    return {
+      status: "error",
+      message: "Internal server error",
+    };
+  }
+}
 
 export const logout = async () => {
   const session = await getSession();
@@ -196,6 +248,7 @@ export const signUp = async (formData: FormData) => {
     };
   }
 };
+
 
 export const resendCode = async () => {
   const signUpSession = await getCreateUserSession();
@@ -342,7 +395,7 @@ export const deleteNewUserRequest = async (email: string) => {
     return { status: "error", message: "No email provided" };
   }
 
-  const response = await fetch(`${USER_SERVICE_URL}/users/${email}`, {
+  const response = await fetch(`${USER_SERVICE_URL}/users/${email}/request`, {
     method: "DELETE",
   });
 
@@ -356,6 +409,240 @@ export const deleteNewUserRequest = async (email: string) => {
       status: "error",
       message:
         "There was a fatal error, please sign-up with a different email and username!",
+    };
+  }
+};
+
+export const editUsername = async (newUsername: string) => {
+  if (!newUsername) {
+    return { status: "error", message: "No username provided" };
+  }
+
+  const session = await getSession();
+  try {
+    const response = await fetch(`${USER_SERVICE_URL}/users/${session.userId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session.accessToken}`,
+      },
+      body: JSON.stringify({
+        username: newUsername
+      }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      session.username = data.data.username;
+      console.log(session.username)
+      await session.save();
+      return { status: "success", message: "Username was successfully updated"};
+    } else {
+      const errorData = await response.json();
+      return { status: "error", message: errorData.message || "Error modifying username"};
+    }
+  } catch(err) {
+    console.error("Change username error:", err);
+
+    return {
+      status: "error",
+      message: "Internal server error",
+    };
+  }
+}
+
+export const editEmailRequest = async (newEmail: string) => {
+  const emailChangeSession = await getEmailChangeSession();
+  const session = await getSession();
+
+  console.log(`${USER_SERVICE_URL}/users/${session.userId}/email-update-request`);
+  console.log(session.accessToken);
+
+  try {
+    // Make the signup request to your API
+    const response = await fetch(`${USER_SERVICE_URL}/users/${session.userId}/email-update-request`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session.accessToken}`,
+      },
+      body: JSON.stringify({
+        email: newEmail,
+      }),
+    });
+
+    if (response.ok) {
+      const res = await response.json();
+
+      emailChangeSession.emailToken = res.data.token;
+      emailChangeSession.ttl = res.data.expiry;
+
+      await emailChangeSession.save();
+
+      return { status: "success", message: "Email change request successful" }; // Return success status
+    } else {
+      // Handle error response (e.g., show error message)
+      const errorData = await response.json();
+
+      return {
+        status: "error",
+        message: errorData.message || "Email change request failed.",
+      }; // Return error status
+    }
+  } catch (error) {
+    console.error("Email change request error:", error);
+
+    return {
+      status: "error",
+      message: "Unable to reach the user service. Please try again later.",
+    };
+  }
+};
+
+export const verifyEmailCode = async (code: number, newEmail: string) => {
+  const session = await getSession();
+  const emailChangeSession = await getEmailChangeSession();
+  console.log(code, newEmail)
+
+  try {
+    const emailToken = await getEmailChangeEmailToken();
+    const secret = env("JWT_SECRET");
+
+    if (!emailToken) {
+      return {
+        status: "error",
+        message: "Token has expired or does not exist",
+      };
+    }
+
+    if (!secret) {
+      return { status: "error", message: "Internal application error" };
+    }
+
+    // Convert the secret string to Uint8Array
+    const secretKey = new TextEncoder().encode(secret);
+
+    // Decode the JWT token
+    const { payload } = await jwtVerify(emailToken, secretKey);
+
+    // Extract the verification code from the token's payload
+    const verificationCode = payload.code;
+
+    if (!verificationCode) {
+      return {
+        status: "error",
+        message: "Verification code not found in token.",
+      };
+    }
+
+    if (verificationCode === code) {
+      // If code matches, update the email
+      console.log(newEmail);
+      const response = await fetch(`${USER_SERVICE_URL}/users/${session.userId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.accessToken}`,
+        },
+        body: JSON.stringify({
+          email: newEmail
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Update session with new email
+        session.email = data.data.email;
+        await session.save();
+        
+        // Clean up email change session
+        await emailChangeSession.destroy();
+
+        return {
+          status: "success",
+          message: "Email updated successfully!",
+        };
+      } else {
+        const errorData = await response.json();
+        return {
+          status: "error",
+          message: errorData.message || "Failed to update email.",
+        };
+      }
+    } else {
+      return {
+        status: "error",
+        message: "Verification code is incorrect. Please try again.",
+      };
+    }
+  } catch (error) {
+    console.error("Error verifying email code:", error);
+    return {
+      status: "error",
+      message: "There was an error validating your code.",
+    };
+  }
+};
+
+export const clearEmailChangeSession = async () => {
+  const emailChangeSession = await getEmailChangeSession();
+  await emailChangeSession.destroy();
+};
+
+export const changePassword = async (newPassword: string) => {
+  const session = await getSession();
+
+  try {
+    const response = await fetch(`${USER_SERVICE_URL}/users/${session.userId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session.accessToken}`,
+      },
+      body: JSON.stringify({
+        password: newPassword,
+      }),
+    });
+
+    if (response.ok) {
+      return { status: "success", message: "Password updated successfully" };
+    } else {
+      const errorData = await response.json();
+      return {
+        status: "error",
+        message: errorData.message || "Failed to update password",
+      };
+    }
+  } catch (error) {
+    return {
+      status: "error",
+      message: "Unable to reach the user service. Please try again later.",
+    };
+  }
+};
+
+export const deleteUser = async () => {
+  const session = await getSession();
+
+  const response = await fetch(`${USER_SERVICE_URL}/users/${session.userId}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${session.accessToken}`,
+    },
+  });
+
+  if (response.ok) {
+    await session.destroy();
+    return {
+      status: "success",
+      message: "Your account has been deleted succesfully",
+    };
+  } else {
+    return {
+      status: "error",
+      message:
+        "There was an error with deleting your account",
     };
   }
 };
