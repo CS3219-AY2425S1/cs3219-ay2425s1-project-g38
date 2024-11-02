@@ -73,7 +73,7 @@ export default function CollabCodeEditor({
 
   return (
     <div className="flex justify-center items-center h-full w-full pt-4">
-      <Card className="flex flex-col h-full w-full p-4 gap-4 bg-gray-200 dark:bg-gray-800">
+      <Card className="flex flex-col h-full w-full p-2 gap-4 bg-gray-200 dark:bg-gray-800">
         <div className="flex flex-col w-full h-3/4">
           <div className="flex flex-row px-4 sm:px-0 mb-2">
             <LanguageSelector language={language} onSelect={onSelect} />

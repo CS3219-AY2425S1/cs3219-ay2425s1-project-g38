@@ -125,7 +125,7 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <div className="relative flex flex-col w-full h-[90vh]">
+    <div className="relative flex flex-col w-full h-[90vh] max-w-full overflow-hidden">
       <CollabNavbar
         usersInRoom={usersInRoom}
         username={username}
@@ -141,7 +141,7 @@ const App: React.FC = () => {
         propagateMessage={propagateMessage}
         chatHistory={chatHistory}
       />
-      <div className="flex flex-row w-full h-full">
+      <div className="flex flex-row w-full h-full max-w-full">
         <div className="flex w-1/2 h-full">
           <QuestionDisplay
             questionId={questionId}

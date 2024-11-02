@@ -88,18 +88,35 @@ export default function QuestionDisplay({
         <div className="flex flex-col w-full h-2/5">
           <div className="flex flex-row w-full h-full gap-4">
             <Card className="flex flex-col w-1/2 h-full p-4">
-              <div className="flex flex-col w-full h-1/4">
-                <h2 className="text-xl font-bold mb-4">Test Cases:</h2>
-                {testCases?.map((testCase, index) => (
-                  <Card
-                    key={index}
-                    className="mb-2 p-1 bg-gray-100 dark:bg-gray-700 rounded-lg shadow min-h-[35px]"
-                  >
-                    <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
-                      {testCase}
-                    </ReactMarkdown>
-                  </Card>
-                ))}
+              <div className="flex flex-col w-full h-full">
+                <h2 className="text-xl font-bold mb-2">Test Cases:</h2>
+                <div className="flex flex-col w-full h-full overflow-y-auto">
+                  <div className="flex flex-row mb-2">
+                    <div className="flex-1 text-start w-1/2 font-bold px-2">
+                      {testCases.length > 1 ? "Inputs" : "Input"}
+                    </div>
+                    <div className="flex-1 text-start w-1/2 font-bold px-2">
+                      {testCases.length > 1 ? "Outputs" : "Output"}
+                    </div>
+                  </div>
+                  {testCases?.map((testCase, index) => {
+                    const [input, output] = testCase.split("->").map((str) => str.trim());
+                    return (
+                      <div key={index} className="flex flex-row mb-2 max-2-full">
+                        <Card className="flex w-1/2 p-1 bg-gray-100 dark:bg-gray-700 rounded-lg shadow min-h-[35px] mr-2 break-words">
+                          <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
+                            {input}
+                          </ReactMarkdown>
+                        </Card>
+                        <Card className="flex p-1 w-1/2 bg-gray-100 dark:bg-gray-700 rounded-lg shadow min-h-[35px] mr-2 break-words">
+                          <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
+                            {output}
+                          </ReactMarkdown>
+                        </Card>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </Card>
             <div className="flex w-1/2 h-full">
