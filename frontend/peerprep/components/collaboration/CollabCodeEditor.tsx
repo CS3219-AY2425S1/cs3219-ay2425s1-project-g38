@@ -73,9 +73,9 @@ export default function CollabCodeEditor({
 
   return (
     <div className="flex justify-center items-center h-full w-full pt-4">
-      <Card className="flex flex-col h-full w-full p-4 gap-4 bg-gray-200 dark:bg-gray-800">
+      <div className="flex flex-col h-full w-full pt-2 gap-4 bg-gray-200 dark:bg-gray-800 rounded-2xl shadow-2xl">
         <div className="flex flex-col w-full h-3/4">
-          <div className="flex flex-row px-4 sm:px-0 mb-2">
+          <div className="flex flex-row px-4 sm:px-0 mb-2 ml-2 mr-2 ">
             <LanguageSelector language={language} onSelect={onSelect} />
             <Button
               className="ml-auto"
@@ -89,8 +89,8 @@ export default function CollabCodeEditor({
           </div>
           <div className="flex w-full h-full">
             <Editor
-              className="flex-1"
-              theme={theme === "dark" ? "vs-dark" : "vs-light"}
+              className="flex-1 border-1 border-gray-300 dark:border-gray-700"
+              theme={theme === "dark" ? "vs-dark" : "vs"}
               language={language}
               onMount={onMount}
               options={{ fontSize: 14, autoIndent: "none" }}
@@ -106,7 +106,7 @@ export default function CollabCodeEditor({
             isCodeError={isCodeError}
           />
         </div>
-      </Card>
+      </div>
     </div>
   );
 }

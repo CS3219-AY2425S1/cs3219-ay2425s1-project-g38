@@ -66,7 +66,7 @@ export default function QuestionDisplay({
   return (
     <div className="flex justify-center items-center h-full w-full">
       <div className="flex flex-col w-full h-full gap-4 p-4">
-        <Card className="flex flex-col h-3/5 w-full p-4 bg-gray-200 dark:bg-gray-800">
+        <Card className="flex flex-col h-3/5 w-full p-4 bg-gray-200 dark:bg-gray-800 shadow-sm">
           <h2 className="text-xl font-bold ml-3 mb-1 mt-1">{`${questionId}. ${questionTitle}`}</h2>
           <div className="flex items-center ml-3 mb-2">
             <div className="pr-2">Difficulty:</div>
