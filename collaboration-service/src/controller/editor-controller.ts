@@ -51,9 +51,6 @@ export async function initialize(socket: Socket, io: Server) {
             return;
         }
 
-        const questionDescription = session.questionDescription;
-        const questionTestcases = session.questionTestcases;
-
         const yDoc = await getYDocFromRedis(session.session_id);
 
         let yDocUpdate: Uint8Array;
@@ -87,8 +84,7 @@ export async function initialize(socket: Socket, io: Server) {
         socket.emit('initialData', {
             message: 'You have joined the session!',
             sessionData: {
-                questionDescription,
-                questionTestcases,
+                question: session.question,
                 yDocUpdate,
                 selectedLanguage,
                 usersInRoom,

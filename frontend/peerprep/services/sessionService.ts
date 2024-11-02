@@ -28,8 +28,12 @@ export const initializeSessionSocket = async (
   setLanguage: Dispatch<any>,
   setUsersInRoom: Dispatch<any>,
   setUsername: Dispatch<any>,
+  setQuestionId: Dispatch<any>,
   setQuestionDescription: Dispatch<any>,
   setQuestionTestcases: Dispatch<any>,
+  setQuestionCategory: Dispatch<any>,
+  setQuestionDifficulty: Dispatch<any>,
+  setQuestionTitle: Dispatch<any>,
   updateDoc: (arg0: Uint8Array) => void,
   setCodeOutput: Dispatch<any>,
   setIsCodeError: Dispatch<any>,
@@ -66,14 +70,25 @@ export const initializeSessionSocket = async (
   socket.on("initialData", (data: any) => {
     console.log("Populating initial data");
     const { sessionData } = data;
-    setLanguage(sessionData.language);
+    setLanguage(sessionData.selectedLanguage);
+    console.log("setting language: ", sessionData.language);
     setUsersInRoom(sessionData.usersInRoom);
     console.log("username: ", sessionData.username);
     setUsername(sessionData.username);
-    setQuestionDescription(sessionData.questionDescription);
-    setQuestionTestcases(sessionData.questionTestcases);
     updateDoc(new Uint8Array(sessionData.yDocUpdate));
     setChatHistory(sessionData.chatHistory);
+
+    const question = sessionData.question
+
+    const { question_id, title, description, testCases, category, complexity } = question;
+
+    setQuestionId(question_id);
+    setQuestionTitle(title);
+    setQuestionDescription(description);
+    setQuestionTestcases(testCases[0]);
+    setQuestionCategory(category);
+    setQuestionDifficulty(complexity);
+
   });
 
   registerUserEvents(setUsersInRoom);

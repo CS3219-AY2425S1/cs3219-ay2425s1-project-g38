@@ -4,7 +4,7 @@ import { useRef, useState, useEffect } from "react";
 import * as Y from "yjs";
 import { Editor } from "@monaco-editor/react";
 import { useTheme } from "next-themes";
-import { Button, Card } from "@nextui-org/react";
+import { Button, Card, Chip } from "@nextui-org/react";
 
 import { SupportedLanguages } from "../../utils/utils";
 import { executeCode } from "../../services/sessionOutputService";
@@ -44,7 +44,6 @@ export default function CollabCodeEditor({
     try {
       setIsLoading(true);
       const { run: result } = await executeCode(language, sourceCode);
-
       propagateUpdates(undefined, undefined, result);
     } catch (error: any) {
       // would only occur if api is down
