@@ -38,7 +38,7 @@ export default function TerminateModal({
       <Modal
         isOpen={isModalVisible}
         onClose={closeModal}
-        title="Session Terminated"
+        title=""
         aria-labelledby="Termination Modal"
         aria-describedby="Modal to confirm termination of session"
       >

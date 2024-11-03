@@ -51,11 +51,14 @@ export async function middleware(req: any) {
     }
 
     // Check if the user is in a session
-    const isInSession = await checkUserMatchStatus();
 
-    if (!isInSession && url.pathname.startsWith("/session")) {
-      url.pathname = "/forbidden";
-      return NextResponse.redirect(url);
+    if (url.pathname.startsWith("/session")) {
+      const isInSession = await checkUserMatchStatus();
+
+      if (!isInSession) {
+        url.pathname = "/forbidden";
+        return NextResponse.redirect(url);
+      }
     }
 
   }

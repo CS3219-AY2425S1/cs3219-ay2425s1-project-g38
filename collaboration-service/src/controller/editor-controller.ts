@@ -1,25 +1,27 @@
 import { Server, Socket } from "socket.io";
 import Session from '../model/session-model';
 import * as Y from 'yjs';
-import { addConnectedUser, addUpdateToYDocInRedis, deleteLanguageFromRedis, deleteYDocFromRedis, getLanguageFromRedis, getYDocFromRedis, isUserConnected, removeConnectedUser, setLanguageInRedis } from "../utils/redis-helper";
+import {
+    addConnectedUser,
+    addUpdateToYDocInRedis,
+    deleteLanguageFromRedis,
+    deleteYDocFromRedis,
+    getLanguageFromRedis,
+    getYDocFromRedis,
+    isUserConnected,
+    removeConnectedUser,
+    setLanguageInRedis,
+    setChatHistoryInRedis,
+    getChatHistoryFromRedis,
+    deleteChatHistoryFromRedis
+} from "../utils/redis-helper";
 
 const userSocketMap: { [key: string]: string } = {};
 
 export async function initialize(socket: Socket, io: Server) {
 
-    const { userId } = socket.data;
+    const { userId, username } = socket.data;
 
-    const userConnected = await isUserConnected(userId);
-
-    if (userConnected) {
-        console.log('User already connected:', userId);
-        socket.emit('error', 'User already connected');
-        socket.disconnect(true);
-        return;
-    }
-
-    // Store userID to redis
-    await addConnectedUser(userId);
     userSocketMap[userId] = socket.id;
 
     try {
@@ -36,8 +38,18 @@ export async function initialize(socket: Socket, io: Server) {
             return;
         }
 
-        const questionDescription = session.questionDescription;
-        const questionTestcases = session.questionTestcases;
+        // Check if user is already connected
+        let roomSockets = await io.in(session.session_id).fetchSockets();
+        let usersInRoom = roomSockets.map((socket) => socket.data.username);
+
+        const userConnected = username in usersInRoom;
+
+        if (userConnected) {
+            console.log('User already connected:', userId);
+            socket.emit('error', 'User already connected');
+            socket.disconnect(true);
+            return;
+        }
 
         const yDoc = await getYDocFromRedis(session.session_id);
 
@@ -55,6 +67,8 @@ export async function initialize(socket: Socket, io: Server) {
 
         const roomId = session.session_id; // Use session ID as room ID
 
+        const chatHistory = await getChatHistoryFromRedis(roomId) || [];
+
         // Join the socket to the room
         socket.join(roomId);
 
@@ -62,20 +76,20 @@ export async function initialize(socket: Socket, io: Server) {
         socket.data.roomId = roomId;
 
         // Get all sockets in the room
-        const roomSockets = await io.in(session.session_id).fetchSockets();
-        const usersInRoom = roomSockets.map((socket) => socket.data.username);
-
+        roomSockets = await io.in(session.session_id).fetchSockets();
+        usersInRoom = roomSockets.map((socket) => socket.data.username);
         console.log(`User ${userId} joined session ${roomId}`);
 
         // Emit initial data to the user after they join the room
         socket.emit('initialData', {
             message: 'You have joined the session!',
             sessionData: {
-                questionDescription,
-                questionTestcases,
+                question: session.question,
                 yDocUpdate,
                 selectedLanguage,
-                usersInRoom
+                usersInRoom,
+                username,
+                chatHistory
             },
         });
 
@@ -138,14 +152,24 @@ export function handleTermination(socket: Socket, io: Server) {
     });
 }
 
+export function handleChat(socket: Socket, io: Server) {
+    socket.on('chatMessage', async (message) => {
+        const roomId = socket.data.roomId;
+        // Store chat history in Redis
+        const stringifiedMessage = JSON.stringify(message);
+        await setChatHistoryInRedis(roomId, stringifiedMessage);
+        io.to(roomId).emit('chatMessage', message);
+    });
+}
+
 export async function handleDisconnect(socket: Socket, io: Server) {
     socket.on('disconnect', async () => {
 
         console.log('user disconnected');
         const roomId = socket.data.roomId;
         if (roomId) {
-            const roomSockets = io.sockets.adapter.rooms.get(roomId);
-            if (!roomSockets || roomSockets.size === 0) {
+            const roomSockets = await io.in(roomId).fetchSockets();
+            if (!roomSockets || roomSockets.length === 0) {
                 // If no sockets left, mark the session as inactive
                 console.log(`Room ${roomId} is empty. Marking session as inactive`);
 
@@ -172,6 +196,12 @@ export async function handleDisconnect(socket: Socket, io: Server) {
                 // Delete the YDoc from Redis
                 deleteYDocFromRedis(roomId);
                 deleteLanguageFromRedis(roomId);
+
+                const chatHistory = await getChatHistoryFromRedis(roomId) || [];
+                if (chatHistory.length > 0) {
+                    // Delete chat history from Redis
+                    deleteChatHistoryFromRedis(roomId);
+                }
 
             } else {
                 const roomSockets = await io.in(roomId).fetchSockets();

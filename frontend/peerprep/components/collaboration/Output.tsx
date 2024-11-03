@@ -2,8 +2,6 @@ import { useState, useEffect } from "react";
 import { Button, Card } from "@nextui-org/react";
 import { useTheme } from "next-themes";
 
-import { executeCode } from "../../services/sessionOutputService";
-
 type SupportedLanguages =
   | "javascript"
   | "typescript"
@@ -41,7 +39,6 @@ const Output: React.FC<OutputProps> = ({
 }) => {
   const { theme, resolvedTheme } = useTheme();
   const [isThemeReady, setIsThemeReady] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     if (resolvedTheme) {
@@ -49,38 +46,10 @@ const Output: React.FC<OutputProps> = ({
     }
   }, [resolvedTheme]);
 
-  const runCode = async () => {
-    const sourceCode = editorRef.current?.getValue();
-
-    if (!sourceCode) return;
-    try {
-      setIsLoading(true);
-      const { run: result } = await executeCode(language, sourceCode);
-
-      propagateUpdates(undefined, undefined, result);
-    } catch (error: any) {
-      // would only occur if api is down
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   if (!isThemeReady) return null;
 
   return (
     <div className="flex flex-col h-full w-full">
-      <div className="flex justify-start mb-2">
-        <Button
-          className=""
-          variant="flat"
-          color={`${isCodeError ? "danger" : "success"}`}
-          disabled={isLoading}
-          onClick={runCode}
-        >
-          {isLoading ? "Running" : "Run Code"}
-        </Button>
-      </div>
       <Card
         className={`flex-1 p-4 overflow-auto
         ${

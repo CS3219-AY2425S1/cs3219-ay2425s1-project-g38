@@ -29,9 +29,8 @@ export default async function ApplicationLayout({
   return (
     <section>
       <div className="flex flex-grow mx-6">
-        <main className="flex-grow max-w-screen">{children}</main>
+        <main className="flex-grow max-w-screen max-h-screen">{children}</main>
       </div>
-      <footer className="w-full flex items-center justify-center py-3" />
     </section>
   );
 }

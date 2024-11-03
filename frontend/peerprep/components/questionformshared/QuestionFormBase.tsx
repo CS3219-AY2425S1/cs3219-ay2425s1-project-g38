@@ -249,8 +249,8 @@ export function QuestionFormBase({
         <Editor
           className="min-h-[250px] w-[250px]"
           defaultLanguage="javascript"
-          defaultValue={templateCode}
-          value={templateCode}
+          // defaultValue={templateCode}
+          // value={templateCode}
           language={language}
           options={{
             fontSize: 14,

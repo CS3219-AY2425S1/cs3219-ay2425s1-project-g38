@@ -6,7 +6,10 @@ import { Socket } from "socket.io-client";
 import { getAccessToken } from "../auth/actions";
 
 import { codeOutputInterface } from "@/components/collaboration/Output";
-const NEXT_PUBLIC_COLLAB_SERVICE_URL = env("NEXT_PUBLIC_COLLAB_SERVICE_URL");
+
+import { chatMessage } from "@/utils/utils";
+const NEXT_PUBLIC_COLLAB_SERVICE_URL = env("NEXT_PUBLIC_COLLAB_SOCKET_URL") || env("NEXT_PUBLIC_COLLAB_SERVICE_URL");
+const NEXT_PUBLIC_COLLAB_SERVICE_PATH = env("NEXT_PUBLIC_COLLAB_SOCKET_PATH") || "/socket.io";
 
 export let socket: Socket | null = null;
 
@@ -25,8 +28,13 @@ const getToken = async () => {
 export const initializeSessionSocket = async (
   setLanguage: Dispatch<any>,
   setUsersInRoom: Dispatch<any>,
+  setUsername: Dispatch<any>,
+  setQuestionId: Dispatch<any>,
   setQuestionDescription: Dispatch<any>,
   setQuestionTestcases: Dispatch<any>,
+  setQuestionCategory: Dispatch<any>,
+  setQuestionDifficulty: Dispatch<any>,
+  setQuestionTitle: Dispatch<any>,
   updateDoc: (arg0: Uint8Array) => void,
   setCodeOutput: Dispatch<any>,
   setIsCodeError: Dispatch<any>,
@@ -34,7 +42,8 @@ export const initializeSessionSocket = async (
   setModalVisibility: Dispatch<any>,
   setUserConfirmed: Dispatch<any>,
   setIsFirstToCancel: Dispatch<any>,
-  router: any,
+  setChatHistory: Dispatch<any>,
+  router: any
 ) => {
   const token = await getToken();
 
@@ -45,6 +54,7 @@ export const initializeSessionSocket = async (
   }
 
   socket = io(NEXT_PUBLIC_COLLAB_SERVICE_URL, {
+    path: NEXT_PUBLIC_COLLAB_SERVICE_PATH,
     auth: { token },
     transports: ["websocket"],
     reconnectionAttempts: 5,
@@ -60,12 +70,25 @@ export const initializeSessionSocket = async (
   socket.on("initialData", (data: any) => {
     console.log("Populating initial data");
     const { sessionData } = data;
-
-    setLanguage(sessionData.language);
+    setLanguage(sessionData.selectedLanguage);
+    console.log("setting language: ", sessionData.language);
     setUsersInRoom(sessionData.usersInRoom);
-    setQuestionDescription(sessionData.questionDescription);
-    setQuestionTestcases(sessionData.questionTestcases);
+    console.log("username: ", sessionData.username);
+    setUsername(sessionData.username);
     updateDoc(new Uint8Array(sessionData.yDocUpdate));
+    setChatHistory(sessionData.chatHistory);
+
+    const question = sessionData.question
+
+    const { question_id, title, description, testCases, category, complexity } = question;
+
+    setQuestionId(question_id);
+    setQuestionTitle(title);
+    setQuestionDescription(description);
+    setQuestionTestcases(testCases[0]);
+    setQuestionCategory(category);
+    setQuestionDifficulty(complexity);
+
   });
 
   registerUserEvents(setUsersInRoom);
@@ -74,13 +97,10 @@ export const initializeSessionSocket = async (
 
   registerCodeExecutionEvents(setCodeOutput, setIsCodeError);
 
-  registerModalEvents(
-    setIsCancelled,
-    setModalVisibility,
-    setUserConfirmed,
-    setIsFirstToCancel,
-    router,
-  );
+
+  registerTerminationModalEvents(setIsCancelled, setModalVisibility, setUserConfirmed, setIsFirstToCancel, router);
+
+  registerChatEvents(setChatHistory);
 };
 
 const registerUserEvents = async (setUsersInRoom: Dispatch<any>) => {
@@ -132,13 +152,7 @@ const registerCodeExecutionEvents = async (
   });
 };
 
-export const registerModalEvents = async (
-  setIsCancelled: Dispatch<any>,
-  setModalVisibility: Dispatch<any>,
-  setUserConfirmed: Dispatch<any>,
-  setIsFirstToCancel: Dispatch<any>,
-  router: any,
-) => {
+export const registerTerminationModalEvents = async (setIsCancelled: Dispatch<any>, setModalVisibility: Dispatch<any>, setUserConfirmed: Dispatch<any>, setIsFirstToCancel: Dispatch<any>, router: any) => {
   if (!socket) return;
 
   socket.on("modalVisibility", (isVisible: boolean) => {
@@ -164,6 +178,15 @@ export const registerModalEvents = async (
     router.push("/");
   });
 };
+
+export const registerChatEvents = async (setChatHistory: Dispatch<any>) => {
+  if (!socket) return;
+
+  socket.on("chatMessage", (message: any) => {
+    // console.log("Received chat message", message);
+    setChatHistory((prevChatHistory: any) => [...prevChatHistory, message]);
+  });
+}
 
 export const disconnectSocket = async () => {
   if (socket) {
@@ -193,6 +216,13 @@ export const propagateDocUpdate = async (update: Uint8Array) => {
   console.log("Propagating document update", update);
   socket.emit("update", update);
 };
+
+export const propagateMessage = async (message: chatMessage) => {
+  if (!socket) return;
+
+  // console.log("Propagating chat message", message);
+  socket.emit("chatMessage", message);
+}
 
 export const openModal = async (setModalVisibility: Dispatch<any>) => {
   if (!socket) return;

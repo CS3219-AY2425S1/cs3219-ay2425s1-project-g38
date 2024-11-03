@@ -1,5 +1,5 @@
 import { Request, Response, Router } from "express";
-import { validateApiJWT } from '../middleware/jwt-validation';
+import { validateApiJWT, validateApiKey } from '../middleware/jwt-validation';
 import { sessionController } from "../controller/session-controller";
 
 const router = Router();
@@ -8,7 +8,7 @@ const router = Router();
 router.get('/', (req, res) => {res.send('Hello from session service!')});
 
 // Create a new session
-router.post("/create", sessionController.createSession);
+router.post("/create", validateApiKey, sessionController.createSession);
 
 // Check if user is in a session
 router.get("/check", validateApiJWT, sessionController.checkSessionStatus);

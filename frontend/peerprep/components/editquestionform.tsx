@@ -18,8 +18,13 @@ import {
   useQuestionDataFetcher,
   isValidQuestionSubmission,
 } from "@/services/questionService";
+import * as Y from "yjs";
 
-export default function EditQuestionForm() {
+interface EditQuestionFormProps {
+  yDoc: Y.Doc;
+}
+
+export default function EditQuestionForm({ yDoc }: EditQuestionFormProps) {
   const params = useParams();
   const router = useRouter();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -34,6 +39,26 @@ export default function EditQuestionForm() {
   const formState = useQuestionForm({});
   const questionId = Array.isArray(params.id) ? params.id[0] : params.id;
   const { questionData, questionLoading } = useQuestionDataFetcher(questionId);
+  const [YDocUpdate, setYDocUpdate] = useState<Uint8Array>(new Uint8Array());
+
+  const yText = yDoc.getText("code");
+
+  yDoc.on("update", () => {
+    console.log("YDoc updated");
+    console.log("YText", yText.toString());
+  });
+
+  const onMount = async (editor: any) => {
+    const model = editor.getModel();
+    if (model) {
+      const MonacoBinding = (await import("y-monaco")).MonacoBinding;
+      const binding = new MonacoBinding(yText, model, new Set([editor]));
+    }
+    console.log("YDoc mounted");
+    yDoc.on("update", () => {
+      setYDocUpdate(Y.encodeStateAsUpdateV2(yDoc));
+    });
+  };
 
   useEffect(() => {
     if (questionData?.question && !questionLoading) {
@@ -55,6 +80,18 @@ export default function EditQuestionForm() {
           }),
         ) || [],
       );
+
+      setYDocUpdate(
+        Uint8Array.from(questionData.question.templateCodeYDocUpdate.data)
+      );
+
+      Y.applyUpdateV2(
+        yDoc,
+        Uint8Array.from(questionData.question.templateCodeYDocUpdate.data)
+      );
+
+      console.log("YDoc updated with question data");
+
       setQuestionToDelete(questionData.question);
     }
   }, [questionData, questionLoading]);
@@ -88,7 +125,7 @@ export default function EditQuestionForm() {
         formState.templateCode,
         formState.testCases,
         formState.language,
-        formState.YDocUpdate,
+        YDocUpdate
       );
 
       if (response.ok) {
@@ -150,6 +187,7 @@ export default function EditQuestionForm() {
         onCancel={() => router.push("/questions-management")}
         onSubmit={handleEdit}
         additionalButtons={deleteButton}
+        onMount={onMount}
       />
       <DeleteConfirmationModal
         isOpen={isOpen}

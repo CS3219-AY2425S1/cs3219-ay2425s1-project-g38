@@ -14,16 +14,24 @@ import {
   propagateCodeOutput,
   propagateDocUpdate,
   propagateLanguage,
+  propagateMessage,
   openModal,
   closeModal,
   confirmTermination,
 } from "@/services/sessionService";
 import { codeOutputInterface } from "@/components/collaboration/Output";
+import { useRouter } from "next/navigation";
+import { chatMessage } from "@/utils/utils";
 
 const App: React.FC = () => {
   const router = useRouter();
   const [language, setLanguage] = useState<SupportedLanguages>("javascript");
   const [usersInRoom, setUsersInRoom] = useState<string[]>([]);
+  const [username, setUsername] = useState<string>("");
+  const [questionId, setQuestionId] = useState<string>("");
+  const [questionTitle, setQuestionTitle] = useState<string>("");
+  const [questionCategory, setQuestionCategory] = useState<string[]>([]);
+  const [questionDifficulty, setQuestionDifficulty] = useState<string>("None");
   const [questionDescription, setQuestionDescription] = useState<string>("");
   const [questionTestcases, setQuestionTestcases] = useState<string[]>([]);
   const [codeOutput, setCodeOutput] = useState<string[] | null>(null);
@@ -33,6 +41,7 @@ const App: React.FC = () => {
   const [userConfirmed, setUserConfirmed] = useState<boolean>(false);
   const [isCancelled, setIsCancelled] = useState<boolean>(false); // Is termination cancelled
   const [isFirstToCancel, setIsFirstToCancel] = useState<boolean>(true);
+  const [chatHistory, setChatHistory] = useState<chatMessage[]>([]);
 
   const doc = new Y.Doc();
   const yText = doc.getText("code");
@@ -92,8 +101,13 @@ const App: React.FC = () => {
     initializeSessionSocket(
       setLanguage,
       setUsersInRoom,
+      setUsername,
+      setQuestionId,
       setQuestionDescription,
       setQuestionTestcases,
+      setQuestionCategory,
+      setQuestionDifficulty,
+      setQuestionTitle,
       updateDoc,
       setCodeOutput,
       setIsCodeError,
@@ -101,7 +115,8 @@ const App: React.FC = () => {
       setModalVisibility,
       setUserConfirmed,
       setIsFirstToCancel,
-      router,
+      setChatHistory,
+      router
     );
 
     return () => {
@@ -111,9 +126,10 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <div className="relative flex flex-col h-screen">
+    <div className="relative flex flex-col w-full h-[90vh] max-w-full overflow-hidden">
       <CollabNavbar
         usersInRoom={usersInRoom}
+        username={username}
         setUsersInRoom={setUsersInRoom}
         isModalVisible={isModalVisible}
         userConfirmed={userConfirmed}
@@ -123,15 +139,24 @@ const App: React.FC = () => {
         handleCloseModal={handleCloseModal}
         handleConfirm={handleConfirm}
         setIsCancelled={setIsCancelled}
+        propagateMessage={propagateMessage}
+        chatHistory={chatHistory}
       />
-      <div className="flex flex-row w-full h-[90vh] gap-2">
+      <div className="flex flex-row w-full h-full max-w-full">
         <div className="flex w-1/2 h-full">
           <QuestionDisplay
-            question={questionDescription}
+            questionId={questionId}
+            questionDifficulty={questionDifficulty}
+            questionTitle={questionTitle}
+            questionCategory={questionCategory}
+            questionDescription={questionDescription}
             testCases={questionTestcases}
+            propagateMessage={propagateMessage}
+            username={username}
+            chatHistory={chatHistory}
           />
         </div>
-        <div className="flex w-1/2 h-full">
+        <div className="flex w-1/2 h-full overflow-y-auto">
           <CollabCodeEditor
             language={language}
             yDoc={doc}

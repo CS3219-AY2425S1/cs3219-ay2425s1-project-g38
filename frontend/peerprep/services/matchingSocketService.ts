@@ -3,7 +3,8 @@ import { env } from "next-runtime-env";
 
 import { getAccessToken } from "../auth/actions";
 
-const MATCHING_SERVICE_URL = env("NEXT_PUBLIC_MATCHING_SERVICE_URL");
+const MATCHING_SERVICE_URL = env("NEXT_PUBLIC_MATCHING_SOCKET_URL") || env("NEXT_PUBLIC_MATCHING_SERVICE_URL");
+const MATCHING_SERVICE_PATH = env("NEXT_PUBLIC_MATCHING_SOCKET_PATH") || "/socket.io";
 let socket: Socket | null = null;
 
 export const isSocketConnected = () => {
@@ -12,7 +13,9 @@ export const isSocketConnected = () => {
 
 const createSocketConnection = (token: string): Socket => {
   const socketConnection = io(MATCHING_SERVICE_URL, {
+    path: MATCHING_SERVICE_PATH,
     auth: { token },
+    transports: ["websocket"],
     autoConnect: false, // We'll connect it manually
     reconnectionAttempts: 5, // Retry connection 5 times if it fails
     timeout: 10000, // Timeout after 10 seconds
