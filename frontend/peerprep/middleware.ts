@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { getCreateUserSession, getSession } from "./auth/actions";
+import { checkUserMatchStatus } from "./services/sessionAPI";
 
 export async function middleware(req: any) {
   const url = req.nextUrl.clone(); // Clone the URL
