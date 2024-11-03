@@ -1,0 +1,29 @@
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: peerprep
+spec:
+  domains:
+    - peerprep.delishad.com
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: frontend-ingress
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: "peerprep" # Link to Global IP
+    kubernetes.io/ingress.class: "gce" # Ensures GKE Ingress is used
+    networking.gke.io/managed-certificates: "peerprep" # Link to ManagedCertificate
+spec:
+  rules:
+    - host: peerprep.delishad.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend-service
+                port:
+                  number: 80

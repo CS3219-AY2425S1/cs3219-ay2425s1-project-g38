@@ -38,7 +38,7 @@ export const sessionOptions: SessionOptions = {
   cookieName: "peerprep-session",
   cookieOptions: {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: false,
     maxAge: 24 * 60 * 60,
   },
 };
@@ -48,7 +48,7 @@ export const createUserOptions: SessionOptions = {
   cookieName: "user-creation-session",
   cookieOptions: {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: false,
     maxAge: 3 * 60,
   },
 };
@@ -58,7 +58,7 @@ export const emailChangeOptions: SessionOptions = {
   cookieName: "email-change-session",
   cookieOptions: {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: false,
     maxAge: 3 * 60,
   },
 };

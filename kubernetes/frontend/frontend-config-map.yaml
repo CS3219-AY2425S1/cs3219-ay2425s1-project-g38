@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-config
+data:
+  NEXT_PUBLIC_USER_SERVICE_URL: "https://peerprepapi.delishad.com/users"
+  NEXT_PUBLIC_MATCHING_SERVICE_URL: "https://peerprepapi.delishad.com/matching"
+  NEXT_PUBLIC_QUESTION_SERVICE_URL: "https://peerprepapi.delishad.com/questions"
+  NEXT_PUBLIC_COLLAB_SERVICE_URL: "https://peerprepapi.delishad.com/collab"
+  NEXT_PUBLIC_MATCHING_SOCKET_URL: "https://peerprepapi.delishad.com/"
+  NEXT_PUBLIC_COLLAB_SOCKET_URL: "https://peerprepapi.delishad.com/"
+  NEXT_PUBLIC_MATCHING_SOCKET_PATH: "/matching/socket.io"
+  NEXT_PUBLIC_COLLAB_SOCKET_PATH: "/collab/socket.io"
+  FRONTEND_PORT: "3000"

@@ -141,7 +141,7 @@ const App: React.FC = () => {
         propagateMessage={propagateMessage}
         chatHistory={chatHistory}
       />
-      <div className="flex flex-row w-full h-full max-w-full">
+      <div className="flex flex-row w-full h-full max-w-full overflow-y-auto">
         <div className="flex w-1/2 h-full">
           <QuestionDisplay
             questionId={questionId}

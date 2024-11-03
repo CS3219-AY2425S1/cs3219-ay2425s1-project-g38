@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: peerprep-cert
+  namespace: default # Ensure this matches the namespace where your Ingress is located
+spec:
+  secretName: peerprep-tls # This secret will store your TLS certificate
+  issuerRef:
+    name: letsencrypt-prod # Make sure this ClusterIssuer exists
+    kind: ClusterIssuer
+  commonName: peerprepapi.delishad.com # Your primary domain
+  dnsNames:
+    - peerprepapi.delishad.com # Ensure it's a list; can include additional domains if needed
