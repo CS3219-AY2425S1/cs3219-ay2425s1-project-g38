@@ -10,9 +10,7 @@ import { UsersInRoom } from "./UsersInRoom";
 import TerminateModal from "./TerminateModal";
 
 import { ThemeSwitch } from "@/components/theme-switch";
-import { SettingButton, NotificationButton } from "@/components/navbar-buttons";
 import { Logo } from "@/components/icons";
-import { getUsername } from "@/auth/actions";
 import { chatMessage } from "@/utils/utils";
 
 export interface CollabNavbarProps {

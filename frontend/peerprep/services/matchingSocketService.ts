@@ -3,8 +3,11 @@ import { env } from "next-runtime-env";
 
 import { getAccessToken } from "../auth/actions";
 
-const MATCHING_SERVICE_URL = env("NEXT_PUBLIC_MATCHING_SOCKET_URL") || env("NEXT_PUBLIC_MATCHING_SERVICE_URL");
-const MATCHING_SERVICE_PATH = env("NEXT_PUBLIC_MATCHING_SOCKET_PATH") || "/socket.io";
+const MATCHING_SERVICE_URL =
+  env("NEXT_PUBLIC_MATCHING_SOCKET_URL") ||
+  env("NEXT_PUBLIC_MATCHING_SERVICE_URL");
+const MATCHING_SERVICE_PATH =
+  env("NEXT_PUBLIC_MATCHING_SOCKET_PATH") || "/socket.io";
 let socket: Socket | null = null;
 
 export const isSocketConnected = () => {

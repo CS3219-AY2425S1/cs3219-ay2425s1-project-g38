@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import * as Y from "yjs";
 
 import { useQuestionForm } from "../hooks/useQuestionForm";
 
@@ -11,7 +12,6 @@ import {
   isValidQuestionSubmission,
   submitQuestion,
 } from "@/services/questionService";
-import * as Y from "yjs";
 
 interface AddQuestionFormProps {
   yDoc: Y.Doc;
@@ -33,9 +33,11 @@ export default function AddQuestionForm({ yDoc }: AddQuestionFormProps) {
 
   const onMount = async (editor: any) => {
     const model = editor.getModel();
+
     if (model) {
       const MonacoBinding = (await import("y-monaco")).MonacoBinding;
       const yText = yDoc.getText("code");
+
       new MonacoBinding(yText, model, new Set([editor]));
     }
 
@@ -74,7 +76,7 @@ export default function AddQuestionForm({ yDoc }: AddQuestionFormProps) {
         formState.templateCode,
         formState.testCases,
         formState.language,
-        yDocUpdate
+        yDocUpdate,
       );
 
       if (response.ok) {

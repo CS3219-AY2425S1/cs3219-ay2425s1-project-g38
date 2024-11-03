@@ -1,6 +1,4 @@
-import { editor } from 'monaco-editor';
-import { useState, useEffect, useRef } from 'react';
-import * as Y from "yjs";
+import { useState } from "react";
 
 export function useQuestionForm(initialValues: {
   title?: string;
@@ -19,9 +17,15 @@ export function useQuestionForm(initialValues: {
     initialValues.complexity || "EASY",
   );
   const [categories, setCategories] = useState(initialValues.categories || []);
-  const [templateCode, setTemplateCode] = useState(initialValues.templateCode || "");
-  const [testCases, setTestCases] = useState(initialValues.testCases || [{ input: "", output: "" }]);
-  const [language, setLanguage] = useState(initialValues.language || "javascript");
+  const [templateCode, setTemplateCode] = useState(
+    initialValues.templateCode || "",
+  );
+  const [testCases, setTestCases] = useState(
+    initialValues.testCases || [{ input: "", output: "" }],
+  );
+  const [language, setLanguage] = useState(
+    initialValues.language || "javascript",
+  );
   // Yjs setup
 
   return {

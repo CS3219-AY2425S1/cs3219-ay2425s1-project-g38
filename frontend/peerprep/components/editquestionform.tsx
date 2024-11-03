@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useDisclosure } from "@nextui-org/react";
 import { Button } from "@nextui-org/react";
+import * as Y from "yjs";
 
 import { useQuestionForm } from "../hooks/useQuestionForm";
 
@@ -18,7 +19,6 @@ import {
   useQuestionDataFetcher,
   isValidQuestionSubmission,
 } from "@/services/questionService";
-import * as Y from "yjs";
 
 interface EditQuestionFormProps {
   yDoc: Y.Doc;
@@ -50,6 +50,7 @@ export default function EditQuestionForm({ yDoc }: EditQuestionFormProps) {
 
   const onMount = async (editor: any) => {
     const model = editor.getModel();
+
     if (model) {
       const MonacoBinding = (await import("y-monaco")).MonacoBinding;
       const binding = new MonacoBinding(yText, model, new Set([editor]));
@@ -82,12 +83,12 @@ export default function EditQuestionForm({ yDoc }: EditQuestionFormProps) {
       );
 
       setYDocUpdate(
-        Uint8Array.from(questionData.question.templateCodeYDocUpdate.data)
+        Uint8Array.from(questionData.question.templateCodeYDocUpdate.data),
       );
 
       Y.applyUpdateV2(
         yDoc,
-        Uint8Array.from(questionData.question.templateCodeYDocUpdate.data)
+        Uint8Array.from(questionData.question.templateCodeYDocUpdate.data),
       );
 
       console.log("YDoc updated with question data");
@@ -125,7 +126,7 @@ export default function EditQuestionForm({ yDoc }: EditQuestionFormProps) {
         formState.templateCode,
         formState.testCases,
         formState.language,
-        YDocUpdate
+        YDocUpdate,
       );
 
       if (response.ok) {

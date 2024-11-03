@@ -57,10 +57,10 @@ export async function middleware(req: any) {
 
       if (!isInSession) {
         url.pathname = "/forbidden";
+
         return NextResponse.redirect(url);
       }
     }
-
   }
 
   // If no conditions match, allow the request to proceed

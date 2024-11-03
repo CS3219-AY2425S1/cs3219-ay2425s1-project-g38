@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Button, Card } from "@nextui-org/react";
+import { Card } from "@nextui-org/react";
 import { useTheme } from "next-themes";
 
 type SupportedLanguages =

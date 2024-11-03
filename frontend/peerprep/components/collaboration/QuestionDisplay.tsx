@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useEffect, use } from "react";
 import { useTheme } from "next-themes";
 import { Card, CardBody } from "@nextui-org/react";
 import ReactMarkdown from "react-markdown";
@@ -8,10 +7,8 @@ import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
 import { Chip } from "@nextui-org/react";
 
-
-import { socket } from "../../services/sessionService";
 import Chat from "./Chat";
-import { useQuestionDataFetcher } from "@/services/questionService";
+
 import { capitalize } from "@/utils/utils";
 
 interface QuestionDisplayProps {
@@ -101,16 +98,26 @@ export default function QuestionDisplay({
                     </div>
                   </div>
                   {testCases?.map((testCase, index) => {
-                    const [input, output] = testCase.split("->").map((str) => str.trim());
+                    const [input, output] = testCase
+                      .split("->")
+                      .map((str) => str.trim());
+
                     return (
-                      <div key={index} className="flex flex-row mb-2 max-2-full">
+                      <div
+                        key={index}
+                        className="flex flex-row mb-2 max-2-full"
+                      >
                         <Card className="flex w-1/2 p-1 bg-gray-100 dark:bg-gray-700 rounded-lg shadow min-h-[35px] mr-2 break-words">
-                          <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
+                          <ReactMarkdown
+                            remarkPlugins={[remarkGfm, remarkBreaks]}
+                          >
                             {input}
                           </ReactMarkdown>
                         </Card>
                         <Card className="flex p-1 w-1/2 bg-gray-100 dark:bg-gray-700 rounded-lg shadow min-h-[35px] mr-2 break-words">
-                          <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
+                          <ReactMarkdown
+                            remarkPlugins={[remarkGfm, remarkBreaks]}
+                          >
                             {output}
                           </ReactMarkdown>
                         </Card>

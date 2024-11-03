@@ -1,9 +1,7 @@
 "use client";
 
 import { useTheme } from "next-themes";
-import { Card } from "@nextui-org/react";
 import { useEffect, useState } from "react";
-import ReactMarkdown from "react-markdown";
 
 interface UsersInRoomProps {
   usersInRoom: string[];

@@ -12,7 +12,6 @@ import { UserAvatar } from "./useravatar";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { NotificationButton } from "@/components/navbar-buttons";
 import { Logo } from "@/components/icons";
-import { getEmail, getUsername } from "@/auth/actions";
 
 type NavbarProps = {
   username: string;

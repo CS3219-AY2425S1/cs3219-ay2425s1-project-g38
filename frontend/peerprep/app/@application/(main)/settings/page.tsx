@@ -51,6 +51,7 @@ export default function SettingsPage() {
   React.useEffect(() => {
     const fetchUserData = async () => {
       const session = await getSession();
+
       setFormData({
         username: session.username || "username",
         email: session.email || "email@email.com",
@@ -80,10 +81,8 @@ export default function SettingsPage() {
           setIsChangePasswordModalOpen(true);
         } else if (editTarget === "delete") {
           // Actually delete the account after password confirmation
-          const deleteResponse = setTimeout(
-            async () => await deleteUser(),
-            1000
-          );
+          setTimeout(async () => await deleteUser(), 1000);
+
           router.push("/");
         }
         setIsPasswordModalOpen(false);
@@ -151,7 +150,7 @@ export default function SettingsPage() {
     setIsLoading(true);
     if (!validateEmail(formData.email)) {
       setErrorMessage(
-        "Invalid email format. Please enter a valid email address."
+        "Invalid email format. Please enter a valid email address.",
       );
       setIsErrorModalOpen(true);
 
@@ -236,7 +235,7 @@ export default function SettingsPage() {
                 "flex w-full items-center space-x-2 rounded-lg px-3 py-2 text-sm font-medium",
                 activeSection === "profile"
                   ? "bg-gray-200 text-gray-900 dark:bg-gray-700 dark:text-gray-100"
-                  : "text-gray-700 hover:bg-gray-200 dark:text-gray-200 dark:hover:bg-gray-700"
+                  : "text-gray-700 hover:bg-gray-200 dark:text-gray-200 dark:hover:bg-gray-700",
               )}
             >
               <BoxIcon name="bxs-user-circle" size="16px" />
@@ -248,7 +247,7 @@ export default function SettingsPage() {
                 "flex w-full items-center space-x-2 rounded-lg px-3 py-2 text-sm font-medium",
                 activeSection === "security"
                   ? "bg-gray-200 text-gray-900 dark:bg-gray-700 dark:text-gray-100"
-                  : "text-gray-700 hover:bg-gray-200 dark:text-gray-200 dark:hover:bg-gray-700"
+                  : "text-gray-700 hover:bg-gray-200 dark:text-gray-200 dark:hover:bg-gray-700",
               )}
             >
               <BoxIcon name="bxs-check-shield" size="16px" />

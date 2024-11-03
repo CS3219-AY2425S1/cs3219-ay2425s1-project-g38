@@ -81,6 +81,28 @@ const sendVerificationEmail = async (email, username, verificationCode) => {
   });
 };
 
+const sendVerificationEmailForEmailChange = async (email, username, verificationCode) => {
+  return transporter.sendMail({
+    from: '"PeerPrep" <peerprep38@gmail.com>',
+    to: email,
+    subject: 'Confirm you new email',
+    html: `
+      <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+      <h2 style="text-align: center; color: #6A0CE2;">Confirm your new email</h2>
+      <p style="font-size: 16px;">Hello <span style="color: #6A0CE2; font-weight: bold;">${username}</span>,</p>
+      <p style="font-size: 16px;">To complete chaning your email account, please use the following verification code:</p>
+      <div style="text-align: center; margin: 20px 0;">
+        <span style="font-size: 24px; font-weight: bold; color: #6A0CE2; background-color: #f4f4f4; padding: 10px 20px; border-radius: 5px;">${verificationCode}</span>
+      </div>
+      <p style="font-size: 16px;">Please enter this code in the verification section to confirm your email change.</p>
+      <p style="font-size: 14px; color: #777;">If you did not make this request, please disregard this email.</p>
+      <hr style="border-top: 1px solid #eee; margin: 20px 0;">
+      <p style="font-size: 14px; text-align: center; color: #aaa;">This is an automated message. Please do not reply.</p>
+      </div>
+    `,
+  });
+};
+
 export async function createUserRequest(req, res) {
   const { username, email, password } = req.body;
   console.log(`[USER] New user registration attempt - Username: ${username}, Email: ${email}`);
@@ -145,7 +167,7 @@ export async function updateEmailRequest(req, res) {
 
     const emailToken = generateEmailToken(verifiedUser.id, verifiedUser.createdAt, verificationCode, expiresInSeconds);
 
-    await sendVerificationEmail(email, verifiedUser.username, verificationCode);
+    await sendVerificationEmailForEmailChange(email, verifiedUser.username, verificationCode);
 
     return res.status(201).json({
       message: `Created email udpate request`,
