@@ -1,7 +1,7 @@
 import "@/styles/globals.css";
 import { Metadata, Viewport } from "next";
 
-import { getUsername, isSessionAdmin } from "@/auth/actions";
+import { getEmail, getUsername, isSessionAdmin } from "@/auth/actions";
 import { siteConfig } from "@/config/site";
 import { Navbar } from "@/components/navbar";
 import { Sidebar } from "@/components/sidebar";
@@ -30,12 +30,13 @@ export default async function ApplicationLayout({
   children: React.ReactNode;
 }) {
   const isAdmin = await isSessionAdmin();
-  const user = await getUsername();
+  const username = await getUsername();
+  const email = await getEmail();
 
   return (
     <section>
       <div className="relative flex flex-col h-screen">
-        <Navbar user={user || "User"} />
+        <Navbar username={username || "User"} email={email || "email"} />
         <div className="flex flex-grow mx-6">
           <Sidebar isAdmin={isAdmin} />
           <main className="flex-grow max-w-screen">{children}</main>

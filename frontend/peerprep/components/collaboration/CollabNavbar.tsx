@@ -56,7 +56,6 @@ export const CollabNavbar = ({
         </NavbarBrand>
         {/* <GreetingMessageHeader user={user || "User"} /> */}
       </NavbarContent>
-
       <NavbarContent className="basis-1/5 sm:basis-full" justify="end">
         <NavbarItem className="flex items-center justify-end gap-3">
           <div className="flex items-center justify-end gap-3 p-5">

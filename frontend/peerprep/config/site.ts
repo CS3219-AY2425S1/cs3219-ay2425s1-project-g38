@@ -5,9 +5,14 @@ export const siteConfig = {
   description: "Make beautiful websites regardless of your design experience.",
   navItems: [
     {
-      label: "Home",
+      label: "Dashboard",
       href: "/",
-      icon: "bxs-home",
+      icon: "bxs-dashboard",
+    },
+    {
+      label: "Settings",
+      href: "/settings",
+      icon: "bx-cog",
     },
   ],
   adminNavItems: [

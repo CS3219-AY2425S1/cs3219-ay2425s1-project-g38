@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef } from "react";
 import * as Y from "yjs";
 import { Editor } from "@monaco-editor/react";
 import { useTheme } from "next-themes";
@@ -20,7 +20,7 @@ interface CollabCodeEditorProps {
   propagateUpdates: (
     docUpdate?: Uint8Array,
     languageUpdate?: SupportedLanguages,
-    codeOutput?: codeOutputInterface
+    codeOutput?: codeOutputInterface,
   ) => void;
 }
 

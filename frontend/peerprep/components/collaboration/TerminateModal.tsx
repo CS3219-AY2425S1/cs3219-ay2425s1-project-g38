@@ -30,7 +30,6 @@ export default function TerminateModal({
   handleConfirm,
   setIsCancelled,
 }: TerminateModalProps) {
-
   return (
     <div className="flex justify-center items-center h-full w-full">
       <Button className="" variant="flat" color="danger" onClick={openModal}>

@@ -4,6 +4,8 @@ import { findUserById as _findUserById } from "../model/repository.js";
 export function verifyAccessToken(req, res, next) {
   const authHeader = req.headers["authorization"];
   if (!authHeader) {
+    console.log("token verification failed")
+
     return res.status(401).json({ message: "Authentication failed" });
   }
 
@@ -11,16 +13,20 @@ export function verifyAccessToken(req, res, next) {
   const token = authHeader.split(" ")[1];
   jwt.verify(token, process.env.JWT_SECRET, async (err, user) => {
     if (err) {
+      console.log("token verification failed")
+
       return res.status(401).json({ message: "Authentication failed" });
     }
 
     // load latest user info from DB
     const dbUser = await _findUserById(user.id);
     if (!dbUser) {
+      console.log("token verification failed")
       return res.status(401).json({ message: "Authentication failed" });
     }
 
     req.user = { id: dbUser.id, username: dbUser.username, email: dbUser.email, isAdmin: dbUser.isAdmin };
+    console.log("token verified")
     next();
   });
 }
@@ -67,6 +73,7 @@ export function verifyIsAdmin(req, res, next) {
 }
 
 export function verifyIsOwnerOrAdmin(req, res, next) {
+  console.log(req);
   if (req.user.isAdmin) {
     return next();
   }

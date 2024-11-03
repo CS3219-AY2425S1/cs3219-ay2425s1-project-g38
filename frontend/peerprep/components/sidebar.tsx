@@ -1,4 +1,5 @@
 "use client";
+
 import { useTheme } from "next-themes";
 import { Listbox, ListboxItem } from "@nextui-org/listbox";
 import { Button } from "@nextui-org/react";
@@ -19,9 +20,7 @@ export const Sidebar = ({ isAdmin }: SidebarProps) => {
   const { theme } = useTheme();
   const currentPath = usePathname();
   const router = useRouter();
-  const [toast, setToast] = useState<{ message: string; type: string } | null>(
-    null,
-  );
+
   const [isModalOpen, setModalOpen] = useState(false); // Track modal open state
 
   const handleLogout = async () => {

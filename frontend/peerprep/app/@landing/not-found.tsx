@@ -23,7 +23,7 @@ export default function NotFound() {
           color="secondary"
           startContent={<BoxIcon name="bx-undo" />}
         >
-          Return to Home
+          Return to Dashboard
         </Button>
       </Link>
     </div>

@@ -7,6 +7,7 @@ const SECRET_KEY =
 export interface SessionData {
   userId?: string;
   username?: string;
+  email?: string;
   isAdmin: boolean;
   accessToken?: string;
   isLoggedIn: boolean;
@@ -15,6 +16,11 @@ export interface SessionData {
 export interface CreateUserSessionData {
   emailToken?: string;
   isPending: boolean;
+  ttl?: string;
+}
+
+export interface EmailChangeSessionData {
+  emailToken?: string;
   ttl?: string;
 }
 
@@ -36,6 +42,16 @@ export const sessionOptions: SessionOptions = {
 export const createUserOptions: SessionOptions = {
   password: SECRET_KEY,
   cookieName: "user-creation-session",
+  cookieOptions: {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 3 * 60,
+  },
+};
+
+export const emailChangeOptions: SessionOptions = {
+  password: SECRET_KEY,
+  cookieName: "email-change-session",
   cookieOptions: {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",

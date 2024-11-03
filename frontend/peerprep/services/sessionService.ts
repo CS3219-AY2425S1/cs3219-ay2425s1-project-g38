@@ -1,9 +1,10 @@
 import io from "socket.io-client";
 import { env } from "next-runtime-env";
-
-import { getAccessToken } from "../auth/actions";
 import { Dispatch } from "react";
 import { Socket } from "socket.io-client";
+
+import { getAccessToken } from "../auth/actions";
+
 import { codeOutputInterface } from "@/components/collaboration/Output";
 
 import { chatMessage } from "@/utils/utils";
@@ -44,7 +45,6 @@ export const initializeSessionSocket = async (
   setChatHistory: Dispatch<any>,
   router: any
 ) => {
-
   const token = await getToken();
 
   if (!token) return;
@@ -97,19 +97,19 @@ export const initializeSessionSocket = async (
 
   registerCodeExecutionEvents(setCodeOutput, setIsCodeError);
 
+
   registerTerminationModalEvents(setIsCancelled, setModalVisibility, setUserConfirmed, setIsFirstToCancel, router);
 
   registerChatEvents(setChatHistory);
 };
 
 const registerUserEvents = async (setUsersInRoom: Dispatch<any>) => {
-
   if (!socket) return;
 
   socket.on("userJoined", (data: any) => {
     const { usersInRoom } = data;
 
-    setUsersInRoom(usersInRoom)
+    setUsersInRoom(usersInRoom);
   });
   socket.on("userLeft", (data: any) => {
     const { usersInRoom } = data;
@@ -118,7 +118,10 @@ const registerUserEvents = async (setUsersInRoom: Dispatch<any>) => {
   });
 };
 
-const registerEditorEvents = async (updateDoc: (arg0: Uint8Array) => void, setLanguage: Dispatch<any>) => {
+const registerEditorEvents = async (
+  updateDoc: (arg0: Uint8Array) => void,
+  setLanguage: Dispatch<any>,
+) => {
   if (!socket) return;
 
   socket.on("updateContent", (update: any) => {
@@ -130,9 +133,12 @@ const registerEditorEvents = async (updateDoc: (arg0: Uint8Array) => void, setLa
   socket.on("updateLanguage", (updatedLanguage: string) => {
     setLanguage(updatedLanguage);
   });
-}
+};
 
-const registerCodeExecutionEvents = async (setCodeOutput: Dispatch<any>, setIsCodeError: Dispatch<any>) => {
+const registerCodeExecutionEvents = async (
+  setCodeOutput: Dispatch<any>,
+  setIsCodeError: Dispatch<any>,
+) => {
   if (!socket) return;
 
   socket.on("updateOutput", (data: any) => {
@@ -144,7 +150,7 @@ const registerCodeExecutionEvents = async (setCodeOutput: Dispatch<any>, setIsCo
       setIsCodeError(false);
     }
   });
-}
+};
 
 export const registerTerminationModalEvents = async (setIsCancelled: Dispatch<any>, setModalVisibility: Dispatch<any>, setUserConfirmed: Dispatch<any>, setIsFirstToCancel: Dispatch<any>, router: any) => {
   if (!socket) return;
@@ -158,7 +164,7 @@ export const registerTerminationModalEvents = async (setIsCancelled: Dispatch<an
       setUserConfirmed(false);
       setIsFirstToCancel(true);
     }
-  })
+  });
 
   socket.on("terminateOne", () => {
     console.log("Partner confirmed termination");
@@ -171,7 +177,7 @@ export const registerTerminationModalEvents = async (setIsCancelled: Dispatch<an
     socket?.disconnect();
     router.push("/");
   });
-}
+};
 
 export const registerChatEvents = async (setChatHistory: Dispatch<any>) => {
   if (!socket) return;
@@ -191,25 +197,25 @@ export const disconnectSocket = async () => {
 
 export const isSocketConnected = async () => {
   return socket ? socket.connected : false;
-}
+};
 
 export const propagateCodeOutput = async (codeOutput: codeOutputInterface) => {
   if (!socket) return;
   console.log("Propagating code execution", codeOutput);
   socket.emit("codeExecution", codeOutput);
-}
+};
 
 export const propagateLanguage = async (language: string) => {
   if (!socket) return;
 
   socket.emit("selectLanguage", language);
-}
+};
 
 export const propagateDocUpdate = async (update: Uint8Array) => {
   if (!socket) return;
   console.log("Propagating document update", update);
   socket.emit("update", update);
-}
+};
 
 export const propagateMessage = async (message: chatMessage) => {
   if (!socket) return;
@@ -223,18 +229,27 @@ export const openModal = async (setModalVisibility: Dispatch<any>) => {
 
   setModalVisibility(true);
   socket.emit("changeModalVisibility", true);
-}
+};
 
-export const closeModal = async (setModalVisibility: Dispatch<any>, setUserConfirmed: Dispatch<any>, setIsFirstToCancel: Dispatch<any>) => {
+export const closeModal = async (
+  setModalVisibility: Dispatch<any>,
+  setUserConfirmed: Dispatch<any>,
+  setIsFirstToCancel: Dispatch<any>,
+) => {
   if (!socket) return;
 
   setModalVisibility(false);
   setUserConfirmed(false);
   setIsFirstToCancel(true);
   socket.emit("changeModalVisibility", false);
-}
+};
 
-export const confirmTermination = async (isFirstToCancel: boolean, router: any, setUserConfirmed: Dispatch<any>, setModalVisibility: Dispatch<any>) => {
+export const confirmTermination = async (
+  isFirstToCancel: boolean,
+  router: any,
+  setUserConfirmed: Dispatch<any>,
+  setModalVisibility: Dispatch<any>,
+) => {
   setUserConfirmed(true);
   if (!socket) return;
 
@@ -245,6 +260,5 @@ export const confirmTermination = async (isFirstToCancel: boolean, router: any, 
     socket.emit("terminateSession");
     socket.disconnect();
     router.push("/");
-  };
-}
-
+  }
+};

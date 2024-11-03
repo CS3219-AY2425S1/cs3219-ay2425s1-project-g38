@@ -13,7 +13,8 @@ import {
   getFriends,
   sendFriendRequest,
   acceptFriendRequest,
-  addMatchToUser
+  addMatchToUser,
+  updateEmailRequest
 } from "../controller/user-controller.js";
 import { verifyAccessToken, verifyEmailToken, verifyIsAdmin, verifyIsOwnerOrAdmin } from "../middleware/basic-access-control.js";
 
@@ -37,11 +38,13 @@ router.post("/", createUserRequest);
 
 router.patch("/:id/resend-request", verifyEmailToken, refreshEmailToken);
 
-router.delete("/:email", deleteUserRequest);
+router.delete("/:email/request", deleteUserRequest);
 
 router.get("/:id", verifyAccessToken, verifyIsOwnerOrAdmin, getUser);
 
 router.patch("/:id", verifyAccessToken, verifyIsOwnerOrAdmin, updateUser);
+
+router.post("/:id/email-update-request", verifyAccessToken, verifyIsOwnerOrAdmin, updateEmailRequest);
 
 router.delete("/:id", verifyAccessToken, verifyIsOwnerOrAdmin, deleteUser);
 

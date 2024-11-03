@@ -11,7 +11,7 @@ import BoxIcon from "@/components/boxicons";
 const ForbiddenPage = () => {
   const router = useRouter();
 
-  const handleReturnHome = () => {
+  const handleReturnDashboard = () => {
     router.push("/");
   };
 
@@ -25,12 +25,12 @@ const ForbiddenPage = () => {
       </p>
       <img src={forbiddenImage.src} alt="Illustration" className="w-1/5 mb-8" />
       <Button
-        onClick={handleReturnHome}
+        onClick={handleReturnDashboard}
         variant="bordered"
         color="secondary"
         startContent={<BoxIcon name="bx-undo" />}
       >
-        Return to Home
+        Return to Dashboard
       </Button>
     </div>
   );

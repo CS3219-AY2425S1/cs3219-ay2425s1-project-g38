@@ -25,7 +25,7 @@ interface OutputProps {
   propagateUpdates: (
     docUpdate?: Uint8Array,
     languageUpdate?: SupportedLanguages,
-    codeOutput?: codeOutputInterface
+    codeOutput?: codeOutputInterface,
   ) => void;
   isCodeError: boolean;
 }

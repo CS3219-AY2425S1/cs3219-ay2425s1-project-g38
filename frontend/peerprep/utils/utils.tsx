@@ -6,6 +6,15 @@ export function capitalize(word: string) {
   return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
 }
 
+// Validations
+export const validateEmail = (email: string) =>
+  /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(email);
+
+export const validateUsername = (username: string) =>
+  /^[a-zA-Z0-9_-]{2,32}$/.test(username);
+
+export const validatePassword = (password: string) => password.length >= 8;
+
 export type SupportedLanguages =
   | "javascript"
   | "typescript"

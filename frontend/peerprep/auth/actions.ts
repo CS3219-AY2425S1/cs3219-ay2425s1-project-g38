@@ -13,12 +13,17 @@ import {
   defaultSession,
   CreateUserSessionData,
   createUserOptions,
+  EmailChangeSessionData,
+  emailChangeOptions,
 } from "./lib";
 
 const USER_SERVICE_URL = env("NEXT_PUBLIC_USER_SERVICE_URL");
 
 export const getSession = async () => {
-  const session = await getIronSession<SessionData>(cookies() as any, sessionOptions);
+  const session = await getIronSession<SessionData>(
+    cookies() as any,
+    sessionOptions,
+  );
 
   if (!session.isLoggedIn) {
     session.isLoggedIn = defaultSession.isLoggedIn;
@@ -44,6 +49,15 @@ export const getCreateUserSession = async () => {
   return session;
 };
 
+export const getEmailChangeSession = async () => {
+  const session = await getIronSession<EmailChangeSessionData>(
+    cookies(),
+    emailChangeOptions,
+  );
+
+  return session;
+};
+
 export const getAccessToken = async () => {
   const session = await getSession();
 
@@ -56,10 +70,22 @@ export const getEmailToken = async () => {
   return session.emailToken;
 };
 
+export const getEmailChangeEmailToken = async () => {
+  const session = await getEmailChangeSession();
+
+  return session.emailToken;
+};
+
 export const getUsername = async () => {
   const session = await getSession();
 
   return session.username;
+};
+
+export const getEmail = async () => {
+  const session = await getSession();
+
+  return session.email;
 };
 
 export const isSessionLoggedIn = async () => {
@@ -81,6 +107,12 @@ export const isSessionAdmin = async () => {
 
 export const getTimeToExpire = async () => {
   const session = await getCreateUserSession();
+
+  return session.ttl;
+};
+
+export const getEmailChangeTimeToExpire = async () => {
+  const session = await getEmailChangeSession();
 
   return session.ttl;
 };
@@ -110,6 +142,7 @@ export const login = async (formData: FormData) => {
       // Set session data
       session.userId = data.data.id; // Get user ID from the response
       session.username = data.data.username; // Get username from the response
+      session.email = data.data.email;
       session.isLoggedIn = true;
       session.accessToken = data.data.accessToken; // Store the access token in the session
       session.isAdmin = data.data.isAdmin; // Check if the user is an admin
@@ -129,6 +162,41 @@ export const login = async (formData: FormData) => {
     return {
       status: "error",
       message: "Unable to reach the user service. Please try again later.",
+    };
+  }
+};
+
+export const verifyPassword = async (enteredPassword: string) => {
+  const token = await getAccessToken();
+
+  try {
+    const response = await fetch(`${USER_SERVICE_URL}/auth/verify-password`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        password: enteredPassword,
+      }),
+    });
+
+    if (response.ok) {
+      return { status: "success", message: "Password verified." };
+    } else {
+      const errorData = await response.json();
+
+      return {
+        status: "error",
+        message: errorData.message || "Error verifying password",
+      };
+    }
+  } catch (err) {
+    console.error("Login error:", err);
+
+    return {
+      status: "error",
+      message: "Internal server error",
     };
   }
 };
@@ -295,6 +363,7 @@ export const verifyCode = async (code: number) => {
         // Set session data
         session.userId = data.data.id; // Get user ID from the response
         session.username = data.data.username; // Get username from the response
+        session.email = data.data.email;
         session.isLoggedIn = true;
         session.accessToken = data.data.accessToken; // Store the access token in the session
         session.isAdmin = data.data.isAdmin; // Check if the user is an admin
@@ -307,13 +376,16 @@ export const verifyCode = async (code: number) => {
         };
       } else {
         const errorData = await response.json();
+
         return {
           status: "error",
-          message: errorData.message || "There was a problem registering the user.",
+          message:
+            errorData.message || "There was a problem registering the user.",
         };
       }
     } else {
       console.log(verificationCode, code);
+
       return {
         status: "error",
         message: "Verification code is wrong! Please check and try again!",
@@ -334,7 +406,7 @@ export const deleteNewUserRequest = async (email: string) => {
     return { status: "error", message: "No email provided" };
   }
 
-  const response = await fetch(`${USER_SERVICE_URL}/users/${email}`, {
+  const response = await fetch(`${USER_SERVICE_URL}/users/${email}/request`, {
     method: "DELETE",
   });
 
@@ -348,6 +420,269 @@ export const deleteNewUserRequest = async (email: string) => {
       status: "error",
       message:
         "There was a fatal error, please sign-up with a different email and username!",
+    };
+  }
+};
+
+export const editUsername = async (newUsername: string) => {
+  if (!newUsername) {
+    return { status: "error", message: "No username provided" };
+  }
+
+  const session = await getSession();
+
+  try {
+    const response = await fetch(
+      `${USER_SERVICE_URL}/users/${session.userId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.accessToken}`,
+        },
+        body: JSON.stringify({
+          username: newUsername,
+        }),
+      },
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+
+      session.username = data.data.username;
+      console.log(session.username);
+      await session.save();
+
+      return {
+        status: "success",
+        message: "Username was successfully updated",
+      };
+    } else {
+      const errorData = await response.json();
+
+      return {
+        status: "error",
+        message: errorData.message || "Error modifying username",
+      };
+    }
+  } catch (err) {
+    console.error("Change username error:", err);
+
+    return {
+      status: "error",
+      message: "Internal server error",
+    };
+  }
+};
+
+export const editEmailRequest = async (newEmail: string) => {
+  const emailChangeSession = await getEmailChangeSession();
+  const session = await getSession();
+
+  console.log(
+    `${USER_SERVICE_URL}/users/${session.userId}/email-update-request`,
+  );
+  console.log(session.accessToken);
+
+  try {
+    // Make the signup request to your API
+    const response = await fetch(
+      `${USER_SERVICE_URL}/users/${session.userId}/email-update-request`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.accessToken}`,
+        },
+        body: JSON.stringify({
+          email: newEmail,
+        }),
+      },
+    );
+
+    if (response.ok) {
+      const res = await response.json();
+
+      emailChangeSession.emailToken = res.data.token;
+      emailChangeSession.ttl = res.data.expiry;
+
+      await emailChangeSession.save();
+
+      return { status: "success", message: "Email change request successful" }; // Return success status
+    } else {
+      // Handle error response (e.g., show error message)
+      const errorData = await response.json();
+
+      return {
+        status: "error",
+        message: errorData.message || "Email change request failed.",
+      }; // Return error status
+    }
+  } catch (error) {
+    console.error("Email change request error:", error);
+
+    return {
+      status: "error",
+      message: "Unable to reach the user service. Please try again later.",
+    };
+  }
+};
+
+export const verifyEmailCode = async (code: number, newEmail: string) => {
+  const session = await getSession();
+  const emailChangeSession = await getEmailChangeSession();
+
+  console.log(code, newEmail);
+
+  try {
+    const emailToken = await getEmailChangeEmailToken();
+    const secret = env("JWT_SECRET");
+
+    if (!emailToken) {
+      return {
+        status: "error",
+        message: "Token has expired or does not exist",
+      };
+    }
+
+    if (!secret) {
+      return { status: "error", message: "Internal application error" };
+    }
+
+    // Convert the secret string to Uint8Array
+    const secretKey = new TextEncoder().encode(secret);
+
+    // Decode the JWT token
+    const { payload } = await jwtVerify(emailToken, secretKey);
+
+    // Extract the verification code from the token's payload
+    const verificationCode = payload.code;
+
+    if (!verificationCode) {
+      return {
+        status: "error",
+        message: "Verification code not found in token.",
+      };
+    }
+
+    if (verificationCode === code) {
+      // If code matches, update the email
+      console.log(newEmail);
+      const response = await fetch(
+        `${USER_SERVICE_URL}/users/${session.userId}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.accessToken}`,
+          },
+          body: JSON.stringify({
+            email: newEmail,
+          }),
+        },
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+
+        // Update session with new email
+        session.email = data.data.email;
+        await session.save();
+
+        // Clean up email change session
+        await emailChangeSession.destroy();
+
+        return {
+          status: "success",
+          message: "Email updated successfully!",
+        };
+      } else {
+        const errorData = await response.json();
+
+        return {
+          status: "error",
+          message: errorData.message || "Failed to update email.",
+        };
+      }
+    } else {
+      return {
+        status: "error",
+        message: "Verification code is incorrect. Please try again.",
+      };
+    }
+  } catch (error) {
+    console.error("Error verifying email code:", error);
+
+    return {
+      status: "error",
+      message: "There was an error validating your code.",
+    };
+  }
+};
+
+export const clearEmailChangeSession = async () => {
+  const emailChangeSession = await getEmailChangeSession();
+
+  await emailChangeSession.destroy();
+};
+
+export const changePassword = async (newPassword: string) => {
+  const session = await getSession();
+
+  try {
+    const response = await fetch(
+      `${USER_SERVICE_URL}/users/${session.userId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.accessToken}`,
+        },
+        body: JSON.stringify({
+          password: newPassword,
+        }),
+      },
+    );
+
+    if (response.ok) {
+      return { status: "success", message: "Password updated successfully" };
+    } else {
+      const errorData = await response.json();
+
+      return {
+        status: "error",
+        message: errorData.message || "Failed to update password",
+      };
+    }
+  } catch (error) {
+    return {
+      status: "error",
+      message: "Unable to reach the user service. Please try again later.",
+    };
+  }
+};
+
+export const deleteUser = async () => {
+  const session = await getSession();
+
+  const response = await fetch(`${USER_SERVICE_URL}/users/${session.userId}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${session.accessToken}`,
+    },
+  });
+
+  if (response.ok) {
+    await session.destroy();
+
+    return {
+      status: "success",
+      message: "Your account has been deleted succesfully",
+    };
+  } else {
+    return {
+      status: "error",
+      message: "There was an error with deleting your account",
     };
   }
 };
