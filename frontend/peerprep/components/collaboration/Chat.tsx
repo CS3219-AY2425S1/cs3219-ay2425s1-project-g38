@@ -84,6 +84,7 @@ export default function Chat({
       <div className="flex flex-row gap-2 mt-4">
         <Textarea
           onChange={(e) => setMessage(e.target.value)}
+          value={message}
           placeholder="Type your message..."
           minRows={1}
           maxRows={2}
