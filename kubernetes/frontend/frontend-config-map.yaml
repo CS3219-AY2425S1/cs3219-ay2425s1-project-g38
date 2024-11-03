@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-config
+data:
+  NEXT_PUBLIC_USER_SERVICE_URL: "http://35.197.190.216/users"
+  NEXT_PUBLIC_MATCHING_SERVICE_URL: "http://35.197.190.216/matching"
+  NEXT_PUBLIC_QUESTION_SERVICE_URL: "http://35.197.190.216/questions"
+  NEXT_PUBLIC_COLLAB_SERVICE_URL: "http://35.197.190.216/collab"
+  NEXT_PUBLIC_MATCHING_SOCKET_URL: "http://35.197.190.216/"
+  NEXT_PUBLIC_COLLAB_SOCKET_URL: "http://35.197.190.216/"
+  NEXT_PUBLIC_MATCHING_SOCKET_PATH: "/matching/socket.io"
+  NEXT_PUBLIC_COLLAB_SOCKET_PATH: "/collab/socket.io"
+  FRONTEND_PORT: "3000"
