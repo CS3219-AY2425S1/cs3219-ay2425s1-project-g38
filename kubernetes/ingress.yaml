@@ -1,4 +1,3 @@
-# ingress.yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -11,9 +10,15 @@ metadata:
     nginx.ingress.kubernetes.io/upstream-hash-by: "$client_ip"
     nginx.ingress.kubernetes.io/proxy-set-headers: "true"
     nginx.org/websocket-services: "matching-service, collab-service"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
 spec:
+  tls:
+    - hosts:
+        - peerprepapi.delishad.com # Your domain
+      secretName: peerprep-tls # The secret that contains the TLS certificate and private key
   rules:
-    - http:
+    - host: peerprepapi.delishad.com # Specify the host for the rules
+      http:
         paths:
           - path: /users(/|$)(.*)
             pathType: ImplementationSpecific
