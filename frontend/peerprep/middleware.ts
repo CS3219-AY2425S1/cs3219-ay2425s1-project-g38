@@ -1,15 +1,33 @@
 import { NextResponse } from "next/server";
 
-import { getCreateUserSession, getSession } from "./auth/actions";
+import { getCreateUserSession, getResetPasswordSession, getSession } from "./auth/actions";
 import { checkUserMatchStatus } from "./services/sessionAPI";
 
 export async function middleware(req: any) {
   const url = req.nextUrl.clone(); // Clone the URL
   const session = await getSession();
   const signUpSession = await getCreateUserSession();
+  const resetPasswordSession = await getResetPasswordSession();
   const token = session?.accessToken; // Access token from the session
   const isAdmin = session?.isAdmin; // Admin status from the session
   const emailToken = signUpSession?.emailToken;
+
+  // Handle reset password route
+  if (url.pathname.startsWith('/sign-in/forgot-password/reset')) {
+    const resetToken = url.searchParams.get('token');
+    
+    // If no token in URL or no reset password session, redirect to forgot password page
+    if (!resetToken || !resetPasswordSession?.resetToken) {
+      url.pathname = '/404';
+      return NextResponse.redirect(url);
+    }
+
+    // Verify that the tokens match
+    if (resetToken !== resetPasswordSession.resetToken) {
+      url.pathname = '/403';
+      return NextResponse.redirect(url);
+    }
+  }
 
   // Redirect unauthenticated users trying to access protected routes
   if (!token) {
@@ -74,5 +92,6 @@ export const config = {
     "/sign-up/:path*",
     "/session",
     "/settings",
+    "/sign-in/forgot-password/reset",
   ],
 };

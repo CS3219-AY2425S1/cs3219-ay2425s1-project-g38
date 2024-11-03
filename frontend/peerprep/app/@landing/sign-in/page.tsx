@@ -21,7 +21,7 @@ export default function SignInPage() {
   const [password, setPassword] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false); // Loading state for button
   const [toast, setToast] = useState<{ message: string; type: string } | null>(
-    null,
+    null
   );
 
   const toggleVisibility = () => setIsVisible(!isVisible);
@@ -138,25 +138,33 @@ export default function SignInPage() {
           />
         </div>
 
-        <button
-          className="transition ease-in-out bg-violet-600 dark:bg-gray-800 hover:-translate-y-0.5 hover:scale-[1.02] active:scale-100 dark:active:bg-gray-900 active:bg-violet-700 duration-300 rounded-md p-1.5 text-sm text-gray-200 mb-8"
-          onClick={handleContinue}
-          disabled={isLoading} // Disable button when loading
-        >
-          <div className="flex flex-row gap-2 items-center justify-center">
-            <div
-              className={`${fontFun.variable} my-1 font-medium`}
-              style={{ fontFamily: "var(--font-fun)" }}
-            >
-              Continue
+        <div className="flex flex-col gap-1">
+          <button
+            className="transition ease-in-out bg-violet-600 dark:bg-gray-800 hover:-translate-y-0.5 hover:scale-[1.02] active:scale-100 dark:active:bg-gray-900 active:bg-violet-700 duration-300 rounded-md p-1.5 text-sm text-gray-200 mb-8"
+            onClick={handleContinue}
+            disabled={isLoading} // Disable button when loading
+          >
+            <div className="flex flex-row gap-2 items-center justify-center">
+              <div
+                className={`${fontFun.variable} my-1 font-medium`}
+                style={{ fontFamily: "var(--font-fun)" }}
+              >
+                Continue
+              </div>
+              {isLoading ? ( // Display loader when loading
+                <CircularProgress size="sm" />
+              ) : (
+                <BoxIcon name="bxs-right-arrow" size="10px" color="#e5e7eb" />
+              )}
             </div>
-            {isLoading ? ( // Display loader when loading
-              <CircularProgress size="sm" />
-            ) : (
-              <BoxIcon name="bxs-right-arrow" size="10px" color="#e5e7eb" />
-            )}
-          </div>
-        </button>
+          </button>
+          <a
+            href="/sign-in/forgot-password"
+            className="underline text-white text-xs"
+          >
+            Forgot password
+          </a>
+        </div>
       </div>
     </div>
   );

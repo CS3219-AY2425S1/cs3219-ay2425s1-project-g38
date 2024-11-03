@@ -15,6 +15,8 @@ import {
   createUserOptions,
   EmailChangeSessionData,
   emailChangeOptions,
+  ResetPasswordSessionData,
+  resetPasswordOptions,
 } from "./lib";
 
 const USER_SERVICE_URL = env("NEXT_PUBLIC_USER_SERVICE_URL");
@@ -58,6 +60,14 @@ export const getEmailChangeSession = async () => {
   return session;
 };
 
+export const getResetPasswordSession = async () => {
+  const session = await getIronSession<ResetPasswordSessionData>(
+    cookies(),
+    resetPasswordOptions,
+  )
+  return session;
+}
+
 export const getAccessToken = async () => {
   const session = await getSession();
 
@@ -74,6 +84,12 @@ export const getEmailChangeEmailToken = async () => {
   const session = await getEmailChangeSession();
 
   return session.emailToken;
+};
+
+export const getResetPasswordToken = async () => {
+  const session = await getResetPasswordSession();
+
+  return session.resetToken;
 };
 
 export const getUsername = async () => {
@@ -238,7 +254,7 @@ export const signUp = async (formData: FormData) => {
 
       await session.save();
 
-      return { status: "success", message: "User registered successfully." }; // Return success status
+      return { status: "success", message: "User registered successfully." };
     } else {
       // Handle error response (e.g., show error message)
       const errorData = await response.json();
@@ -662,6 +678,64 @@ export const changePassword = async (newPassword: string) => {
   }
 };
 
+export const resetPassword = async (newPassword: string) => {
+  const session = await getResetPasswordSession();
+
+  try {
+    const secret = env("JWT_SECRET");
+    const resetToken = await getResetPasswordToken();
+
+    if (!resetToken) {
+      return {
+        status: "error",
+        message: "Token has expired or does not exist",
+      };
+    }
+
+    if (!secret) {
+      return { status: "error", message: "Internal application error" };
+    }
+
+    // Convert the secret string to Uint8Array
+    const secretKey = new TextEncoder().encode(secret);
+
+    // Decode the JWT token
+    const { payload } = await jwtVerify(resetToken, secretKey);
+
+    const userId = payload.id;
+
+    const response = await fetch(
+      `${USER_SERVICE_URL}/users/${userId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.resetToken}`,
+        },
+        body: JSON.stringify({
+          password: newPassword,
+        }),
+      },
+    );
+
+    if (response.ok) {
+      return { status: "success", message: "Password updated successfully" };
+    } else {
+      const errorData = await response.json();
+
+      return {
+        status: "error",
+        message: errorData.message || "Failed to update password",
+      };
+    }
+  } catch (error) {
+    return {
+      status: "error",
+      message: "Unable to reach the user service. Please try again later.",
+    };
+  }
+};
+
 export const deleteUser = async () => {
   const session = await getSession();
 
@@ -686,3 +760,42 @@ export const deleteUser = async () => {
     };
   }
 };
+
+export const forgetPassword = async (identifier: string) => {
+  const resetPasswordSession = await getResetPasswordSession();
+  try {
+    const response = await fetch(`${USER_SERVICE_URL}/auth/forget-password`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        identifier: identifier,
+      }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      resetPasswordSession.resetToken = data.data.token;
+      await resetPasswordSession.save();
+
+      return { status: "success", message: "Password reset request successful." };
+    } else if (response.status === 401) {
+      return { status: "warning", message: "You do not have an account with us!" };
+    }  else {
+      const errorData = await response.json();
+
+      return {
+        status: "error",
+        message: errorData.message || "Sign up failed.",
+      };
+    }
+  } catch (error) {
+    console.error("Reset password error:", error);
+
+    return {
+      status: "error",
+      message: "Unable to reset password. Please try again later.",
+    };
+  }
+}

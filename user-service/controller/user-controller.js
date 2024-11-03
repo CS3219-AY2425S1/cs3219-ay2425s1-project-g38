@@ -17,18 +17,7 @@ import {
   addMatchToUserById as _addMatchToUserById,
 } from "../model/repository.js";
 import jwt from "jsonwebtoken";
-
-import nodemailer from 'nodemailer';
-
-const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_PASS,
-  },
-});
+import { transporter } from "../mail.js";
 
 // Helper functions
 const isValidEmail = (email) =>
@@ -90,7 +79,7 @@ const sendVerificationEmailForEmailChange = async (email, username, verification
       <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
       <h2 style="text-align: center; color: #6A0CE2;">Confirm your new email</h2>
       <p style="font-size: 16px;">Hello <span style="color: #6A0CE2; font-weight: bold;">${username}</span>,</p>
-      <p style="font-size: 16px;">To complete chaning your email account, please use the following verification code:</p>
+      <p style="font-size: 16px;">To complete changing your email account, please use the following verification code:</p>
       <div style="text-align: center; margin: 20px 0;">
         <span style="font-size: 24px; font-weight: bold; color: #6A0CE2; background-color: #f4f4f4; padding: 10px 20px; border-radius: 5px;">${verificationCode}</span>
       </div>
