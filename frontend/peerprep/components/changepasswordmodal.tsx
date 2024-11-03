@@ -10,9 +10,11 @@ import {
   Button,
   Input,
 } from "@nextui-org/react";
+
+import BoxIcon from "./boxicons";
+
 import { validatePassword } from "@/utils/utils";
 import { EyeFilledIcon, EyeSlashFilledIcon } from "@/components/icons";
-import BoxIcon from "./boxicons";
 
 interface ChangePasswordModalProps {
   isOpen: boolean;
@@ -33,11 +35,13 @@ export function ChangePasswordModal({
   const handleConfirm = () => {
     if (!validatePassword(newPassword)) {
       setError("Password must be at least 8 characters long");
+
       return;
     }
 
     if (newPassword !== confirmPassword) {
       setError("Passwords do not match");
+
       return;
     }
 

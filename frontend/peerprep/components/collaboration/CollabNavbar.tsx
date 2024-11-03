@@ -12,7 +12,6 @@ import TerminateModal from "./TerminateModal";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { SettingButton, NotificationButton } from "@/components/navbar-buttons";
 import { Logo } from "@/components/icons";
-import { getUsername } from "@/auth/actions";
 
 export interface CollabNavbarProps {
   usersInRoom: string[];
@@ -57,7 +56,7 @@ export const CollabNavbar = ({
         {/* Add the UsersInRoom component */}
       </NavbarContent>
       <NavbarContent className="basis-1/5" justify="center">
-        <TerminateModal 
+        <TerminateModal
           isModalVisible={isModalVisible}
           userConfirmed={userConfirmed}
           isCancelled={isCancelled}
@@ -66,7 +65,8 @@ export const CollabNavbar = ({
           handleCloseModal={handleCloseModal}
           handleConfirm={handleConfirm}
           setIsCancelled={setIsCancelled}
-        /> {/* Add the UsersInRoom component */}
+        />{" "}
+        {/* Add the UsersInRoom component */}
       </NavbarContent>
       <NavbarContent className="basis-1/5 sm:basis-full" justify="end">
         <NavbarItem className="flex items-center justify-center gap-5">

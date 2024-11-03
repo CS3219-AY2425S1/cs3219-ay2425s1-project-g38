@@ -1,10 +1,12 @@
 "use client";
-import { CollabNavbar } from "@/components/collaboration/CollabNavbar";
-
-import QuestionDisplay from "@/components/collaboration/QuestionDisplay";
-
 import * as Y from "yjs";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+
+import CollabCodeEditor from "../../../../components/collaboration/CollabCodeEditor";
+
+import { CollabNavbar } from "@/components/collaboration/CollabNavbar";
+import QuestionDisplay from "@/components/collaboration/QuestionDisplay";
 import { SupportedLanguages } from "@/utils/utils";
 import {
   disconnectSocket,
@@ -16,9 +18,7 @@ import {
   closeModal,
   confirmTermination,
 } from "@/services/sessionService";
-import CollabCodeEditor from "../../../../components/collaboration/CollabCodeEditor";
 import { codeOutputInterface } from "@/components/collaboration/Output";
-import { useRouter } from "next/navigation";
 
 const App: React.FC = () => {
   const router = useRouter();
@@ -43,7 +43,7 @@ const App: React.FC = () => {
   function propagateUpdates(
     docUpdate?: Uint8Array,
     languageUpdate?: SupportedLanguages,
-    codeOutput?: codeOutputInterface
+    codeOutput?: codeOutputInterface,
   ) {
     if (docUpdate) {
       updateDoc(docUpdate);
@@ -84,7 +84,7 @@ const App: React.FC = () => {
       isFirstToCancel,
       router,
       setUserConfirmed,
-      setModalVisibility
+      setModalVisibility,
     );
   };
 
@@ -101,7 +101,7 @@ const App: React.FC = () => {
       setModalVisibility,
       setUserConfirmed,
       setIsFirstToCancel,
-      router
+      router,
     );
 
     return () => {

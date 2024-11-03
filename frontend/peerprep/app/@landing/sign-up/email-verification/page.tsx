@@ -9,12 +9,7 @@ import { CircularProgress } from "@nextui-org/react";
 import BoxIcon from "@/components/boxicons";
 import Toast from "@/components/toast"; // Import the Toast component
 import { fontFun } from "@/config/fonts";
-import {
-  verifyCode,
-  getTimeToExpire,
-  deleteNewUserRequest,
-  resendCode,
-} from "@/auth/actions";
+import { verifyCode, getTimeToExpire, resendCode } from "@/auth/actions";
 import { delay } from "@/utils/utils";
 
 export default function EmailVerificationPage() {
@@ -22,7 +17,7 @@ export default function EmailVerificationPage() {
   const searchParams = useSearchParams();
   const [code, setCode] = useState<string>("");
   const [toast, setToast] = useState<{ message: string; type: string } | null>(
-    null
+    null,
   );
   const [isLoading, setIsLoading] = useState<boolean>(false); // Loading state for button
   const [timeLeft, setTimeLeft] = useState<number>(0);
@@ -63,7 +58,7 @@ export default function EmailVerificationPage() {
       const timer = setInterval(() => {
         if (expirationTime) {
           const timeRemaining = Math.floor(
-            (expirationTime - Date.now()) / 1000
+            (expirationTime - Date.now()) / 1000,
           );
 
           if (timeRemaining <= 0) {

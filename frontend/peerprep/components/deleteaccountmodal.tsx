@@ -9,6 +9,7 @@ import {
   ModalFooter,
   Button,
 } from "@nextui-org/react";
+
 import BoxIcon from "./boxicons";
 
 interface DeleteAccountModalProps {

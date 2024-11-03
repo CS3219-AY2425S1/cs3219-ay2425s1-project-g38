@@ -1,22 +1,13 @@
 "use client";
 
 import * as React from "react";
+import { Avatar, Button, Divider, Input } from "@nextui-org/react";
+import { useRouter } from "next/navigation";
+
 import { cn } from "@/lib/utils";
 import BoxIcon from "@/components/boxicons";
-import {
-  Avatar,
-  Button,
-  Divider,
-  Input,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-} from "@nextui-org/react";
 import { validateEmail, validateUsername } from "@/utils/utils";
 import { ErrorModal } from "@/components/errormodal";
-import { DeleteConfirmationModal } from "@/components/deleteconfirmationmodal";
 import { PasswordConfirmationModal } from "@/components/passwordconfirmationmodal";
 import {
   editUsername,
@@ -24,23 +15,18 @@ import {
   editEmailRequest,
   verifyEmailCode,
   deleteUser,
+  getSession,
 } from "@/auth/actions";
 import { EmailVerificationModal } from "@/components/emailverificationmodal";
 import { ChangePasswordModal } from "@/components/changepasswordmodal";
 import { changePassword } from "@/auth/actions";
 import { DeleteAccountModal } from "@/components/deleteaccountmodal";
-import { useRouter } from "next/navigation";
 import { SuccessModal } from "@/components/succesmodal";
 
-type SettingsPageProps = {
-  username: string;
-  email: string;
-};
-
-export default function SettingsPage({ username, email }: SettingsPageProps) {
+export default function SettingsPage() {
   const [formData, setFormData] = React.useState({
-    username: username || "username",
-    email: email || "email@email.com",
+    username: "",
+    email: "",
   });
   const [activeSection, setActiveSection] = React.useState("profile");
   const [isEditingUsername, setIsEditingUsername] = React.useState(false);
@@ -62,6 +48,18 @@ export default function SettingsPage({ username, email }: SettingsPageProps) {
   const [isSuccessModalOpen, setIsSuccessModalOpen] = React.useState(false);
   const [successMessage, setSuccessMessage] = React.useState("");
 
+  React.useEffect(() => {
+    const fetchUserData = async () => {
+      const session = await getSession();
+      setFormData({
+        username: session.username || "username",
+        email: session.email || "email@email.com",
+      });
+    };
+
+    fetchUserData();
+  }, []);
+
   const hasChanges = (field: "username" | "email") =>
     formData[field] !== originalData[field];
 
@@ -72,6 +70,7 @@ export default function SettingsPage({ username, email }: SettingsPageProps) {
   const handlePasswordConfirm = async (password: string) => {
     try {
       const response = await verifyPassword(password);
+
       if (response.status === "success") {
         if (editTarget === "username") {
           setIsEditingUsername(true);
@@ -82,6 +81,7 @@ export default function SettingsPage({ username, email }: SettingsPageProps) {
         } else if (editTarget === "delete") {
           // Actually delete the account after password confirmation
           const deleteResponse = await deleteUser();
+
           if (deleteResponse.status === "success") {
             setSuccessMessage("Account deleted successfully. Redirecting...");
             setIsSuccessModalOpen(true);
@@ -93,11 +93,14 @@ export default function SettingsPage({ username, email }: SettingsPageProps) {
         }
         setIsPasswordModalOpen(false);
         setEditTarget(null);
+
         return true;
       }
+
       return false;
     } catch (error) {
       console.error("Password verification error:", error);
+
       return false;
     }
   };
@@ -127,11 +130,13 @@ export default function SettingsPage({ username, email }: SettingsPageProps) {
     if (!validateUsername(formData.username)) {
       setErrorMessage("Invalid username format...");
       setIsErrorModalOpen(true);
+
       return;
     }
 
     try {
       const response = await editUsername(formData.username);
+
       if (response.status === "success") {
         setIsEditingUsername(false);
         setOriginalData(formData);
@@ -154,11 +159,13 @@ export default function SettingsPage({ username, email }: SettingsPageProps) {
         "Invalid email format. Please enter a valid email address."
       );
       setIsErrorModalOpen(true);
+
       return;
     }
 
     try {
       const response = await editEmailRequest(formData.email);
+
       console.log(response.status);
       if (response.status === "success") {
         setIsEmailVerificationModalOpen(true);
@@ -177,6 +184,7 @@ export default function SettingsPage({ username, email }: SettingsPageProps) {
   const handleVerifyEmailCode = async (code: number, newEmail: string) => {
     try {
       const response = await verifyEmailCode(code, newEmail);
+
       if (response.status === "success") {
         setIsEmailVerificationModalOpen(false);
         setIsEditingEmail(false);
@@ -196,6 +204,7 @@ export default function SettingsPage({ username, email }: SettingsPageProps) {
   const handlePasswordChange = async (newPassword: string) => {
     try {
       const response = await changePassword(newPassword);
+
       if (response.status === "success") {
         setSuccessMessage("Password updated successfully!");
         setIsSuccessModalOpen(true);
@@ -290,7 +299,7 @@ export default function SettingsPage({ username, email }: SettingsPageProps) {
                         isDisabled={!isEditingUsername}
                         isInvalid={!validateUsername(formData.username || "")}
                         variant="underlined"
-                        className="w-24"
+                        className="w-30"
                         value={formData.username}
                         onChange={(e) =>
                           handleInputChange("username", e.target.value)

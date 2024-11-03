@@ -1,20 +1,20 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import { Card } from "@nextui-org/react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
 
-import { socket } from "../../services/sessionService";
-
 interface QuestionDisplayProps {
   question: string;
   testCases: string[];
 }
 
-export default function QuestionDisplay({ question, testCases }: QuestionDisplayProps) {
+export default function QuestionDisplay({
+  question,
+  testCases,
+}: QuestionDisplayProps) {
   const { theme } = useTheme();
 
   return (

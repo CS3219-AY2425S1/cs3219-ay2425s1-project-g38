@@ -20,7 +20,10 @@ import {
 const USER_SERVICE_URL = env("NEXT_PUBLIC_USER_SERVICE_URL");
 
 export const getSession = async () => {
-  const session = await getIronSession<SessionData>(cookies() as any, sessionOptions);
+  const session = await getIronSession<SessionData>(
+    cookies() as any,
+    sessionOptions,
+  );
 
   if (!session.isLoggedIn) {
     session.isLoggedIn = defaultSession.isLoggedIn;
@@ -51,6 +54,7 @@ export const getEmailChangeSession = async () => {
     cookies(),
     emailChangeOptions,
   );
+
   return session;
 };
 
@@ -170,10 +174,10 @@ export const verifyPassword = async (enteredPassword: string) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
-        password: enteredPassword
+        password: enteredPassword,
       }),
     });
 
@@ -181,16 +185,21 @@ export const verifyPassword = async (enteredPassword: string) => {
       return { status: "success", message: "Password verified." };
     } else {
       const errorData = await response.json();
-      return { status: "error", message: errorData.message || "Error verifying password"};
+
+      return {
+        status: "error",
+        message: errorData.message || "Error verifying password",
+      };
     }
-  } catch(err) {
+  } catch (err) {
     console.error("Login error:", err);
+
     return {
       status: "error",
       message: "Internal server error",
     };
   }
-}
+};
 
 export const logout = async () => {
   const session = await getSession();
@@ -248,7 +257,6 @@ export const signUp = async (formData: FormData) => {
     };
   }
 };
-
 
 export const resendCode = async () => {
   const signUpSession = await getCreateUserSession();
@@ -368,13 +376,16 @@ export const verifyCode = async (code: number) => {
         };
       } else {
         const errorData = await response.json();
+
         return {
           status: "error",
-          message: errorData.message || "There was a problem registering the user.",
+          message:
+            errorData.message || "There was a problem registering the user.",
         };
       }
     } else {
       console.log(verificationCode, code);
+
       return {
         status: "error",
         message: "Verification code is wrong! Please check and try again!",
@@ -419,29 +430,42 @@ export const editUsername = async (newUsername: string) => {
   }
 
   const session = await getSession();
+
   try {
-    const response = await fetch(`${USER_SERVICE_URL}/users/${session.userId}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${session.accessToken}`,
+    const response = await fetch(
+      `${USER_SERVICE_URL}/users/${session.userId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.accessToken}`,
+        },
+        body: JSON.stringify({
+          username: newUsername,
+        }),
       },
-      body: JSON.stringify({
-        username: newUsername
-      }),
-    });
+    );
 
     if (response.ok) {
       const data = await response.json();
+
       session.username = data.data.username;
-      console.log(session.username)
+      console.log(session.username);
       await session.save();
-      return { status: "success", message: "Username was successfully updated"};
+
+      return {
+        status: "success",
+        message: "Username was successfully updated",
+      };
     } else {
       const errorData = await response.json();
-      return { status: "error", message: errorData.message || "Error modifying username"};
+
+      return {
+        status: "error",
+        message: errorData.message || "Error modifying username",
+      };
     }
-  } catch(err) {
+  } catch (err) {
     console.error("Change username error:", err);
 
     return {
@@ -449,27 +473,32 @@ export const editUsername = async (newUsername: string) => {
       message: "Internal server error",
     };
   }
-}
+};
 
 export const editEmailRequest = async (newEmail: string) => {
   const emailChangeSession = await getEmailChangeSession();
   const session = await getSession();
 
-  console.log(`${USER_SERVICE_URL}/users/${session.userId}/email-update-request`);
+  console.log(
+    `${USER_SERVICE_URL}/users/${session.userId}/email-update-request`,
+  );
   console.log(session.accessToken);
 
   try {
     // Make the signup request to your API
-    const response = await fetch(`${USER_SERVICE_URL}/users/${session.userId}/email-update-request`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${session.accessToken}`,
+    const response = await fetch(
+      `${USER_SERVICE_URL}/users/${session.userId}/email-update-request`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.accessToken}`,
+        },
+        body: JSON.stringify({
+          email: newEmail,
+        }),
       },
-      body: JSON.stringify({
-        email: newEmail,
-      }),
-    });
+    );
 
     if (response.ok) {
       const res = await response.json();
@@ -502,7 +531,8 @@ export const editEmailRequest = async (newEmail: string) => {
 export const verifyEmailCode = async (code: number, newEmail: string) => {
   const session = await getSession();
   const emailChangeSession = await getEmailChangeSession();
-  console.log(code, newEmail)
+
+  console.log(code, newEmail);
 
   try {
     const emailToken = await getEmailChangeEmailToken();
@@ -538,24 +568,27 @@ export const verifyEmailCode = async (code: number, newEmail: string) => {
     if (verificationCode === code) {
       // If code matches, update the email
       console.log(newEmail);
-      const response = await fetch(`${USER_SERVICE_URL}/users/${session.userId}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session.accessToken}`,
+      const response = await fetch(
+        `${USER_SERVICE_URL}/users/${session.userId}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.accessToken}`,
+          },
+          body: JSON.stringify({
+            email: newEmail,
+          }),
         },
-        body: JSON.stringify({
-          email: newEmail
-        }),
-      });
+      );
 
       if (response.ok) {
         const data = await response.json();
-        
+
         // Update session with new email
         session.email = data.data.email;
         await session.save();
-        
+
         // Clean up email change session
         await emailChangeSession.destroy();
 
@@ -565,6 +598,7 @@ export const verifyEmailCode = async (code: number, newEmail: string) => {
         };
       } else {
         const errorData = await response.json();
+
         return {
           status: "error",
           message: errorData.message || "Failed to update email.",
@@ -578,6 +612,7 @@ export const verifyEmailCode = async (code: number, newEmail: string) => {
     }
   } catch (error) {
     console.error("Error verifying email code:", error);
+
     return {
       status: "error",
       message: "There was an error validating your code.",
@@ -587,6 +622,7 @@ export const verifyEmailCode = async (code: number, newEmail: string) => {
 
 export const clearEmailChangeSession = async () => {
   const emailChangeSession = await getEmailChangeSession();
+
   await emailChangeSession.destroy();
 };
 
@@ -594,21 +630,25 @@ export const changePassword = async (newPassword: string) => {
   const session = await getSession();
 
   try {
-    const response = await fetch(`${USER_SERVICE_URL}/users/${session.userId}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${session.accessToken}`,
+    const response = await fetch(
+      `${USER_SERVICE_URL}/users/${session.userId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.accessToken}`,
+        },
+        body: JSON.stringify({
+          password: newPassword,
+        }),
       },
-      body: JSON.stringify({
-        password: newPassword,
-      }),
-    });
+    );
 
     if (response.ok) {
       return { status: "success", message: "Password updated successfully" };
     } else {
       const errorData = await response.json();
+
       return {
         status: "error",
         message: errorData.message || "Failed to update password",
@@ -634,6 +674,7 @@ export const deleteUser = async () => {
 
   if (response.ok) {
     await session.destroy();
+
     return {
       status: "success",
       message: "Your account has been deleted succesfully",
@@ -641,8 +682,7 @@ export const deleteUser = async () => {
   } else {
     return {
       status: "error",
-      message:
-        "There was an error with deleting your account",
+      message: "There was an error with deleting your account",
     };
   }
 };

@@ -5,8 +5,6 @@ import { Card } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 
-import { socket } from "../../services/sessionService";
-
 interface UsersInRoomProps {
   usersInRoom: string[];
   setUsersInRoom: React.Dispatch<React.SetStateAction<string[]>>;

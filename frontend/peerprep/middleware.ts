@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 
 import { getCreateUserSession, getSession } from "./auth/actions";
-import { checkUserMatchStatus } from "./services/sessionAPI";
 
 export async function middleware(req: any) {
   const url = req.nextUrl.clone(); // Clone the URL
@@ -14,9 +13,9 @@ export async function middleware(req: any) {
   // Redirect unauthenticated users trying to access protected routes
   if (!token) {
     if (
-      url.pathname.startsWith("/home") ||
       url.pathname.startsWith("/questions-management") ||
-      url.pathname.startsWith("/session")
+      url.pathname.startsWith("/session") ||
+      url.pathname.startsWith("/settings")
     ) {
       url.pathname = "/sign-in";
 
@@ -65,5 +64,11 @@ export async function middleware(req: any) {
 }
 
 export const config = {
-  matcher: ["/questions-management/:path*", "/sign-in", "/sign-up/:path*", "/session"],
+  matcher: [
+    "/questions-management/:path*",
+    "/sign-in",
+    "/sign-up/:path*",
+    "/session",
+    "/settings",
+  ],
 };

@@ -3,7 +3,6 @@ import { Button, Card } from "@nextui-org/react";
 import { useTheme } from "next-themes";
 
 import { executeCode } from "../../services/sessionOutputService";
-import { socket } from "../../services/sessionService";
 
 type SupportedLanguages =
   | "javascript"
@@ -28,7 +27,7 @@ interface OutputProps {
   propagateUpdates: (
     docUpdate?: Uint8Array,
     languageUpdate?: SupportedLanguages,
-    codeOutput?: codeOutputInterface
+    codeOutput?: codeOutputInterface,
   ) => void;
   isCodeError: boolean;
 }

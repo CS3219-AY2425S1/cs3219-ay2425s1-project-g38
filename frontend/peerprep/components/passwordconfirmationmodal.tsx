@@ -8,6 +8,7 @@ import {
   Input,
 } from "@nextui-org/react";
 import React, { useState } from "react";
+
 import BoxIcon from "./boxicons";
 import { EyeFilledIcon } from "./icons";
 import { EyeSlashFilledIcon } from "./icons";
@@ -39,6 +40,7 @@ export const PasswordConfirmationModal: React.FC<
   const handleConfirm = async () => {
     setIsLoading(true);
     const success = await onConfirm(password);
+
     if (!success) {
       setIsInvalid(true);
     }

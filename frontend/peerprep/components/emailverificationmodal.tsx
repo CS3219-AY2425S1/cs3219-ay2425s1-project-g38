@@ -10,7 +10,9 @@ import {
   Button,
   Input,
 } from "@nextui-org/react";
+
 import BoxIcon from "./boxicons";
+
 import {
   getEmailChangeTimeToExpire,
   clearEmailChangeSession,
@@ -63,6 +65,7 @@ export function EmailVerificationModal({
         }
 
         const expirationString = await getEmailChangeTimeToExpire();
+
         expirationTime = expirationString
           ? new Date(expirationString).getTime()
           : Date.now() + 3 * 60 * 1000;
@@ -80,7 +83,7 @@ export function EmailVerificationModal({
       timerRef.current = setInterval(() => {
         if (expirationTime) {
           const timeRemaining = Math.floor(
-            (expirationTime - Date.now()) / 1000
+            (expirationTime - Date.now()) / 1000,
           );
 
           if (timeRemaining <= 0) {
@@ -117,11 +120,13 @@ export function EmailVerificationModal({
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
+
     return `${minutes}:${remainingSeconds < 10 ? `0${remainingSeconds}` : remainingSeconds}`;
   };
 
   const handleVerify = () => {
     const code = parseInt(verificationCode);
+
     if (!isNaN(code)) {
       onVerify(code, email);
     }

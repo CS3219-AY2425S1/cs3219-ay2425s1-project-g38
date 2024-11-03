@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import {
   Modal,
   ModalContent,
@@ -9,9 +8,6 @@ import {
   ModalFooter,
   Button,
 } from "@nextui-org/react";
-import { useRouter } from "next/navigation";
-
-import { socket } from "../../services/sessionService";
 
 interface TerminateModalProps {
   isModalVisible: boolean;
@@ -34,7 +30,6 @@ export default function TerminateModal({
   handleConfirm,
   setIsCancelled,
 }: TerminateModalProps) {
-
   return (
     <div className="flex justify-center items-center h-full w-full">
       <Button className="" variant="flat" color="danger" onClick={openModal}>

@@ -25,6 +25,7 @@ export const Sidebar = ({ isAdmin }: SidebarProps) => {
 
   const handleLogout = async () => {
     setTimeout(async () => await logout(), 1000);
+    router.push("/");
   };
 
   const handleSignOutClick = () => {

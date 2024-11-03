@@ -14,6 +14,7 @@ import { useTheme } from "next-themes";
 
 import { WysiMarkEditor } from "../wysimarkeditor";
 import BoxIcon from "../boxicons";
+
 import { capitalize, languages } from "@/utils/utils";
 import { complexityColorMap } from "@/app/@application/(main)/questions-management/columns";
 import { useUniqueCategoriesFetcher } from "@/services/questionService";
@@ -73,6 +74,7 @@ export function QuestionFormBase({
   // Category management
   const addCategory = () => {
     const caps = currentCategory.toUpperCase();
+
     if (caps && !categories.includes(caps)) {
       setCategories([...categories, caps]);
     }
@@ -94,10 +96,11 @@ export function QuestionFormBase({
 
   const handleInputChange = (
     index: number,
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const updatedTestCases = [...testCases];
     const { name, value } = event.target;
+
     if (name === "input" || name === "output") {
       updatedTestCases[index][name] = value;
     }
@@ -107,7 +110,7 @@ export function QuestionFormBase({
   // Effects and handlers
   useEffect(() => {
     setWarnMessage(
-      categories.length >= 3 ? "You can only add up to 3 categories." : ""
+      categories.length >= 3 ? "You can only add up to 3 categories." : "",
     );
   }, [categories]);
 

@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { QuestionFormBase } from "@/components/questionformshared/QuestionFormBase";
+
 import { useQuestionForm } from "../hooks/useQuestionForm";
+
 import { SuccessModal } from "./succesmodal";
 import { ErrorModal } from "./errormodal";
+
+import { QuestionFormBase } from "@/components/questionformshared/QuestionFormBase";
 import {
   isValidQuestionSubmission,
   submitQuestion,
@@ -30,13 +33,14 @@ export default function AddQuestionForm() {
         formState.categories,
         formState.templateCode,
         formState.testCases,
-        formState.language
+        formState.language,
       )
     ) {
       setErrorMessage(
-        "Please fill in all the required fields before submitting."
+        "Please fill in all the required fields before submitting.",
       );
       setErrorModalOpen(true);
+
       return;
     }
 
@@ -49,7 +53,7 @@ export default function AddQuestionForm() {
         formState.templateCode,
         formState.testCases,
         formState.language,
-        formState.YDocUpdate
+        formState.YDocUpdate,
       );
 
       if (response.ok) {
@@ -57,14 +61,15 @@ export default function AddQuestionForm() {
         setSuccessModalOpen(true);
       } else {
         const errorData = await response.json();
+
         setErrorMessage(
-          errorData.error || "Failed to submit the question. Please try again."
+          errorData.error || "Failed to submit the question. Please try again.",
         );
         setErrorModalOpen(true);
       }
     } catch (error) {
       setErrorMessage(
-        "An error occurred while submitting the question. Please try again later"
+        "An error occurred while submitting the question. Please try again later",
       );
       setErrorModalOpen(true);
     }

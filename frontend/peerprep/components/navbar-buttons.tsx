@@ -20,7 +20,7 @@ export const SettingButton: React.FC = () => {
 };
 
 export const NotificationButton: React.FC = () => {
-  const [notificationCount, setNotificationCount] = useState<number>(99);
+  const [notificationCount] = useState<number>(99);
 
   return (
     <Badge

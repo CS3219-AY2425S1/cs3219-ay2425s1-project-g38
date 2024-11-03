@@ -12,8 +12,8 @@ export const siteConfig = {
     {
       label: "Settings",
       href: "/settings",
-      icon: "bx-cog"
-    }
+      icon: "bx-cog",
+    },
   ],
   adminNavItems: [
     {

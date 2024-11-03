@@ -2,7 +2,6 @@ import "@/styles/globals.css";
 import { Metadata, Viewport } from "next";
 
 import { siteConfig } from "@/config/site";
-import { CollabNavbar } from "@/components/collaboration/CollabNavbar";
 
 export const metadata: Metadata = {
   title: {

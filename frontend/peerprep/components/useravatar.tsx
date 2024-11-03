@@ -13,8 +13,10 @@ import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { useIsSSR } from "@react-aria/ssr";
 import { useState } from "react";
+
 import BoxIcon from "./boxicons";
 import { SignOutConfirmationModal } from "./signoutconfirmationmodal";
+
 import { logout } from "@/auth/actions";
 
 interface UserAvatarProps {
@@ -30,6 +32,7 @@ export const UserAvatar = ({ userName, userEmail }: UserAvatarProps) => {
 
   const handleLogout = async () => {
     setTimeout(async () => await logout(), 1000);
+    router.push("/");
   };
 
   const handleSignOutClick = () => {
