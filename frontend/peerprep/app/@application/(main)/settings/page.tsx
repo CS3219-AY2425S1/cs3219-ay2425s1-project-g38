@@ -80,16 +80,11 @@ export default function SettingsPage() {
           setIsChangePasswordModalOpen(true);
         } else if (editTarget === "delete") {
           // Actually delete the account after password confirmation
-          const deleteResponse = await deleteUser();
-
-          if (deleteResponse.status === "success") {
-            setSuccessMessage("Account deleted successfully. Redirecting...");
-            setIsSuccessModalOpen(true);
-            setTimeout(() => router.push("/sign-in"), 1500);
-          } else {
-            setErrorMessage(deleteResponse.message);
-            setIsErrorModalOpen(true);
-          }
+          const deleteResponse = setTimeout(
+            async () => await deleteUser(),
+            1000
+          );
+          router.push("/");
         }
         setIsPasswordModalOpen(false);
         setEditTarget(null);
@@ -220,7 +215,7 @@ export default function SettingsPage() {
 
   const handleDeleteConfirm = async () => {
     setIsDeleteModalOpen(false);
-    setEditTarget("delete"); // New target for delete confirmation
+    setEditTarget("delete");
     setIsPasswordModalOpen(true);
   };
 

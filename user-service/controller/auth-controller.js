@@ -10,36 +10,36 @@ const isEmail = (input) =>
   /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(input);
 
 export async function handleLogin(req, res) {
-
-  // For demoing Load Balancer
-  console.log("Login Request Received");
-
   const { identifier, password } = req.body;
+  console.log(`[AUTH] Login attempt for user: ${identifier}`);
 
   if (!identifier || !password) {
+    console.log(`[AUTH] Login failed: Missing credentials for ${identifier}`);
     return res.status(400).json({ message: "Missing identifier and/or password" });
   }
 
   try {
-    // Determine whether the identifier is an email or a username
     const user = isEmail(identifier)
       ? await _findUserByEmail(identifier)
       : await _findUserByUsername(identifier);
 
     if (!user) {
+      console.log(`[AUTH] Login failed: User not found - ${identifier}`);
       return res.status(401).json({ message: "Wrong username/email and/or password" });
     }
 
-    // Compare the password with the hashed password
     const match = await bcrypt.compare(password, user.password);
     if (!match) {
+      console.log(`[AUTH] Login failed: Invalid password for user ${identifier}`);
       return res.status(401).json({ message: "Wrong username/email and/or password" });
     }
 
     if (!user.isVerified) {
+      console.log(`[AUTH] Login failed: Unverified account - ${identifier}`);
       return res.status(403).json({message: "You have not verified your account"});
     }
 
+    console.log(`[AUTH] Login successful: ${user.username} (${user.id})`);
     // Generate JWT access token
     const accessToken = jwt.sign(
       { id: user.id },
@@ -55,7 +55,7 @@ export async function handleLogin(req, res) {
       },
     });
   } catch (err) {
-    console.error(err);
+    console.error(`[AUTH] Login error: ${err.message}`, err);
     return res.status(500).json({ message: "Unknown error occurred during login" });
   }
 }
@@ -71,25 +71,32 @@ export async function handleVerifyToken(req, res) {
 
 export async function verifyPassword(req, res) {
   try {
-    const verifiedUser = req.user;
-    const user = await _findUserByUsername(verifiedUser.username)
-    const password = req.body.password;
-    const match = await bcrypt.compare(password, user.password);
+    const { username } = req.user;
+    console.log(`[AUTH] Password verification attempt for user: ${username}`);
+    
+    const user = await _findUserByUsername(username);
+    const match = await bcrypt.compare(req.body.password, user.password);
+    
     if (!match) {
+      console.log(`[AUTH] Password verification failed for user: ${username}`);
       return res.status(401).json({ message: "Wrong password" });
-    } else {
-      return res.status(200).json({message: "Password verified!"});
     }
+    
+    console.log(`[AUTH] Password verified successfully for user: ${username}`);
+    return res.status(200).json({message: "Password verified!"});
   } catch (err) {
-    console.log(err.message);
+    console.error(`[AUTH] Password verification error: ${err.message}`, err);
     return res.status(500).json({message: err.message});
   }
 }
 
 export async function confirmUser(req, res) {
   try {
-    const verifiedUser = req.user;
-    const updatedUser = await _confirmUserById(verifiedUser.id, true);
+    const { id, username } = req.user;
+    console.log(`[AUTH] Account confirmation attempt for user: ${username} (${id})`);
+
+    const updatedUser = await _confirmUserById(id, true);
+    console.log(`[AUTH] Account confirmed successfully for user: ${username} (${id})`);
 
     // Generate JWT access token
     const accessToken = jwt.sign(
@@ -106,6 +113,7 @@ export async function confirmUser(req, res) {
       },
     });
   } catch (err) {
+    console.error(`[AUTH] Account confirmation error: ${err.message}`, err);
     return res.status(500).json({ message: err.message });
   }
 }

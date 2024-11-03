@@ -3,86 +3,121 @@ import { findUserById as _findUserById } from "../model/repository.js";
 
 export function verifyAccessToken(req, res, next) {
   const authHeader = req.headers["authorization"];
+  
   if (!authHeader) {
-    console.log("token verification failed")
-
+    console.log("[AUTH] Token verification failed: Missing authorization header");
     return res.status(401).json({ message: "Authentication failed" });
   }
 
-  // request auth header: `Authorization: Bearer + <access_token>`
   const token = authHeader.split(" ")[1];
   jwt.verify(token, process.env.JWT_SECRET, async (err, user) => {
     if (err) {
-      console.log("token verification failed")
-
+      console.log(`[AUTH] Token verification failed: Invalid token - ${err.message}`);
       return res.status(401).json({ message: "Authentication failed" });
     }
 
-    // load latest user info from DB
-    const dbUser = await _findUserById(user.id);
-    if (!dbUser) {
-      console.log("token verification failed")
-      return res.status(401).json({ message: "Authentication failed" });
-    }
+    try {
+      const dbUser = await _findUserById(user.id);
+      if (!dbUser) {
+        console.log(`[AUTH] Token verification failed: User not found - ID: ${user.id}`);
+        return res.status(401).json({ message: "Authentication failed" });
+      }
 
-    req.user = { id: dbUser.id, username: dbUser.username, email: dbUser.email, isAdmin: dbUser.isAdmin };
-    console.log("token verified")
-    next();
+      req.user = { 
+        id: dbUser.id, 
+        username: dbUser.username, 
+        email: dbUser.email, 
+        isAdmin: dbUser.isAdmin 
+      };
+      console.log(`[AUTH] Token verified for user: ${dbUser.username} (${dbUser.id})`);
+      next();
+    } catch (error) {
+      console.error(`[AUTH] Database error during token verification: ${error.message}`);
+      return res.status(500).json({ message: "Internal server error" });
+    }
   });
 }
 
 export function verifyEmailToken(req, res, next) {
   const authHeader = req.headers["authorization"];
+  
   if (!authHeader) {
+    console.log("[AUTH] Email token verification failed: Missing authorization header");
     return res.status(401).json({ message: "Authentication failed" });
   }
 
-  // request auth header: `Authorization: Bearer + <access_token>`
   const token = authHeader.split(" ")[1];
   jwt.verify(token, process.env.JWT_SECRET, async (err, user) => {
     if (err) {
+      console.log(`[AUTH] Email token verification failed: ${err.message}`);
       return res.status(401).json({ message: "Authentication failed" });
     }
 
-    if (user.id !== req.params.id) {
-      return res.status(401).json({ message: "Authentication failed" });
-    }
+    try {
+      if (user.id !== req.params.id) {
+        console.log(`[AUTH] Email token verification failed: Token-param ID mismatch - Token: ${user.id}, Param: ${req.params.id}`);
+        return res.status(401).json({ message: "Authentication failed" });
+      }
 
-    // load latest user info from DB
-    const dbUser = await _findUserById(user.id);
-    if (!dbUser) {
-      return res.status(401).json({ message: "Authentication failed" });
-    } else if (dbUser.isVerified) {
-      return res.status(401).json({message: "Invalid request"});
-    }
+      const dbUser = await _findUserById(user.id);
+      if (!dbUser) {
+        console.log(`[AUTH] Email token verification failed: User not found - ID: ${user.id}`);
+        return res.status(401).json({ message: "Authentication failed" });
+      }
 
-    if (dbUser.createdAt.getTime() !== new Date(user.createdAt).getTime()) {
-      return res.status(401).json({ message: "Old token used, use new token instead" });
+      if (dbUser.isVerified) {
+        console.log(`[AUTH] Email token verification failed: Account already verified - ${dbUser.username}`);
+        return res.status(401).json({message: "Invalid request"});
+      }
+
+      if (dbUser.createdAt.getTime() !== new Date(user.createdAt).getTime()) {
+        console.log(`[AUTH] Email token verification failed: Token expired for user ${dbUser.username}`);
+        return res.status(401).json({ message: "Old token used, use new token instead" });
+      }
+
+      req.user = { 
+        id: dbUser.id, 
+        username: dbUser.username, 
+        email: dbUser.email, 
+        isAdmin: dbUser.isAdmin, 
+        isVerified: dbUser.isVerified, 
+        createdAt: dbUser.createdAt, 
+        expireAt: dbUser.expireAt
+      };
+      console.log(`[AUTH] Email token verified for user: ${dbUser.username} (${dbUser.id})`);
+      next();
+    } catch (error) {
+      console.error(`[AUTH] Database error during email token verification: ${error.message}`);
+      return res.status(500).json({ message: "Internal server error" });
     }
-    req.user = { id: dbUser.id, username: dbUser.username, email: dbUser.email, isAdmin: dbUser.isAdmin, isVerified: dbUser.isVerified, createdAt: dbUser.createdAt, expireAt: dbUser.expireAt};
-    next();
   });
 }
 
 export function verifyIsAdmin(req, res, next) {
-  if (req.user.isAdmin) {
+  const { username, isAdmin } = req.user;
+  if (isAdmin) {
+    console.log(`[AUTH] Admin access granted for user: ${username}`);
     next();
   } else {
+    console.log(`[AUTH] Admin access denied for user: ${username}`);
     return res.status(403).json({ message: "Not authorized to access this resource" });
   }
 }
 
 export function verifyIsOwnerOrAdmin(req, res, next) {
-  console.log(req);
-  if (req.user.isAdmin) {
+  const { id: tokenId, username, isAdmin } = req.user;
+  const paramId = req.params.id;
+
+  if (isAdmin) {
+    console.log(`[AUTH] Admin access granted for user: ${username}`);
     return next();
   }
 
-  const userIdFromReqParams = req.params.id;
-  const userIdFromToken = req.user.id;
-  if (userIdFromReqParams === userIdFromToken) {
+  if (paramId === tokenId) {
+    console.log(`[AUTH] Owner access granted for user: ${username}`);
     return next();
   }
 
+  console.log(`[AUTH] Unauthorized access attempt by user: ${username} for resource: ${paramId}`);
   return res.status(403).json({ message: "Not authorized to access this resource" });
 }

@@ -82,23 +82,29 @@ const sendVerificationEmail = async (email, username, verificationCode) => {
 };
 
 export async function createUserRequest(req, res) {
-  try {
-    const { username, email, password } = req.body;
+  const { username, email, password } = req.body;
+  console.log(`[USER] New user registration attempt - Username: ${username}, Email: ${email}`);
 
-    const error = validateUserData({ username, email, password });
-    if (error) return res.status(400).json({ message: error });
+  try {
+    const error = validateUserData(req.body);
+    if (error) {
+      console.log(`[USER] Registration validation failed - ${error}`);
+      return res.status(400).json({ message: error });
+    }
 
     const existingUser = await _findUserByUsernameOrEmail(username, email);
     if (existingUser) {
       if (!existingUser.isVerified) {
+        console.log(`[USER] Unverified account found - Username: ${username}`);
         const match = await bcrypt.compare(password, existingUser.password);
         if (match) {
           req.user = existingUser;
           return refreshEmailToken(req, res);
-        } else {
-          return res.status(409).json({message: "An unverified account has been linked to your username/email, use the same password or try again after 3 minutes"})
         }
+        console.log(`[USER] Password mismatch for unverified account - Username: ${username}`);
+        return res.status(409).json({message: "An unverified account has been linked to your username/email"});
       }
+      console.log(`[USER] Registration failed - Username/Email already exists - Username: ${username}`);
       return res.status(409).json({ message: "Username or email already exists." });
     }
     
@@ -108,16 +114,19 @@ export async function createUserRequest(req, res) {
     const expiresInSeconds = Math.floor((expirationDate.getTime() - Date.now()) / 1000);
 
     const createdUser = await _createTempUser(username, email, hashedPassword, false, expirationDate);
+    console.log(`[USER] Temporary user created successfully - ID: ${createdUser.id}, Username: ${username}`);
+
     const emailToken = generateEmailToken(createdUser.id, createdUser.createdAt, verificationCode, expiresInSeconds);
 
     await sendVerificationEmail(email, username, verificationCode);
+    console.log(`[USER] Verification email sent - Username: ${username}`);
 
     return res.status(201).json({
       message: `Created new user ${username} request successfully`,
       data: { token: emailToken, expiry: expirationDate },
     });
   } catch (error) {
-    console.error(error);
+    console.error(`[USER] Registration error - ${error.message}`, error);
     return res.status(500).json({ message: "Unknown error occurred when creating a new user!" });
   }
 }
@@ -224,44 +233,55 @@ export async function getAllUsers(req, res) {
 }
 
 export async function updateUser(req, res) {
+  const userId = req.params.id;
+  const { username, email, password } = req.body;
+  console.log(`[USER] Update request - ID: ${userId}, New Username: ${username}, New Email: ${email}`);
+
   try {
-    console.log(req);
-    const { username, email, password } = req.body;
-    if (username || email || password) {
-      const userId = req.params.id;
-      if (!isValidObjectId(userId)) {
-        return res.status(404).json({ message: `User ${userId} not found` });
-      }
-      const user = await _findUserById(userId);
-      if (!user) {
-        return res.status(404).json({ message: `User ${userId} not found` });
-      }
-      if (username || email) {
-        let existingUser = await _findUserByUsername(username);
-        if (existingUser && existingUser.id !== userId) {
-          return res.status(409).json({ message: "Username already exists" });
-        }
-        existingUser = await _findUserByEmail(email);
-        if (existingUser && existingUser.id !== userId) {
-          return res.status(409).json({ message: "Email already exists" });
-        }
+    if (!username && !email && !req.body.password) {
+      console.log(`[USER] Update failed - No fields to update - ID: ${userId}`);
+      return res.status(400).json({ message: "No field to update" });
+    }
+
+    if (!isValidObjectId(userId)) {
+      console.log(`[USER] Update failed - Invalid user ID: ${userId}`);
+      return res.status(404).json({ message: `User ${userId} not found` });
+    }
+
+    const user = await _findUserById(userId);
+    if (!user) {
+      console.log(`[USER] Update failed - User not found - ID: ${userId}`);
+      return res.status(404).json({ message: `User ${userId} not found` });
+    }
+
+    // Check for username/email conflicts
+    if (username || email) {
+      let existingUser = username ? await _findUserByUsername(username) : null;
+      if (existingUser && existingUser.id !== userId) {
+        console.log(`[USER] Update failed - Username already exists - Username: ${username}`);
+        return res.status(409).json({ message: "Username already exists" });
       }
 
-      let hashedPassword;
-      if (password) {
-        const salt = bcrypt.genSaltSync(10);
-        hashedPassword = bcrypt.hashSync(password, salt);
+      existingUser = email ? await _findUserByEmail(email) : null;
+      if (existingUser && existingUser.id !== userId) {
+        console.log(`[USER] Update failed - Email already exists - Email: ${email}`);
+        return res.status(409).json({ message: "Email already exists" });
       }
-      const updatedUser = await _updateUserById(userId, username, email, hashedPassword);
-      return res.status(200).json({
-        message: `Updated data for user ${userId}`,
-        data: formatUserResponse(updatedUser),
-      });
-    } else {
-      return res.status(400).json({ message: "No field to update: username and email and password are all missing!" });
     }
+
+    let hashedPassword;
+    if (password) {
+      const salt = bcrypt.genSaltSync(10);
+      hashedPassword = bcrypt.hashSync(password, salt);
+    }
+    const updatedUser = await _updateUserById(userId, username, email, hashedPassword);
+    console.log(`[USER] User updated successfully - ID: ${userId}`);
+    return res.status(200).json({
+      message: `Updated data for user ${userId}`,
+      data: formatUserResponse(updatedUser),
+    });
   } catch (err) {
-    console.error(err);
+    console.error(`[USER] Update error - ${err.message}`, err);
     return res.status(500).json({ message: "Unknown error when updating user!" });
   }
 }
@@ -295,21 +315,26 @@ export async function updateUserPrivilege(req, res) {
 }
 
 export async function deleteUser(req, res) {
+  const userId = req.params.id;
+  console.log(`[USER] Delete request - ID: ${userId}`);
+
   try {
-    const userId = req.params.id;
-    console.log(userId);
     if (!isValidObjectId(userId)) {
+      console.log(`[USER] Delete failed - Invalid user ID: ${userId}`);
       return res.status(404).json({ message: `User ${userId} not found` });
     }
+
     const user = await _findUserById(userId);
     if (!user) {
+      console.log(`[USER] Delete failed - User not found - ID: ${userId}`);
       return res.status(404).json({ message: `User ${userId} not found` });
     }
 
     await _deleteUserById(userId);
+    console.log(`[USER] User deleted successfully - ID: ${userId}`);
     return res.status(200).json({ message: `Deleted user ${userId} successfully` });
   } catch (err) {
-    console.error(err);
+    console.error(`[USER] Delete error - ${err.message}`, err);
     return res.status(500).json({ message: "Unknown error when deleting user!" });
   }
 }
@@ -363,32 +388,36 @@ export async function getFriendRequests(req, res) {
 }
 
 export async function sendFriendRequest(req, res) {
+  const { id: userId, friendId } = req.params;
+  console.log(`[USER] Friend request - From: ${userId}, To: ${friendId}`);
+
   try {
-    const userId = req.params.id;
-    const friendId = req.body.friendId;
     if (!isValidObjectId(userId) || !isValidObjectId(friendId)) {
-      return res.status(404).json({ message: `User ${userId} or friend ${friendId} not found` });
+      console.log(`[USER] Friend request failed - Invalid ID(s) - User: ${userId}, Friend: ${friendId}`);
+      return res.status(404).json({ message: `Invalid user IDs` });
     }
-    const user = await _findUserById(userId);
-    const friend = await _findUserById(friendId);
+
+    const [user, friend] = await Promise.all([
+      _findUserById(userId),
+      _findUserById(friendId)
+    ]);
+
     if (!user || !friend) {
-      return res.status(404).json({ message: `User ${userId} or friend ${friendId} not found` });
+      console.log(`[USER] Friend request failed - User(s) not found - User: ${userId}, Friend: ${friendId}`);
+      return res.status(404).json({ message: `User not found` });
     }
 
     if (user.friends.includes(friendId)) {
-      return res.status(409).json({ message: `User ${userId} is already friends with ${friendId}` });
-    }
-
-    if (friend.friendRequests.includes(userId)) {
-      return res.status(409).json({ message: `User ${userId} already sent friend request to ${friendId}` });
+      console.log(`[USER] Friend request failed - Already friends - User: ${userId}, Friend: ${friendId}`);
+      return res.status(409).json({ message: `Already friends` });
     }
 
     await _sendFriendRequestById(userId, friendId);
-
-    return res.status(200).json({ message: `Sent friend request from user ${userId} to friend ${friendId}` });
+    console.log(`[USER] Friend request sent successfully - From: ${userId}, To: ${friendId}`);
+    return res.status(200).json({ message: `Friend request sent` });
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({ message: "Unknown error when adding friend!" });
+    console.error(`[USER] Friend request error - ${err.message}`, err);
+    return res.status(500).json({ message: "Error sending friend request" });
   }
 }
 

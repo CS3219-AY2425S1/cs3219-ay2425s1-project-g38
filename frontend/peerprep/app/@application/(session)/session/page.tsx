@@ -1,8 +1,6 @@
 "use client";
 import * as Y from "yjs";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-
 import CollabCodeEditor from "../../../../components/collaboration/CollabCodeEditor";
 
 import { CollabNavbar } from "@/components/collaboration/CollabNavbar";
@@ -52,7 +50,7 @@ const App: React.FC = () => {
   function propagateUpdates(
     docUpdate?: Uint8Array,
     languageUpdate?: SupportedLanguages,
-    codeOutput?: codeOutputInterface,
+    codeOutput?: codeOutputInterface
   ) {
     if (docUpdate) {
       updateDoc(docUpdate);
@@ -93,7 +91,7 @@ const App: React.FC = () => {
       isFirstToCancel,
       router,
       setUserConfirmed,
-      setModalVisibility,
+      setModalVisibility
     );
   };
 
