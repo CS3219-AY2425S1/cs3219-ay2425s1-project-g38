@@ -12,9 +12,12 @@ const SessionHistory = () => {
 
   return (
     <div className="flex flex-col gap-4">
-      {matchHistory.map((match: Match) => (
-        <SessionCard key={match.sessionId} match={match} />
-      ))}
+      {matchHistory
+        .slice()
+        .reverse()
+        .map((match: Match) => (
+          <SessionCard key={match.sessionId} match={match} />
+        ))}
     </div>
   );
 };
@@ -34,7 +37,7 @@ const SessionCard = ({ match }: { match: Match }) => {
 
   if (questionLoading) {
     return (
-      <Card className="w-full space-y-5 p-4" radius="lg">
+      <Card className="w-full space-y-5 p-4" radius="sm">
         <Skeleton className="rounded-lg">
           <div className="h-24 rounded-lg bg-default-300"></div>
         </Skeleton>

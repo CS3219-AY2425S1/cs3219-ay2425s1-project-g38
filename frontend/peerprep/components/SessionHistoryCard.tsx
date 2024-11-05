@@ -41,7 +41,7 @@ export default function SessionHistoryCard({
   const timeAgo = formatDistanceToNow(date, { addSuffix: true });
 
   return (
-    <Card shadow="sm" className="w-full">
+    <Card shadow="sm" className="w-full" radius="sm">
       <CardHeader className="flex flex-col items-start px-4 pt-3 pb-3">
         <div className="flex justify-between w-full items-center">
           <div className="flex text-md font-semibold">
@@ -59,7 +59,7 @@ export default function SessionHistoryCard({
                   </button>
                 </PopoverTrigger>
                 <PopoverContent className="max-w-[500px] max-h-[400px] overflow-y-auto p-4">
-                  <div className="prose dark:prose-invert max-w-none">
+                  <div className="prose dark:prose-invert w-[480px] break-words">
                     <ReactMarkdown
                       remarkPlugins={[remarkGfm, remarkBreaks]}
                       components={{
