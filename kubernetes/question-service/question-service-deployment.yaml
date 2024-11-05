@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: question-service
-          image: delishad21/question-service:dev
+          image: delishad21/question-service:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8003
@@ -27,3 +27,5 @@ spec:
                 name: app-config
             - secretRef:
                 name: question-secrets
+            - secretRef:
+                name: app-secrets

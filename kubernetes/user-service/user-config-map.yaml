@@ -4,3 +4,4 @@ metadata:
   name: user-config
 data:
   USER_PORT: "8004"
+  FRONTEND_URL: "https://peerprep.delishad.com"

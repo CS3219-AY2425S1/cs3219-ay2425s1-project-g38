@@ -25,11 +25,11 @@ const sendPasswordResetLink = async (email, username, resetLink) => {
       <p style="font-size: 16px;">Hello <span style="color: #6A0CE2; font-weight: bold;">${username}</span>,</p>
       <p style="font-size: 16px;">We received a request to reset your password. Click the button below to create a new password:</p>
       <div style="text-align: center; margin: 20px 0;">
-          <a href="http://${resetLink}" style="background-color: #6A0CE2; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">Reset Password</a>
+          <a href="${resetLink}" style="background-color: #6A0CE2; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">Reset Password</a>
       </div>
       <p style="font-size: 16px;">This link will expire in 3 minutes for security reasons.</p>
       <p style="font-size: 14px;">If the button doesn't work, you can copy and paste this link into your browser:</p>
-      <a href="http://${resetLink}" style="font-size: 14px; word-break: break-all; color: #6A0CE2;">http://${resetLink}</a>
+      <a href="${resetLink}" style="font-size: 14px; word-break: break-all; color: #6A0CE2;">${resetLink}</a>
       <p style="font-size: 14px; color: #777;">If you did not request a password reset, please ignore this email and ensure your account is secure.</p>
       <hr style="border-top: 1px solid #eee; margin: 20px 0;">
       <p style="font-size: 14px; text-align: center; color: #aaa;">This is an automated message. Please do not reply.</p>
@@ -150,15 +150,15 @@ export async function verifyPassword(req, res) {
   try {
     const { username } = req.user;
     console.log(`[AUTH] Password verification attempt for user: ${username}`);
-    
+
     const user = await _findUserByUsername(username);
     const match = await bcrypt.compare(req.body.password, user.password);
-    
+
     if (!match) {
       console.log(`[AUTH] Password verification failed for user: ${username}`);
       return res.status(401).json({ message: "Wrong password" });
     }
-    
+
     console.log(`[AUTH] Password verified successfully for user: ${username}`);
     return res.status(200).json({message: "Password verified!"});
   } catch (err) {

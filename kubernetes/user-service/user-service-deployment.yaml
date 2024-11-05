@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: user-service
-          image: delishad21/user-service:dev
+          image: delishad21/user-service:milestone7.1
           imagePullPolicy: Always
           ports:
             - containerPort: 8004
@@ -25,5 +25,7 @@ spec:
                 name: user-config
             - configMapRef:
                 name: app-config
+            - secretRef:
+                name: app-secrets
             - secretRef:
                 name: user-secrets

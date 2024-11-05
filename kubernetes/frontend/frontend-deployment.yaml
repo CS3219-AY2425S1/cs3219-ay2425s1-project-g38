@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: frontend-service
-          image: delishad21/frontend-peerprep:dev
+          image: delishad21/frontend-peerprep:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 3000

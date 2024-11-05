@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: matching-service
-          image: delishad21/matching-service:dev
+          image: delishad21/matching-service:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8002
@@ -25,5 +25,7 @@ spec:
                 name: matching-config
             - configMapRef:
                 name: app-config
+            - secretRef:
+                name: app-secrets
             - secretRef:
                 name: matching-secrets

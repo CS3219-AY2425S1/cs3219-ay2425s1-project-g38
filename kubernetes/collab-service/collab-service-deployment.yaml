@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: collab-service
-          image: delishad21/collaboration-service:dev
+          image: delishad21/collaboration-service:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8010
