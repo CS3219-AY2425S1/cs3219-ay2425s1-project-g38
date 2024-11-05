@@ -15,8 +15,8 @@ fi
 declare -A services=(
     # ["matching-service"]="matching-service"
     # ["question-service"]="question-service"
-    ["user-service"]="user-service"
-    # ["frontend-peerprep"]="frontend/peerprep"
+    # ["user-service"]="user-service"
+    ["frontend-peerprep"]="frontend/peerprep"
     # ["collaboration-service"]="collaboration-service"
 )
 
