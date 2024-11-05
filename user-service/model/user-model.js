@@ -48,6 +48,7 @@ const UserModelSchema = new Schema({
         sessionId: { type: String, required: true },
         questionId: { type: String, required: true },
         partnerId: { type: String, required: true },
+        date: { type: Date, required: true },
       },
     ],
     default: [], // Default to an empty array

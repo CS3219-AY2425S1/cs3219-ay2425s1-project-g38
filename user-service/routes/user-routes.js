@@ -14,7 +14,8 @@ import {
   sendFriendRequest,
   acceptFriendRequest,
   addMatchToUser,
-  updateEmailRequest
+  updateEmailRequest,
+  handleGetMatchHistory,
 } from "../controller/user-controller.js";
 import { verifyAccessToken, verifyEmailToken, verifyIsAdmin, verifyIsOwnerOrAdmin } from "../middleware/basic-access-control.js";
 
@@ -47,5 +48,7 @@ router.patch("/:id", verifyAccessToken, verifyIsOwnerOrAdmin, updateUser);
 router.post("/:id/email-update-request", verifyAccessToken, verifyIsOwnerOrAdmin, updateEmailRequest);
 
 router.delete("/:id", verifyAccessToken, verifyIsOwnerOrAdmin, deleteUser);
+
+router.get("/:id/match-history", verifyAccessToken, handleGetMatchHistory)
 
 export default router;

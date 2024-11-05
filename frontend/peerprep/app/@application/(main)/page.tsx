@@ -9,6 +9,8 @@ import StartMatchCard from "@/components/startmatchcard";
 import { checkUserMatchStatus, leaveMatch } from "@/services/sessionAPI";
 import ReconnectCard from "@/components/reconnectcard";
 import BoxIcon from "@/components/boxicons";
+import SessionHistory from "@/components/SessionHistory";
+import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -54,9 +56,9 @@ export default function Dashboard() {
   return (
     <>
       <div>{isMatchUIVisible && <MatchUI onClose={handleClose} />}</div>
-      <div className="flex flex-col items-center p-8">
+      <div className="flex flex-col items-center p-8 gap-3">
         <p className="text-md text-left w-full font-semibold">My Activities</p>
-        <div className="flex justify-center gap-8 w-full mt-4">
+        <div className="flex justify-center gap-8 w-full my-4 w-3/4">
           <div className="w-3/4">
             <div className="flex flex-col gap-4">
               {!isCollabServiceUp && (
@@ -79,17 +81,18 @@ export default function Dashboard() {
               )}
             </div>
           </div>
-          <div className="w-1/4 hidden md:flex">
-            <Card className="w-full">
-              <CardBody>
-                <h3 className="text-lg font-semibold mb-2 p-3 text-nowrap">
-                  Friends
-                </h3>
-                <ul className="space-y-4 min-h-40" />
-              </CardBody>
-            </Card>
-          </div>
+          <div className="w-1/4 hidden md:flex"></div>
         </div>
+        <p className="text-md text-left w-full font-semibold">Activity Feed</p>
+        <div className="flex justify-center gap-8 w-full mt-4 w-3/4">
+          <div className="w-3/4">
+            <div className="flex flex-col gap-4">
+              <SessionHistory />
+            </div>
+          </div>
+          <div className="w-1/4 hidden md:flex"></div>
+        </div>
+        <ScrollToTopButton />
       </div>
     </>
   );

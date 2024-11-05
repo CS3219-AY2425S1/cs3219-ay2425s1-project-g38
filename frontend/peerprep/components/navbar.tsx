@@ -32,7 +32,6 @@ export const Navbar = ({ username, email }: NavbarProps) => {
       <NavbarContent className="basis-1/5 sm:basis-full" justify="end">
         <NavbarItem className="flex items-center justify-center">
           <div className="hidden sm:flex flex-row items-center justify-center">
-            <NotificationButton />
             <ThemeSwitch className="ml-2.5" />
             <UserAvatar userName={username} userEmail={email} />
           </div>

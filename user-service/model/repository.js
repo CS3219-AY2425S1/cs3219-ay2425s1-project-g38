@@ -95,12 +95,12 @@ export async function deleteUserById(userId) {
   return UserModel.findByIdAndDelete(userId);
 }
 
-export async function addMatchToUserById(userId, sessionId, questionId, partnerId) {
+export async function addMatchToUserById(userId, sessionId, questionId, partnerId, date) {
   return UserModel.findByIdAndUpdate(
     userId,
     {
       $push: {
-        matchHistory: { sessionId, questionId, partnerId },
+        matchHistory: { sessionId, questionId, partnerId, date },
       },
     },
     { new: true },  // return the updated user
