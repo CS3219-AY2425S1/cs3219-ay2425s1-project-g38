@@ -471,12 +471,64 @@ export async function addMatchToUser(req, res) {
       return res.status(404).json({ message: `User ${userId} or partner ${partnerId} not found` });
     }
 
-    await _addMatchToUserById(userId, sessionId, questionId, partnerId);
+    await _addMatchToUserById(userId, sessionId, questionId, partnerId, new Date());
 
     return res.status(200).json({ message: `Added match to user ${userId}` });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: "Unknown error when adding match!" });
+  }
+}
+
+export async function handleGetMatchHistory(req, res) {
+  const userId = req.params.id;
+  console.log(`[USER] Match history request - ID: ${userId}`);
+
+  try {
+    if (!isValidObjectId(userId)) {
+      console.log(`[USER] Match history failed - Invalid user ID: ${userId}`);
+      return res.status(404).json({ message: `User ${userId} not found` });
+    }
+
+    const user = await _findUserById(userId);
+    if (!user) {
+      console.log(`[USER] Match history failed - User not found - ID: ${userId}`);
+      return res.status(404).json({ message: `User ${userId} not found` });
+    }
+
+    if (!user.matchHistory || user.matchHistory.length === 0) {
+      console.log(`[USER] Match history empty - ID: ${userId}`);
+      return res.status(200).json({ 
+        message: `No match history found for user ${userId}`,
+        data: []
+      });
+    }
+
+    console.log(`[USER] Found ${user.matchHistory.length} matches for user ${userId}`);
+    const enhancedMatchHistory = await Promise.all(
+      user.matchHistory.map(async (match) => {
+        const partner = await _findUserById(match.partnerId);
+        const partnerUsername = partner ? partner.username : '[deleted]';
+        console.log(`[USER] Match history entry - Session: ${match.sessionId}, Partner: ${partnerUsername}`);
+        return {
+          sessionId: match.sessionId,
+          questionId: match.questionId,
+          partnerUsername,
+          _id: match._id,
+          date: match.date
+        };
+      })
+    );
+
+    console.log(`[USER] Match history retrieved successfully - ID: ${userId}`);
+    return res.status(200).json({
+      message: `Found match history for user ${userId}`,
+      data: enhancedMatchHistory
+    });
+
+  } catch (err) {
+    console.error(`[USER] Match history error - ${err.message}`, err);
+    return res.status(500).json({ message: "Unknown error when getting match history!" });
   }
 }
 
