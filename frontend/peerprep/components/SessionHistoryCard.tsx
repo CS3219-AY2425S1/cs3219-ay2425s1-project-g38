@@ -5,9 +5,7 @@ import {
   CardHeader,
   Chip,
   Divider,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
+  Tooltip,
 } from "@nextui-org/react";
 import { formatDistanceToNow } from "date-fns";
 import BoxIcon from "@/components/boxicons";
@@ -48,17 +46,8 @@ export default function SessionHistoryCard({
             You did&nbsp;
             <div className="flex flex-row items-center gap-1">
               <u className="text-violet-500">{title}</u>
-              <Popover placement="right" showArrow={true}>
-                <PopoverTrigger>
-                  <button className="focus:outline-none">
-                    <BoxIcon
-                      name="bx-info-circle"
-                      size="16px"
-                      className="text-violet-500 hover:text-violet-600"
-                    />
-                  </button>
-                </PopoverTrigger>
-                <PopoverContent className="max-w-[500px] max-h-[400px] overflow-y-auto p-4">
+              <Tooltip
+                content={
                   <div className="prose dark:prose-invert w-[480px] break-words">
                     <ReactMarkdown
                       remarkPlugins={[remarkGfm, remarkBreaks]}
@@ -73,8 +62,18 @@ export default function SessionHistoryCard({
                       {description}
                     </ReactMarkdown>
                   </div>
-                </PopoverContent>
-              </Popover>
+                }
+                placement="right"
+                showArrow
+              >
+                <button className="focus:outline-none">
+                  <BoxIcon
+                    name="bx-info-circle"
+                    size="16px"
+                    className="text-violet-500 hover:text-violet-600"
+                  />
+                </button>
+              </Tooltip>
             </div>
             &nbsp;with&nbsp;
             <p className="bg-gradient-to-r from-indigo-500 via-violet-500 to-fuchsia-500 bg-clip-text text-transparent font-semibold">
