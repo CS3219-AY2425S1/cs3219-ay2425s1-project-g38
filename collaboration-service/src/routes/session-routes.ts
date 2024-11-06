@@ -17,6 +17,6 @@ router.get("/check", validateApiJWT, sessionController.checkSessionStatus);
 router.get("/leave", validateApiJWT, sessionController.leaveSession);
 
 // Get session details
-router.get("/details", validateApiJWT, sessionController.getSessionDetails);
+router.post("/details", validateApiJWT, sessionController.getSessionDetails);
 
 export default router;
