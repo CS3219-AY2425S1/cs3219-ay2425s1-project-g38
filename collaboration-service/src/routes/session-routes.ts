@@ -16,4 +16,7 @@ router.get("/check", validateApiJWT, sessionController.checkSessionStatus);
 // Remove user from session
 router.get("/leave", validateApiJWT, sessionController.leaveSession);
 
+// Get session details
+router.get("/details", validateApiJWT, sessionController.getSessionDetails);
+
 export default router;

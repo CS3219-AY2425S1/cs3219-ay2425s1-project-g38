@@ -1,0 +1,48 @@
+{
+	"info": {
+		"_postman_id": "457509d9-ecd7-47f2-8f5c-59bdecd475fa",
+		"name": "Collab-Service API Copy",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "38670442"
+	},
+	"item": [
+		{
+			"name": "Get Session Information",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3MjQ5OTMzZDUyNmU3MmYyZTUzZTQxMCIsImlhdCI6MTczMDg4MDM4MSwiZXhwIjoxNzMwOTY2NzgxfQ.C3-buUsWrb5pi7G9gX9OeVZ67ItfeThlykx9JCm5iQA",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\":\"67249933d526e72f2e53e410\",\r\n    \"sessionId\": \"cbb35381-301d-4c04-8557-2746642a8a64\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8010/api/session/details",
+					"host": [
+						"localhost"
+					],
+					"port": "8010",
+					"path": [
+						"api",
+						"session",
+						"details"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
