@@ -22,8 +22,8 @@ declare -A services=(
     # ["matching-service"]="matching-service"
     # ["question-service"]="question-service"
     # ["user-service"]="user-service"
-    ["frontend-peerprep"]="frontend/peerprep"
-    # ["collaboration-service"]="collaboration-service"
+    # ["frontend-peerprep"]="frontend/peerprep"
+    ["collaboration-service"]="collaboration-service"
 )
 
 # Track the result of each build and push

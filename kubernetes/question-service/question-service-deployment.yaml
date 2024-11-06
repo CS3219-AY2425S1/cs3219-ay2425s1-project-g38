@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: question-service
-          image: delishad21/question-service:latest
+          image: asia-southeast1-docker.pkg.dev/peerprep-437117/peerprep/question-service:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8003

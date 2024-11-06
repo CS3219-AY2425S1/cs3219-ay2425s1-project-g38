@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Change BASE TAG to your Docker Hub username
-BASE_TAG="delishad21"
+BASE_TAG="asia-southeast1-docker.pkg.dev/peerprep-437117/peerprep"
 
 # Check if a tag argument was provided; otherwise, print an error and exit
 if [ -z "$1" ]; then
@@ -16,8 +16,8 @@ declare -A services=(
     # ["matching-service"]="matching-service"
     # ["question-service"]="question-service"
     # ["user-service"]="user-service"
-    ["frontend-peerprep"]="frontend/peerprep"
-    # ["collaboration-service"]="collaboration-service"
+    # ["frontend-peerprep"]="frontend/peerprep"
+    ["collaboration-service"]="collaboration-service"
 )
 
 # Track the result of each build and push
