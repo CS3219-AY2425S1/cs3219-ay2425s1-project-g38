@@ -128,10 +128,10 @@ export const sessionController = {
         }
     },
     getSessionDetails: async (req: Request, res: Response) => {
-        const { userId, sessionId } = req.body;
+        const { sessionId } = req.body;
 
         try {
-            const session = await Session.findOne({ participants: userId, session_id: sessionId, active: false });
+            const session = await Session.findOne({ session_id: sessionId, active: false });
 
             if (!session) {
                 return res.status(404).json({ message: 'Session not found' });

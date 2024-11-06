@@ -16,13 +16,13 @@
 				"header": [
 					{
 						"key": "authorization",
-						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3MjQ5OTMzZDUyNmU3MmYyZTUzZTQxMCIsImlhdCI6MTczMDg4MDM4MSwiZXhwIjoxNzMwOTY2NzgxfQ.C3-buUsWrb5pi7G9gX9OeVZ67ItfeThlykx9JCm5iQA",
+						"value": "Bearer <replace with own token>",
 						"type": "text"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"userId\":\"67249933d526e72f2e53e410\",\r\n    \"sessionId\": \"cbb35381-301d-4c04-8557-2746642a8a64\"\r\n}",
+					"raw": "{\r\n    \"sessionId\": \"<replace with own session ID>\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
