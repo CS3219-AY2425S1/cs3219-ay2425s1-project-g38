@@ -126,5 +126,37 @@ export const sessionController = {
         } catch (err) {
             res.status(500).json({ message: (err as Error).message });
         }
+    },
+    getSessionDetails: async (req: Request, res: Response) => {
+        const { userId, sessionId } = req.body;
+
+        try {
+            const session = await Session.findOne({ participants: userId, session_id: sessionId, active: false });
+
+            if (!session) {
+                return res.status(404).json({ message: 'Session not found' });
+            }
+
+            const yDoc = new Y.Doc();
+            const yDocBuffer = session.yDoc;
+            
+            Y.applyUpdateV2(yDoc, new Uint8Array(yDocBuffer));
+
+            // Assuming the text type is named "code"
+            const yText = yDoc.getText('code');
+            const yDocString = yText.toString();
+
+            res.status(200).json({
+                sessionId: session.session_id,
+                dateCreated: session.date_created,
+                participants: session.participants,
+                question: session.question,
+                active: session.active,
+                attemptCode: yDocString,
+                language: session.language,
+            });
+        } catch (err) {
+            res.status(500).json({ message: (err as Error).message });
+        }
     }
 };
