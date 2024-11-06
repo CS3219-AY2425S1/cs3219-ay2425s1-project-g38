@@ -56,7 +56,7 @@ export default function Dashboard() {
   return (
     <>
       <div>{isMatchUIVisible && <MatchUI onClose={handleClose} />}</div>
-      <div className="flex flex-col items-center p-8 gap-3">
+      <div className="flex flex-col items-center py-8 md:py-6 gap-3">
         <p className="text-md text-left w-full font-semibold">My Activities</p>
         <div className="flex justify-center gap-8 w-full my-4 w-3/4">
           <div className="w-3/4">

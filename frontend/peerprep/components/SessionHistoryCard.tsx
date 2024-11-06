@@ -39,7 +39,7 @@ export default function SessionHistoryCard({
   const timeAgo = formatDistanceToNow(date, { addSuffix: true });
 
   return (
-    <Card shadow="sm" className="w-full" radius="sm">
+    <Card shadow="sm" className="w-full" radius="sm" key="">
       <CardHeader className="flex flex-col items-start px-4 pt-3 pb-3">
         <div className="flex justify-between w-full items-center">
           <div className="flex text-md font-semibold">
