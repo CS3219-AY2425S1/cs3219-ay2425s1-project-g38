@@ -33,7 +33,7 @@ export const Sidebar = ({ isAdmin }: SidebarProps) => {
   };
 
   return (
-    <div className="h-fit flex flex-col fixed pt-4 relative w-1/5 max-w-52 min-w-36 mr-8">
+    <div className="h-fit flex flex-col fixed pt-4 relative md:min-w-52 min-win-36 mr-8">
       <SignOutConfirmationModal
         isOpen={isModalOpen}
         onOpenChange={setModalOpen}

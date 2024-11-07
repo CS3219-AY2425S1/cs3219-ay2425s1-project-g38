@@ -12,7 +12,7 @@ const ReconnectCard: React.FC<ReconnectCardProps> = ({
   onLeave,
 }) => {
   return (
-    <Card className="flex-1 bg-gradient-to-br from-[#6F0AD4] to-[#FE9977]">
+    <Card className="flex-1 bg-gradient-to-r from-purple-500 via-indigo-500 to-blue-500">
       <CardBody>
         <h4 className="text-white font-medium text-large p-2">
           You&apos;re currently in a session

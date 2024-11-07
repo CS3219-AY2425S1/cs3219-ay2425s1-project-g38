@@ -1,14 +1,25 @@
 import React from "react";
 import { useMatchHistoryFetcher } from "@/services/userService";
 import SessionHistoryCard from "@/components/SessionHistoryCard";
-import { Card, Skeleton, Spinner } from "@nextui-org/react";
+import { Card, Skeleton, Spinner, Button } from "@nextui-org/react";
 import { useQuestionDataFetcher } from "@/services/questionService";
+import { useRouter } from "next/navigation";
 
 const SessionHistory = () => {
   const { matchHistory, error, isLoading } = useMatchHistoryFetcher();
+  const router = useRouter();
 
   if (isLoading) return <Spinner />;
-  if (error) return <div>Error loading match history</div>;
+  if (error)
+    return <div className="flex items-center">Error loading match history</div>;
+
+  if (matchHistory.length === 0) {
+    return (
+      <div className="flex flex-col items-center gap-4 font-medium text-md text-gray-400 dark:text-gray-500">
+        <p>No match history found. Time to start a match!</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-4">
@@ -63,6 +74,7 @@ const SessionCard = ({ match }: { match: Match }) => {
   return (
     <SessionHistoryCard
       key={match.sessionId}
+      sessionId={match.sessionId}
       title={questionData.question.title}
       partner={match.partnerUsername}
       categories={questionData.question.category}

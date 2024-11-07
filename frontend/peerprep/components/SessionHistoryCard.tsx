@@ -12,8 +12,10 @@ import BoxIcon from "@/components/boxicons";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
+import { useRouter } from "next/navigation";
 
 interface SessionHistoryCardProps {
+  sessionId: string;
   title: string;
   partner: string;
   categories: string[];
@@ -29,6 +31,7 @@ const difficultyColors = {
 } as const;
 
 export default function SessionHistoryCard({
+  sessionId,
   title,
   partner,
   categories,
@@ -37,15 +40,25 @@ export default function SessionHistoryCard({
   description,
 }: SessionHistoryCardProps) {
   const timeAgo = formatDistanceToNow(date, { addSuffix: true });
+  const router = useRouter();
+
+  const handleTitleClick = () => {
+    router.push(`/session-history/${sessionId}?username=${partner}`);
+  };
 
   return (
-    <Card shadow="sm" className="w-full" radius="sm" key="">
+    <Card shadow="sm" className="w-full" radius="sm">
       <CardHeader className="flex flex-col items-start px-4 pt-3 pb-3">
         <div className="flex justify-between w-full items-center">
           <div className="flex text-md font-semibold">
             You did&nbsp;
             <div className="flex flex-row items-center gap-1">
-              <u className="text-violet-500">{title}</u>
+              <u
+                className="text-violet-500 cursor-pointer"
+                onClick={handleTitleClick}
+              >
+                {title}
+              </u>
               <Tooltip
                 content={
                   <div className="prose dark:prose-invert w-[480px] break-words">
