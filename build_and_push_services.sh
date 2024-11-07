@@ -13,10 +13,10 @@ fi
 
 # List of services with their respective directories
 declare -A services=(
-    # ["matching-service"]="matching-service"
-    # ["question-service"]="question-service"
-    # ["user-service"]="user-service"
-    # ["frontend-peerprep"]="frontend/peerprep"
+    ["matching-service"]="matching-service"
+    ["question-service"]="question-service"
+    ["user-service"]="user-service"
+    ["frontend-peerprep"]="frontend/peerprep"
     ["collaboration-service"]="collaboration-service"
 )
 
