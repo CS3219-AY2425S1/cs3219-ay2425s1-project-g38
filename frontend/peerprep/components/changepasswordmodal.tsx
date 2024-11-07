@@ -9,6 +9,7 @@ import {
   ModalFooter,
   Button,
   Input,
+  Tooltip,
 } from "@nextui-org/react";
 
 import BoxIcon from "./boxicons";
@@ -30,18 +31,15 @@ export function ChangePasswordModal({
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isVisible, setIsVisible] = useState(false);
-  const [error, setError] = useState("");
+  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
   const handleConfirm = () => {
+    setIsFormSubmitted(true);
     if (!validatePassword(newPassword)) {
-      setError("Password must be at least 8 characters long");
-
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setError("Passwords do not match");
-
       return;
     }
 
@@ -52,9 +50,34 @@ export function ChangePasswordModal({
   const handleClose = () => {
     setNewPassword("");
     setConfirmPassword("");
-    setError("");
+    setIsFormSubmitted(false);
     onOpenChange(false);
   };
+
+  const passwordRequirements = (
+    <Tooltip
+      content={
+        <ul className="list-disc pl-2 py-1 text-xs">
+          <li>At least 12 characters long</li>
+          <li>Contains at least one uppercase letter</li>
+          <li>Contains at least one lowercase letter</li>
+          <li>Contains at least one digit</li>
+          <li>Contains at least one special character (e.g., @$#!%*?&)</li>
+        </ul>
+      }
+      placement="right"
+      showArrow
+    >
+      <div className="flex flex-row gap-0.5 items-center w-fit text-xs">
+        <BoxIcon
+          name="bx-info-circle"
+          size="10px"
+          className="text-white hover:text-gray-200"
+        />
+        &nbsp;Password requirements
+      </div>
+    </Tooltip>
+  );
 
   return (
     <Modal isOpen={isOpen} onOpenChange={handleClose}>
@@ -63,8 +86,11 @@ export function ChangePasswordModal({
           <>
             <ModalHeader className="flex flex-col gap-1">
               <div className="flex items-center gap-2">
-                <BoxIcon name="bxs-lock" />
-                Change Password
+                <BoxIcon name="bxs-lock" size="40px" />
+                <div className="flex flex-col gap-0 items-center">
+                  Change Password
+                  {passwordRequirements}
+                </div>
               </div>
             </ModalHeader>
             <ModalBody>
@@ -74,9 +100,10 @@ export function ChangePasswordModal({
                 type={isVisible ? "text" : "password"}
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
+                isInvalid={newPassword !== "" && !validatePassword(newPassword)}
                 errorMessage={
                   !validatePassword(newPassword) &&
-                  "Password must be at least 8 characters"
+                  "Password does not meet requirements"
                 }
                 endContent={
                   <Button
@@ -94,8 +121,9 @@ export function ChangePasswordModal({
                 type={isVisible ? "text" : "password"}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
+                isInvalid={isFormSubmitted && newPassword !== confirmPassword}
                 errorMessage={
-                  confirmPassword && newPassword !== confirmPassword
+                  confirmPassword !== "" && newPassword !== confirmPassword
                     ? "Passwords do not match"
                     : ""
                 }
@@ -109,7 +137,6 @@ export function ChangePasswordModal({
                   </Button>
                 }
               />
-              {error && <p className="text-danger text-sm">{error}</p>}
             </ModalBody>
             <ModalFooter>
               <Button color="danger" variant="light" onPress={onClose}>
@@ -118,11 +145,7 @@ export function ChangePasswordModal({
               <Button
                 color="primary"
                 onPress={handleConfirm}
-                isDisabled={
-                  !newPassword ||
-                  !confirmPassword ||
-                  newPassword !== confirmPassword
-                }
+                isDisabled={!newPassword || !confirmPassword}
               >
                 Change Password
               </Button>

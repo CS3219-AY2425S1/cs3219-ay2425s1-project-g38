@@ -10,7 +10,6 @@ import { GreetingMessageHeader } from "./greetingmessageheader";
 import { UserAvatar } from "./useravatar";
 
 import { ThemeSwitch } from "@/components/theme-switch";
-import { NotificationButton } from "@/components/navbar-buttons";
 import { Logo } from "@/components/icons";
 
 type NavbarProps = {

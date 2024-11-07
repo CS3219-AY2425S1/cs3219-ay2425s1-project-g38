@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 
-import { getCreateUserSession, getResetPasswordSession, getSession } from "./auth/actions";
+import {
+  getCreateUserSession,
+  getResetPasswordSession,
+  getSession,
+} from "./auth/actions";
 import { checkUserMatchStatus } from "./services/sessionAPI";
 
 export async function middleware(req: any) {
@@ -13,18 +17,20 @@ export async function middleware(req: any) {
   const emailToken = signUpSession?.emailToken;
 
   // Handle reset password route
-  if (url.pathname.startsWith('/sign-in/forgot-password/reset')) {
-    const resetToken = url.searchParams.get('token');
-    
+  if (url.pathname.startsWith("/sign-in/forgot-password/reset")) {
+    const resetToken = url.searchParams.get("token");
+
     // If no token in URL or no reset password session, redirect to forgot password page
     if (!resetToken || !resetPasswordSession?.resetToken) {
-      url.pathname = '/404';
+      url.pathname = "/404";
+
       return NextResponse.redirect(url);
     }
 
     // Verify that the tokens match
     if (resetToken !== resetPasswordSession.resetToken) {
-      url.pathname = '/403';
+      url.pathname = "/403";
+
       return NextResponse.redirect(url);
     }
   }

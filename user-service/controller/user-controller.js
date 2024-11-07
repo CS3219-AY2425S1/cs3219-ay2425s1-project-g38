@@ -26,7 +26,10 @@ const isValidEmail = (email) =>
 const isValidUsername = (username) =>
   /^[a-zA-Z0-9_-]{2,32}$/.test(username);
 
-const isValidPassword = (password) => password.length >= 8;
+const isValidPassword = (password) =>
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!#%*?&])[A-Za-z\d@$#!%*?&]{12,}$/.test(
+    password
+  );
 
 const validateUserData = ({ username, email, password }) => {
   if (!username || !email || !password) {
@@ -282,6 +285,9 @@ export async function updateUser(req, res) {
 
     let hashedPassword;
     if (password) {
+      if (!isValidPassword(password)) {
+        return res.status(400).json({ message: "Password does not meet requirements" });
+      }
       const salt = bcrypt.genSaltSync(10);
       hashedPassword = bcrypt.hashSync(password, salt);
     }

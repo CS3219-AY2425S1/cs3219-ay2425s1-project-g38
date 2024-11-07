@@ -52,7 +52,7 @@ export default function QuestionsTable() {
     onOpenChange: onConfirmModalOpenChange,
   } = useDisclosure();
   const [questionToDelete, setQuestionToDelete] = useState<Question | null>(
-    null
+    null,
   );
 
   const handleDelete = (question: Question) => {
@@ -91,7 +91,7 @@ export default function QuestionsTable() {
     complexityFilter,
     categoryFilter,
     sortDescriptor,
-    page
+    page,
   );
 
   const { categoryData, categoryLoading } = useUniqueCategoriesFetcher();

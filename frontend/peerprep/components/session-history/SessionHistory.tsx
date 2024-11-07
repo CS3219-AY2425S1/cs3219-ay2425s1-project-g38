@@ -1,9 +1,10 @@
 import React from "react";
-import { useMatchHistoryFetcher } from "@/services/userService";
-import SessionHistoryCard from "@/components/SessionHistoryCard";
-import { Card, Skeleton, Spinner, Button } from "@nextui-org/react";
-import { useQuestionDataFetcher } from "@/services/questionService";
+import { Card, Skeleton, Spinner } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
+
+import { useMatchHistoryFetcher } from "@/services/userService";
+import SessionHistoryCard from "@/components/session-history/SessionHistoryCard";
+import { useQuestionDataFetcher } from "@/services/questionService";
 
 const SessionHistory = () => {
   const { matchHistory, error, isLoading } = useMatchHistoryFetcher();
@@ -43,24 +44,24 @@ interface Match {
 
 const SessionCard = ({ match }: { match: Match }) => {
   const { questionData, questionLoading } = useQuestionDataFetcher(
-    match.questionId
+    match.questionId,
   );
 
   if (questionLoading) {
     return (
       <Card className="w-full space-y-5 p-4" radius="sm">
         <Skeleton className="rounded-lg">
-          <div className="h-24 rounded-lg bg-default-300"></div>
+          <div className="h-24 rounded-lg bg-default-300" />
         </Skeleton>
         <div className="space-y-3">
           <Skeleton className="w-3/5 rounded-lg">
-            <div className="h-3 w-3/5 rounded-lg bg-default-200"></div>
+            <div className="h-3 w-3/5 rounded-lg bg-default-200" />
           </Skeleton>
           <Skeleton className="w-4/5 rounded-lg">
-            <div className="h-3 w-4/5 rounded-lg bg-default-200"></div>
+            <div className="h-3 w-4/5 rounded-lg bg-default-200" />
           </Skeleton>
           <Skeleton className="w-2/5 rounded-lg">
-            <div className="h-3 w-2/5 rounded-lg bg-default-300"></div>
+            <div className="h-3 w-2/5 rounded-lg bg-default-300" />
           </Skeleton>
         </div>
       </Card>

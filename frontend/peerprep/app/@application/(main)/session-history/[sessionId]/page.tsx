@@ -1,23 +1,26 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { getSessionDetails } from "@/services/sessionAPI";
+import { useParams, useSearchParams } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
-import { Card, Chip, CardBody, Divider, Button } from "@nextui-org/react";
-import { capitalize } from "@/utils/utils";
-import BackButton from "@/components/session-history/BackButton";
-import SkeletonCard from "@/components/session-history/SkeletonCard";
-import BoxIcon from "@/components/boxicons";
-import { SupportedLanguages } from "@/utils/utils"; // Assuming this is where the languages are defined
+import { Card, Chip, CardBody, Divider } from "@nextui-org/react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import {
   oneDark,
   oneLight,
 } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { useTheme } from "next-themes";
+import rehypeRaw from "rehype-raw";
+import rehypeSanitize from "rehype-sanitize";
+
+import { SupportedLanguages } from "@/utils/utils"; // Assuming this is where the languages are defined
+import BoxIcon from "@/components/boxicons";
+import SkeletonCard from "@/components/session-history/SkeletonCard";
+import BackButton from "@/components/session-history/BackButton";
+import { capitalize } from "@/utils/utils";
+import { getSessionDetails } from "@/services/sessionAPI";
 
 const SessionDetailsPage: React.FC = () => {
   const [sessionData, setSessionData] = useState<any>(null);
@@ -34,6 +37,7 @@ const SessionDetailsPage: React.FC = () => {
     const fetchSessionDetails = async () => {
       try {
         const result = await getSessionDetails(sessionId);
+
         if (result.status === "success") {
           setSessionData(result.data);
         } else {
@@ -63,13 +67,12 @@ const SessionDetailsPage: React.FC = () => {
               </p>
             </div>
           </div>
-          <div className="animate-pulse min-w-[150px] min-h-[22px] bg-gray-600/80 rounded-md"></div>
+          <div className="animate-pulse min-w-[150px] min-h-[22px] bg-gray-600/80 rounded-md" />
         </div>
         <div className="flex flex-row gap-4">
           <SkeletonCard />
           <SkeletonCard />
         </div>
-        <BackButton />
       </div>
     );
   }
@@ -111,13 +114,13 @@ const SessionDetailsPage: React.FC = () => {
           <h1 className="text-left text-lg font-semibold px-4 mb-4">
             Question
           </h1>
-          <Divider className="mb-1" />
+          <Divider />
           <div className="p-4">
             <h2 className="text-lg font-medium mb-1 text-left">
               {question.title}
             </h2>
-            <div className="flex flex-row gap-2 text-gray-500">
-              <div className="flex items-start mb-4">
+            <div className="flex flex-row gap-2 text-gray-500 text-xs items-center mb-4">
+              <div className="flex items-center">
                 <Chip
                   size="sm"
                   variant="flat"
@@ -131,7 +134,7 @@ const SessionDetailsPage: React.FC = () => {
                 </Chip>
               </div>
               |
-              <div className="flex flex-row gap-2 pb-2">
+              <div className="flex flex-row items-center gap-2">
                 {question.category.map((category: string, index: number) => (
                   <Chip size="sm" key={index}>
                     {capitalize(category)}
@@ -142,6 +145,28 @@ const SessionDetailsPage: React.FC = () => {
             <CardBody className="flex flex-col w-full text-wrap p-0 text-sm font-light leading-loose">
               <ReactMarkdown
                 remarkPlugins={[remarkGfm, remarkBreaks]}
+                rehypePlugins={[rehypeRaw, rehypeSanitize]}
+                components={{
+                  code(props) {
+                    const { className, children, ...rest } = props;
+                    const match = /language-(\w+)/.exec(className || "");
+
+                    return match ? (
+                      <SyntaxHighlighter
+                        style={theme === "dark" ? oneDark : (oneLight as any)}
+                        language={match[1]}
+                        PreTag="div"
+                        customStyle={{ fontSize: "0.75rem" }}
+                      >
+                        {String(children).replace(/\n$/, "")}
+                      </SyntaxHighlighter>
+                    ) : (
+                      <code className={className} {...props}>
+                        {children}
+                      </code>
+                    );
+                  },
+                }}
                 className="space-y-2"
               >
                 {question.description}
@@ -153,7 +178,7 @@ const SessionDetailsPage: React.FC = () => {
           <h1 className="text-left text-lg font-semibold px-4 mb-4">
             Submission
           </h1>
-          <Divider className="mb-1" />
+          <Divider />
           <SyntaxHighlighter
             language={language.toLowerCase() as SupportedLanguages}
             style={theme === "dark" ? oneDark : oneLight}

@@ -63,7 +63,7 @@ export const getSessionDetails = async (sessionId: string) => {
           Authorization: `Bearer ${await getAccessToken()}`,
         },
         body: JSON.stringify({ sessionId: sessionId }),
-      }
+      },
     );
 
     console.log(response);
@@ -71,9 +71,11 @@ export const getSessionDetails = async (sessionId: string) => {
     if (response.ok) {
       console.log("success");
       const data = await response.json();
+
       return { status: "success", data };
     } else {
       const errorData = await response.json();
+
       return {
         status: "error",
         message: errorData.message || "Failed to retrieve session details.",
@@ -81,6 +83,7 @@ export const getSessionDetails = async (sessionId: string) => {
     }
   } catch (error) {
     console.log("Error fetching session details:", error);
+
     return {
       status: "error",
       message: "Unable to reach the session service. Please try again later.",

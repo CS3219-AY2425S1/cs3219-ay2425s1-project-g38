@@ -1,6 +1,5 @@
 "use client";
 
-import { Card, CardBody } from "@nextui-org/card";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -9,7 +8,7 @@ import StartMatchCard from "@/components/startmatchcard";
 import { checkUserMatchStatus, leaveMatch } from "@/services/sessionAPI";
 import ReconnectCard from "@/components/reconnectcard";
 import BoxIcon from "@/components/boxicons";
-import SessionHistory from "@/components/SessionHistory";
+import SessionHistory from "@/components/session-history/SessionHistory";
 import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 
 export default function Dashboard() {
@@ -81,7 +80,7 @@ export default function Dashboard() {
               )}
             </div>
           </div>
-          <div className="w-1/4 hidden md:flex"></div>
+          <div className="w-1/4 hidden md:flex" />
         </div>
         <p className="text-md text-left w-full font-semibold">Activity Feed</p>
         <div className="flex justify-center gap-8 w-full mt-4 w-3/4">
@@ -90,7 +89,7 @@ export default function Dashboard() {
               <SessionHistory />
             </div>
           </div>
-          <div className="w-1/4 hidden md:flex"></div>
+          <div className="w-1/4 hidden md:flex" />
         </div>
         <ScrollToTopButton />
       </div>

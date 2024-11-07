@@ -13,7 +13,10 @@ export const validateEmail = (email: string) =>
 export const validateUsername = (username: string) =>
   /^[a-zA-Z0-9_-]{2,32}$/.test(username);
 
-export const validatePassword = (password: string) => password.length >= 8;
+export const validatePassword = (password: string) =>
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$!%*?&])[A-Za-z\d@#$!%*?&]{12,}$/.test(
+    password,
+  );
 
 export type SupportedLanguages =
   | "javascript"

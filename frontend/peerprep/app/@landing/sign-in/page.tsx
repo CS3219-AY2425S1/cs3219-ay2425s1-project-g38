@@ -21,7 +21,7 @@ export default function SignInPage() {
   const [password, setPassword] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false); // Loading state for button
   const [toast, setToast] = useState<{ message: string; type: string } | null>(
-    null
+    null,
   );
 
   const toggleVisibility = () => setIsVisible(!isVisible);

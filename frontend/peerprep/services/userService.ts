@@ -9,7 +9,7 @@ const NEXT_PUBLIC_USER_SERVICE_URL = env("NEXT_PUBLIC_USER_SERVICE_URL");
 const fetcher = async (url: string) => {
   const token = await getAccessToken();
   const session = await getSession();
-  
+
   if (!session?.userId) {
     throw new Error("No session found");
   }
@@ -19,18 +19,18 @@ const fetcher = async (url: string) => {
       Authorization: `Bearer ${token}`,
     },
   });
-  
+
   if (!response.ok) {
     throw new Error("Failed to fetch match history");
   }
-  
+
   return response.json();
 };
 
 export const useMatchHistoryFetcher = () => {
   const { data, error, isLoading } = useSWR(
     `${NEXT_PUBLIC_USER_SERVICE_URL}/users/:userId/match-history`,
-    fetcher
+    fetcher,
   );
 
   return {
@@ -38,4 +38,4 @@ export const useMatchHistoryFetcher = () => {
     error,
     isLoading,
   };
-}; 
+};

@@ -2,21 +2,14 @@
 
 import { useState } from "react";
 import { Input } from "@nextui-org/input";
-import { Button } from "@nextui-org/button";
 import { useRouter } from "next/navigation";
 import { CircularProgress } from "@nextui-org/react";
 
 import BoxIcon from "@/components/boxicons";
-import { EyeFilledIcon, EyeSlashFilledIcon } from "@/components/icons";
 import PeerprepLogo from "@/components/peerpreplogo";
 import { fontFun } from "@/config/fonts";
-import { forgetPassword, signUp } from "@/auth/actions"; // Import new server functions
+import { forgetPassword } from "@/auth/actions"; // Import new server functions
 import Toast from "@/components/toast"; // Import the Toast component
-import {
-  validateEmail,
-  validateUsername,
-  validatePassword,
-} from "@/utils/utils";
 
 export default function ForgotPasswordPage() {
   const router = useRouter();
@@ -25,7 +18,7 @@ export default function ForgotPasswordPage() {
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: string } | null>(
-    null
+    null,
   );
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {

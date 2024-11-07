@@ -6,6 +6,13 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
 import { Chip } from "@nextui-org/react";
+import SyntaxHighlighter from "react-syntax-highlighter";
+import {
+  oneDark,
+  oneLight,
+} from "react-syntax-highlighter/dist/esm/styles/prism";
+import rehypeRaw from "rehype-raw";
+import rehypeSanitize from "rehype-sanitize";
 
 import Chat from "./Chat";
 
@@ -78,7 +85,32 @@ export default function QuestionDisplay({
             ))}
           </div>
           <CardBody className="flex flex-col w-full h-full overflow-y-auto">
-            <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm, remarkBreaks]}
+              rehypePlugins={[rehypeRaw, rehypeSanitize]}
+              components={{
+                code(props) {
+                  const { className, children, ...rest } = props;
+                  const match = /language-(\w+)/.exec(className || "");
+
+                  return match ? (
+                    <SyntaxHighlighter
+                      style={theme === "dark" ? oneDark : (oneLight as any)}
+                      language={match[1]}
+                      PreTag="div"
+                      customStyle={{ fontSize: "0.75rem" }}
+                    >
+                      {String(children).replace(/\n$/, "")}
+                    </SyntaxHighlighter>
+                  ) : (
+                    <code className={className} {...props}>
+                      {children}
+                    </code>
+                  );
+                },
+              }}
+              className="space-y-2"
+            >
               {questionDescription}
             </ReactMarkdown>
           </CardBody>

@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Input } from "@nextui-org/input";
-import { Button } from "@nextui-org/button";
 import { useRouter, useSearchParams } from "next/navigation";
 import { CircularProgress } from "@nextui-org/react";
 
@@ -12,7 +11,7 @@ import PeerprepLogo from "@/components/peerpreplogo";
 import { fontFun } from "@/config/fonts";
 import { validatePassword } from "@/utils/utils";
 import Toast from "@/components/toast";
-import { changePassword, resetPassword } from "@/auth/actions";
+import { resetPassword } from "@/auth/actions";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -24,7 +23,7 @@ export default function ResetPasswordPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: string } | null>(
-    null
+    null,
   );
 
   const toggleVisibility = () => setIsVisible(!isVisible);
@@ -47,6 +46,7 @@ export default function ResetPasswordPage() {
         type: "error",
       });
       setIsLoading(false);
+
       return;
     }
 
@@ -56,6 +56,7 @@ export default function ResetPasswordPage() {
         type: "error",
       });
       setIsLoading(false);
+
       return;
     }
     try {

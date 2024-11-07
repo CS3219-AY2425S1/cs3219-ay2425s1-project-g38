@@ -64,9 +64,10 @@ export const getResetPasswordSession = async () => {
   const session = await getIronSession<ResetPasswordSessionData>(
     cookies(),
     resetPasswordOptions,
-  )
+  );
+
   return session;
-}
+};
 
 export const getAccessToken = async () => {
   const session = await getSession();
@@ -704,19 +705,16 @@ export const resetPassword = async (newPassword: string) => {
 
     const userId = payload.id;
 
-    const response = await fetch(
-      `${USER_SERVICE_URL}/users/${userId}`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session.resetToken}`,
-        },
-        body: JSON.stringify({
-          password: newPassword,
-        }),
+    const response = await fetch(`${USER_SERVICE_URL}/users/${userId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session.resetToken}`,
       },
-    );
+      body: JSON.stringify({
+        password: newPassword,
+      }),
+    });
 
     if (response.ok) {
       return { status: "success", message: "Password updated successfully" };
@@ -763,6 +761,7 @@ export const deleteUser = async () => {
 
 export const forgetPassword = async (identifier: string) => {
   const resetPasswordSession = await getResetPasswordSession();
+
   try {
     const response = await fetch(`${USER_SERVICE_URL}/auth/forget-password`, {
       method: "POST",
@@ -776,13 +775,20 @@ export const forgetPassword = async (identifier: string) => {
 
     if (response.ok) {
       const data = await response.json();
+
       resetPasswordSession.resetToken = data.data.token;
       await resetPasswordSession.save();
 
-      return { status: "success", message: "Password reset request successful." };
+      return {
+        status: "success",
+        message: "Password reset request successful.",
+      };
     } else if (response.status === 401) {
-      return { status: "warning", message: "You do not have an account with us!" };
-    }  else {
+      return {
+        status: "warning",
+        message: "You do not have an account with us!",
+      };
+    } else {
       const errorData = await response.json();
 
       return {
@@ -798,4 +804,4 @@ export const forgetPassword = async (identifier: string) => {
       message: "Unable to reset password. Please try again later.",
     };
   }
-}
+};

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Input } from "@nextui-org/input";
 import { Button } from "@nextui-org/button";
 import { useRouter } from "next/navigation";
-import { CircularProgress } from "@nextui-org/react";
+import { CircularProgress, Tooltip } from "@nextui-org/react";
 
 import BoxIcon from "@/components/boxicons";
 import { EyeFilledIcon, EyeSlashFilledIcon } from "@/components/icons";
@@ -85,6 +85,56 @@ export default function SignUpPage() {
     setIsLoading(false);
   };
 
+  const passwordRequirements = (
+    <Tooltip
+      content={
+        <ul className="list-disc pl-2 py-1 text-xs">
+          <li>At least 12 characters long</li>
+          <li>Contains at least one uppercase letter</li>
+          <li>Contains at least one lowercase letter</li>
+          <li>Contains at least one digit</li>
+          <li>Contains at least one special character (e.g., @$#!%*?&)</li>
+        </ul>
+      }
+      placement="right"
+      showArrow
+    >
+      <div className="flex flex-row gap-1 items-center w-fit">
+        <BoxIcon
+          name="bx-info-circle"
+          size="12px"
+          className="text-white hover:text-gray-200"
+        />
+        &nbsp;Password requirements
+      </div>
+    </Tooltip>
+  );
+
+  const errorPasswordRequirements = (
+    <Tooltip
+      content={
+        <ul className="list-disc pl-2 py-1 text-xs">
+          <li>At least 12 characters long</li>
+          <li>Contains at least one uppercase letter</li>
+          <li>Contains at least one lowercase letter</li>
+          <li>Contains at least one digit</li>
+          <li>Contains at least one special character (e.g., @$#!%*?&)</li>
+        </ul>
+      }
+      placement="right"
+      showArrow
+    >
+      <div className="flex flex-row gap-1 items-center w-fit">
+        <BoxIcon
+          name="bx-info-circle"
+          size="12px"
+          className="text-danger hover:text-red-700"
+        />
+        &nbsp;Password does not meet requirements
+      </div>
+    </Tooltip>
+  );
+
   return (
     <div className="flex items-center justify-center mt-20">
       {toast && (
@@ -147,11 +197,11 @@ export default function SignUpPage() {
             labelPlacement="outside"
             label="Password"
             placeholder="Enter your password"
-            description="Your password must contain 8 or more characters"
+            description={passwordRequirements}
             value={password}
             onValueChange={setPassword}
-            isInvalid={isFormSubmitted && !validatePassword(password)}
-            errorMessage="Password must be at least 8 characters long"
+            isInvalid={!validatePassword(password)}
+            errorMessage={errorPasswordRequirements}
             classNames={{
               description: "text-gray-700 dark:text-gray-200",
             }}
