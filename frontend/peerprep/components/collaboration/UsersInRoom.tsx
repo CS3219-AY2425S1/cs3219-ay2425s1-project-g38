@@ -8,11 +8,8 @@ interface UsersInRoomProps {
   setUsersInRoom: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
-export const UsersInRoom = ({
-  usersInRoom,
-  setUsersInRoom,
-}: UsersInRoomProps) => {
-  const { theme, resolvedTheme } = useTheme();
+export const UsersInRoom = ({ usersInRoom }: UsersInRoomProps) => {
+  const { resolvedTheme } = useTheme();
   const [isThemeReady, setIsThemeReady] = useState<boolean>(false);
 
   useEffect(() => {
@@ -20,15 +17,6 @@ export const UsersInRoom = ({
       setIsThemeReady(true);
     }
   }, [resolvedTheme]);
-
-  const cardBgColor =
-    usersInRoom.length >= 2
-      ? theme === "dark"
-        ? "bg-gradient-to-br from-[#2055A6] to-[#6F0AD4]"
-        : "bg-white border-2 border-purple-500"
-      : theme === "dark"
-        ? "bg-gray-700"
-        : "bg-gray-200 border-purple-600";
 
   if (!isThemeReady) {
     return null; // or a loading spinner, or any placeholder

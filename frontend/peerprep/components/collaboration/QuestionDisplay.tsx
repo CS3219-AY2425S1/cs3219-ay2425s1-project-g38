@@ -90,7 +90,7 @@ export default function QuestionDisplay({
               rehypePlugins={[rehypeRaw, rehypeSanitize]}
               components={{
                 code(props) {
-                  const { className, children, ...rest } = props;
+                  const { className, children } = props;
                   const match = /language-(\w+)/.exec(className || "");
 
                   return match ? (

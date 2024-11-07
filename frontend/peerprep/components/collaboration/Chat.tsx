@@ -2,7 +2,6 @@
 
 import { useRef, useState, useEffect } from "react";
 import { Button, Textarea } from "@nextui-org/react";
-import { useTheme } from "next-themes";
 
 import { chatMessage } from "@/utils/utils";
 
@@ -17,7 +16,6 @@ export default function Chat({
   propagateMessage,
   chatHistory: messageHistory,
 }: ChatProps) {
-  const { theme } = useTheme();
   const [message, setMessage] = useState<string>("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 

@@ -31,7 +31,6 @@ export interface CollabNavbarProps {
 
 export const CollabNavbar = ({
   usersInRoom,
-  username,
   setUsersInRoom,
   isModalVisible,
   userConfirmed,
@@ -41,8 +40,6 @@ export const CollabNavbar = ({
   handleCloseModal,
   handleConfirm,
   setIsCancelled,
-  propagateMessage,
-  chatHistory,
 }: CollabNavbarProps) => {
   return (
     <NextUINavbar maxWidth="full" position="sticky">

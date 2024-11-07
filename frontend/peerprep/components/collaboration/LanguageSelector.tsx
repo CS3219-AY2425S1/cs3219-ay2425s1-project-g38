@@ -10,7 +10,6 @@ import { useTheme } from "next-themes";
 import { LANGUAGE_VERSIONS, SupportedLanguages } from "../../utils/utils";
 
 const languages = Object.entries(LANGUAGE_VERSIONS);
-const ACTIVE_COLOR = "blue";
 
 interface LanguageSelectorProps {
   language: SupportedLanguages;

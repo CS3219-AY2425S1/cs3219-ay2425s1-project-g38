@@ -52,7 +52,6 @@ export function QuestionFormBase({
   setDescription,
   language,
   setLanguage,
-  templateCode,
   setTemplateCode,
   testCases,
   setTestCases,

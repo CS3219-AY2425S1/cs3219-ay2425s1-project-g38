@@ -1,6 +1,5 @@
 import React from "react";
 import { Card, Skeleton, Spinner } from "@nextui-org/react";
-import { useRouter } from "next/navigation";
 
 import { useMatchHistoryFetcher } from "@/services/userService";
 import SessionHistoryCard from "@/components/session-history/SessionHistoryCard";
@@ -8,7 +7,6 @@ import { useQuestionDataFetcher } from "@/services/questionService";
 
 const SessionHistory = () => {
   const { matchHistory, error, isLoading } = useMatchHistoryFetcher();
-  const router = useRouter();
 
   if (isLoading) return <Spinner />;
   if (error)
