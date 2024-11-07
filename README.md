@@ -8,6 +8,13 @@
 - [Johan](https://github.com/delishad21)
 - [Joshua](https://github.com/dloh2236)
 
+## Kubernetes Deployment
+
+1. Ensure that you have a Kubernetes cluster set up.
+2. Ensure that you have kubectl installed and configured to point to your Kubernetes cluster.
+3. Set up environemnt variables under the config-map.yaml files and secrets.yaml files in the kubernetes directory. Each service also has its own config-map and secret file. Template files have been provided in the kubernetes directory.
+4. Run `kubectl apply -f kubernetes/ --recursive` to deploy all services to your Kubernetes cluster.
+
 ## Deploying this project using docker-compose
 
 1. Clone this repository to your local machine.
@@ -167,13 +174,6 @@ Issue: MongoParseError: URI malformed
 2. Run `docker build -t "<image-name>" .` to build the Docker image.
 
 Alternatively, you can use the `build_and_push_services.sh` or `build_and_push_services_dev.sh` script to build and push all services to the Docker image to Docker Hub.
-
-## Kubernetes Deployment
-
-1. Ensure that you have a Kubernetes cluster set up.
-2. Ensure that you have kubectl installed and configured to point to your Kubernetes cluster.
-3. Set up environemnt variables under the config-map.yaml files and secrets.yaml files in the kubernetes directory. Each service also has its own config-map and secret file. Template files have been provided in the kubernetes directory.
-4. Run `kubectl apply -f kubernetes/ --recursive` to deploy all services to your Kubernetes cluster.
 
 ## Microservices API
 

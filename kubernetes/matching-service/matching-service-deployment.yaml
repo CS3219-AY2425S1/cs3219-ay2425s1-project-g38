@@ -29,3 +29,7 @@ spec:
                 name: app-secrets
             - secretRef:
                 name: matching-secrets
+          resources:
+            requests:
+              memory: "250Mi"
+              cpu: "100m"
