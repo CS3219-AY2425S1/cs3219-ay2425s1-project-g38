@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: user-service
-          image: delishad21/user-service:milestone7.1
+          image: asia-southeast1-docker.pkg.dev/peerprep-437117/peerprep/user-service:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8004
