@@ -8,7 +8,6 @@ import { useQuestionDataFetcher } from "@/services/questionService";
 
 const SessionHistory = () => {
   const { matchHistory, error, isLoading } = useMatchHistoryFetcher();
-  const router = useRouter();
 
   if (isLoading) return <Spinner />;
   if (error)
@@ -44,7 +43,7 @@ interface Match {
 
 const SessionCard = ({ match }: { match: Match }) => {
   const { questionData, questionLoading } = useQuestionDataFetcher(
-    match.questionId,
+    match.questionId
   );
 
   if (questionLoading) {
