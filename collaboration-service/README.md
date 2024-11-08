@@ -146,14 +146,17 @@ Socket Related endpoints require the client to include a JWT (JSON Web Token) un
 - Data:
     - `{ message: string, sessionData: SessionData }`
     - Example:
-        ```json(SessionData)
+        ```json
         {
-            "question": "What is the two sum of 2 and 3?",
-            "yDocUpdate": Uint8Array,
-            "selectedLanguage": "python",
-            "usersInRoom": ["user123", "user456"],
-            "username": "user123"
-            "chatHistory": [ChatMessage]
+            "message": "Welcome to the session!",
+            "sessionData": {
+                "question": "What is the two sum of 2 and 3?",
+                "yDocUpdate": Uint8Array,
+                "selectedLanguage": "python",
+                "usersInRoom": ["user123", "user456"],
+                "username": "user123"
+                "chatHistory": [ChatMessage]
+            }
         }
         ```
         ```
