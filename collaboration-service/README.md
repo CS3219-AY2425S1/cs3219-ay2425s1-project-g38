@@ -219,11 +219,9 @@ Socket Related endpoints require the client to include a JWT (JSON Web Token) un
         ```
 
 - Responses:
-| Response Code | Explanation                                                     |
-| ------------- | --------------------------------------------------------------- |
-| 201           | Session created successfully                                    |
-| 400           | Bad request. Missing required parameters or invalid participant |
-| 500           | Internal Server Error                                           |
+    - 201: Session created successfully
+    - 400: Bad request. Missing required parameters or invalid participant
+    - 500: Internal Server Error         
 
 ### Check Session Status
 
@@ -243,11 +241,9 @@ Socket Related endpoints require the client to include a JWT (JSON Web Token) un
         ```
 
 - Responses:
-| Response Code | Explanation                                                     |
-| ------------- | --------------------------------------------------------------- |
-| 200           | User is a participant in an active session                      |
-| 204           | User is not a participant in any active session                 |
-| 500           | Internal Server Error                                           |
+    - 200: User is a participant in an active session
+    - 204: User is not a participant in any active session
+    - 500: Internal Server Error
 
 ### Leave Session
 
@@ -267,11 +263,9 @@ Socket Related endpoints require the client to include a JWT (JSON Web Token) un
         ```
 
 - Responses:
-| Response Code | Explanation                                                     |
-| ------------- | --------------------------------------------------------------- |
-| 200           | User successfully left the session                              |
-| 404           | User is not a participant in any active session                 |
-| 500           | Internal Server Error                                           |
+    - 200: User successfully left the session
+    - 404: User is not a participant in any active session
+    - 500: Internal Server Error
 
 ### Get Session Data
 
@@ -291,11 +285,9 @@ Socket Related endpoints require the client to include a JWT (JSON Web Token) un
         ```
 
 - Responses:
-| Response Code | Explanation                                                     |
-| ------------- | --------------------------------------------------------------- |
-| 200           | Session data retrieved successfully                             |
-| 404           | Session not found                                               |
-| 500           | Internal Server Error                                           |
+    - 200: Session data retrieved successfully
+    - 404: Session not found
+    - 500: Internal Server Error
 
 ## Cron Job
 
