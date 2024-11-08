@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Change BASE TAG to your Docker Hub username
-BASE_TAG="delishad21"
+BASE_TAG=""
 VERSION_BASE="dev1.0."
 VERSION="dev"
 
@@ -19,10 +19,10 @@ get_latest_version() {
 
 # List of services with their respective directories
 declare -A services=(
-    # ["matching-service"]="matching-service"
-    # ["question-service"]="question-service"
-    # ["user-service"]="user-service"
-    # ["frontend-peerprep"]="frontend/peerprep"
+    ["matching-service"]="matching-service"
+    ["question-service"]="question-service"
+    ["user-service"]="user-service"
+    ["frontend-peerprep"]="frontend/peerprep"
     ["collaboration-service"]="collaboration-service"
 )
 

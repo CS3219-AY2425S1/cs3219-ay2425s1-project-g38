@@ -8,9 +8,14 @@
 - [Johan](https://github.com/delishad21)
 - [Joshua](https://github.com/dloh2236)
 
-# Milestone 4 Submission - Matching Service
+## Kubernetes Deployment
 
-## Prerequisites
+1. Ensure that you have a Kubernetes cluster set up.
+2. Ensure that you have kubectl installed and configured to point to your Kubernetes cluster.
+3. Set up environemnt variables under the config-map.yaml files and secrets.yaml files in the kubernetes directory. Each service also has its own config-map and secret file. Template files have been provided in the kubernetes directory.
+4. Run `kubectl apply -f kubernetes/ --recursive` to deploy all services to your Kubernetes cluster.
+
+## Deploying this project using docker-compose
 
 1. Clone this repository to your local machine.
 2. Ensure you have Docker installed.
@@ -26,23 +31,33 @@
       |--------------|-----------------|-------------------|
       | NEXT_PUBLIC_USER_SERVICE_URL | URL of the user service | http://localhost:8004 |
       | NEXT_PUBLIC_QUESTION_SERVICE_URL | URL of the question service | http://localhost:8003 |
-      | NEXT_PUBLIC_QUESTION_SERVICE_URL | URL of the question service | http://localhost:8003 |
+      | NEXT_PUBLIC_MATCHING_SERVICE_URL | URL of the matching service | http://localhost:8002 |
+      | NEXT_PUBLIC_COLLAB_SERVICE_URL | URL of the collab service | http://localhost:8010 |
+      | NEXT_PUBLIC_COLLAB_SOCKET_URL | URL of the collab socket service | http://localhost:8010 |
+      | NEXT_PUBLIC_MATCHING_SOCKET_URL | URL of the matching socket service | http://localhost:8002 |
       | NEXT_PUBLIC_IMAGE_UPLOAD_KEY | AuthToken for image upload | None, you can get this from https://www.portive.com |
       | FRONTEND_PORT | Port to run the frontend service | 3000 |
+      | FRONTEND_URL | URL of the frontend service | http://localhost:3000 |
       | USER_MONGODB_URI | MongoDB URI for the user service | None, commented out. If you are using a remote MongoDB instance, you can key in your connection string here |
       | USER_MONGO_INITDB_ROOT_USERNAME | MongoDB root username for the user service | userroot |
       | USER_MONGO_INITDB_ROOT_PASSWORD | MongoDB root password for the user service | userpassword |
+      | GMAIL_USER | Gmail account for verification emails | None, you can key in your Gmail account here |
+      | GMAIL_PASS | Gmail password for verification emails | None, you can key in your Gmail password here |
       | USER_PORT | Port to run the user service | 8004 |
       | JWT_SECRET | Secret for creating JWT signature | you-can-replace-this-with-your-own-secret |
       | QUESTION_MONGODB_URI | MongoDB URI for the question service | None, commented out. If you are using a remote MongoDB instance, you can key in your connection string here |
       | QUESTION_MONGO_INITDB_ROOT_USERNAME | MongoDB root username for the question service | questionroot |
       | QUESTION_MONGO_INITDB_ROOT_PASSWORD | MongoDB root password for the question service | questionpassword |
       | QUESTION_PORT | Port to run the question service | 8003 |
-      | MATCHING_PORT | Port to run the matching service | 8002 |
-      | USER_SERVICE_URL | URL of the user service (for matching) | http://g38-user-service:8004 |
-      | REDIS_URL | URL of the Redis instance | redis://redis:6379 |
+      | MATCHING_SERVICE_PORT | Port to run the matching service | 8002 |
+      | REDIS_URL | URL of the Redis instance for internal access | redis://redis:6379 |
       | MATCHING_SERVICE_LOGS_DIR | Directory to store logs for the matching service | ./logs |
       | MATCHING_TIMEOUT | Timeout for matching in milliseconds | 10000 |
+      | USER_SERVICE_URL | URL of the user service for internal access | http://g38-user-service:8004 |
+      | COLLAB_SERVICE_URL | URL of the collab service for internal access | http://g38-collab-service:8010 |
+      | QUESTION_SERVICE_URL | URL of the question service for internal access | http://g38-question-service:8003 |
+      | COLLAB_API_KEY | API key for the collab service ( used by matching-service for initialising sessions) | collab-api-key |
+
 
 3. Run `docker-compose up` to start the services.
    - If you keyed in remote MongoDB URIs in the .env file, the MongoDB containers will not be started. The services will connect to the remote MongoDB instances instead.
@@ -60,8 +75,11 @@ If the services are to be run individually (e.g. for deployment on different pla
 
       | **Variable** | **Description** | **Default Value** |
       |--------------|-----------------|-------------------|
-      | MATCHING_PORT | Port to run the service | 8002 |
+      | MATCHING_SERVICE_PORT | Port to run the service | 8002 |
       | USER_SERVICE_URL | URL of the user service | http://localhost:8004 |
+      | QUESTION_SERVICE_URL | URL of the question service | http://localhost:8003 |
+      | COLLAB_SERVICE_URL | URL of the collab service | http://localhost:8010 |
+      | COLLAB_API_KEY | API key for the collab service ( used by matching-service for initialising sessions) | collab-api-key |
       | REDIS_URL | URL of the Redis instance | redis://redis:6379 |
       | MATCHING_SERVICE_LOGS_DIR | Directory to store logs for the matching service | ./logs |
       | MATCHING_TIMEOUT | Timeout for matching in milliseconds | 10000 |
@@ -80,6 +98,7 @@ If the services are to be run individually (e.g. for deployment on different pla
       | QUESTION_PORT         | Port to run the service | 8003 |
       | MONGO_INITDB_ROOT_USERNAME | MongoDB root username | root |
       | MONGO_INITDB_ROOT_PASSWORD | MongoDB root password | password |
+      | USER_SERVICE_URL | URL of the user service | http://localhost:8004 |
 
 3. Run `docker-compose up` to start the question service.
    - If you keyed in a remote MongoDB URI in the .env file, the MongoDB container will not be started. The question service will connect to the remote MongoDB instance instead.
@@ -100,11 +119,32 @@ Issue: MongoParseError: URI malformed
       |--------------|-----------------|-------------------|
       | USER_MONGODB_URI  | MongoDB URI     | None, commented out. If you are using a remote MongoDB instance, you can key in your connection string here|
       | MONGO_INITDB_ROOT_USERNAME | MongoDB root username | root |
-      | MONGO_INITDB_ROOT_PASSWORD | MongoDB root password | password |
+      | MONGO_INITDB_ROOT_PASSWORD | MongoDB root password | password
+      | GMAIL_USER | Gmail account for verification emails | None, you can key in your Gmail account here |
+      | GMAIL_PASS | Gmail password for verification emails | None, you can key in your Gmail password here |
       | USER_PORT         | Port to run the service | 8004 |
+      | ENV | Environment - determines if secure cookies should be used | PROD |
       | JWT_SECRET | Secret for creating JWT signature | you-can-replace-this-with-your-own-secret |
 3. Run `docker-compose up` to start the user service.
    - If you keyed in a remote MongoDB URI in the .env file, the MongoDB container will not be started. The user service will connect to the remote MongoDB instance instead.
+
+### Collaboration Service
+
+1. cd into the collab-service directory
+2. Duplicate the .env.sample file and rename it to .env
+   - If you wish to, you can modify the values in the .env file
+
+      | **Variable** | **Description** | **Default Value** |
+      |--------------|-----------------|-------------------|
+      | COLLAB_MONGODB_URI | MongoDB URI | None, commented out. If you are using a remote MongoDB instance, you can key in your connection string here |
+      | COLLAB_MONGO_INITDB_ROOT_USERNAME | MongoDB root username | root |
+      | COLLAB_MONGO_INITDB_ROOT_PASSWORD | MongoDB root password | password |
+      | COLLAB_SERVICE_PORT | Port to run the service | 8010 |
+      | USER_SERVICE_URL | URL of the user service | http://localhost:8004 |
+      | QUESTION_SERVICE_URL | URL of the question service | http://localhost:8003 |
+      | COLLAB_REDIS_URL | URL of the Redis instance | redis://collab-redis:6379 |
+      | COLLAB_API_KEY | API key for the collab service | collab-api-key |
+
 
 ### Frontend
 
@@ -115,8 +155,17 @@ Issue: MongoParseError: URI malformed
       | **Variable** | **Description** | **Default Value** |
       |--------------|-----------------|-------------------|
       | NEXT_PUBLIC_QUESTION_SERVICE_URL | URL of the question service | http://localhost:8003 |
+      | NEXT_PUBLIC_USER_SERVICE_URL | URL of the user service | http://localhost:8004 |
+      | NEXT_PUBLIC_MATCHING_SERVICE_URL | URL of the matching service | http://localhost:8002 |
+      | NEXT_PUBLIC_COLLAB_SERVICE_URL | URL of the collab service | http://localhost:8010 |
+      | NEXT_PUBLIC_COLLAB_SOCKET_URL | URL of the collab socket service | http://localhost:8010 |
+      | NEXT_PUBLIC_MATCHING_SOCKET_URL | URL of the matching socket service | http://localhost:8002 |
+      | NEXT_PUBLIC_MATCHING_SOCKET_PATH | Path for the matching socket service | /socket.io |
+      | NEXT_PUBLIC_COLLAB_SOCKET_PATH | Path for the collab socket service | /socket.io |
       | NEXT_PUBLIC_IMAGE_UPLOAD_KEY | AuthToken for image upload | None, you can get this from https://www.portive.com |
       | FRONTEND_PORT | Port to run the frontend service | 3000 |
+      | JWT-SECRET | Secret for creating JWT signature (Make sure this is the same as your user service) | you-can-replace-this-with-your-own-secret |
+
 3. Run `docker-compose up` to start the frontend service.
 
 ## Building your own Docker iamges
@@ -124,11 +173,9 @@ Issue: MongoParseError: URI malformed
 1. cd into the any of the service directories (question-service, user-service, frontend/peerprep)
 2. Run `docker build -t "<image-name>" .` to build the Docker image.
 
-## Matching Service API
+Alternatively, you can use the `build_and_push_services.sh` or `build_and_push_services_dev.sh` script to build and push all services to the Docker image to Docker Hub.
 
-The matching service API can be found here: [Matching Service API](./matching-service/README.md)
-
-## API Endpoints for User and Question Service
+## Microservices API
 
 **User Service API Endpoints**
 
@@ -138,7 +185,15 @@ The user service API can be found here: [User Service API](./user-service/README
 
 The question service API can be found here: [Question Service API](./question-service/README.md)
 
-## Remote DB Setup (MongoDB Atlas) (Optional)
+**Matching Service API**
+
+The matching service API can be found here: [Matching Service API](./matching-service/README.md)
+
+**Collaboration Service API**
+
+The collaboration service API can be found here: [Collaboration Service API](./collab-service/README.md)
+
+## Remote DB Setup (MongoDB Atlas)
 
 1. Visit the MongoDB Atlas Site [https://www.mongodb.com/atlas](https://www.mongodb.com/atlas) and click on "Try Free"
 

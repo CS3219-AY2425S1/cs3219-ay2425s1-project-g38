@@ -29,3 +29,7 @@ spec:
                 name: collab-config
             - secretRef:
                 name: collab-secrets
+          resources:
+            requests:
+              memory: "250Mi"
+              cpu: "100m"
