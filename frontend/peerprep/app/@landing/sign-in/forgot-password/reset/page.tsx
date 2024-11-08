@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Input } from "@nextui-org/input";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { CircularProgress } from "@nextui-org/react";
 
 import BoxIcon from "@/components/boxicons";
@@ -15,6 +15,7 @@ import { resetPassword } from "@/auth/actions";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isVisible, setIsVisible] = useState(false);

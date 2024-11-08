@@ -30,7 +30,13 @@ interface OutputProps {
   isCodeError: boolean;
 }
 
-const Output: React.FC<OutputProps> = ({ codeOutput, isCodeError }) => {
+const Output: React.FC<OutputProps> = ({
+  codeOutput,
+  editorRef,
+  language,
+  propagateUpdates,
+  isCodeError,
+}) => {
   const { theme, resolvedTheme } = useTheme();
   const [isThemeReady, setIsThemeReady] = useState<boolean>(false);
 

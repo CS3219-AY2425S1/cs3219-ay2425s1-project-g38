@@ -32,6 +32,7 @@ export default function CollabCodeEditor({
   propagateUpdates,
 }: CollabCodeEditorProps) {
   const { theme } = useTheme();
+  const yText = yDoc.getText("code");
   const editorRef = useRef<any>(null);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -55,8 +56,14 @@ export default function CollabCodeEditor({
 
   const onMount = async (editor: any) => {
     editorRef.current = editor;
+    const model = editor.getModel();
 
-    yDoc.on("update", async () => {
+    if (model) {
+      const MonacoBinding = (await import("y-monaco")).MonacoBinding; // not dynamically importing this causes an error
+      const binding = new MonacoBinding(yText, model, new Set([editor]));
+    }
+
+    yDoc.on("update", async (update: Uint8Array) => {
       propagateUpdates(Y.encodeStateAsUpdateV2(yDoc));
     });
   };

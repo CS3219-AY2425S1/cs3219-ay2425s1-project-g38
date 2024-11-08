@@ -48,7 +48,13 @@ export default function EditQuestionForm({ yDoc }: EditQuestionFormProps) {
     console.log("YText", yText.toString());
   });
 
-  const onMount = async () => {
+  const onMount = async (editor: any) => {
+    const model = editor.getModel();
+
+    if (model) {
+      const MonacoBinding = (await import("y-monaco")).MonacoBinding;
+      const binding = new MonacoBinding(yText, model, new Set([editor]));
+    }
     console.log("YDoc mounted");
     yDoc.on("update", () => {
       setYDocUpdate(Y.encodeStateAsUpdateV2(yDoc));

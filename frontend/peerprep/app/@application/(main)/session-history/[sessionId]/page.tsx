@@ -148,7 +148,7 @@ const SessionDetailsPage: React.FC = () => {
                 rehypePlugins={[rehypeRaw, rehypeSanitize]}
                 components={{
                   code(props) {
-                    const { className, children } = props;
+                    const { className, children, ...rest } = props;
                     const match = /language-(\w+)/.exec(className || "");
 
                     return match ? (

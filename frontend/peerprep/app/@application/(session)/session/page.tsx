@@ -43,6 +43,7 @@ const App: React.FC = () => {
   const [chatHistory, setChatHistory] = useState<chatMessage[]>([]);
 
   const doc = new Y.Doc();
+  const yText = doc.getText("code");
   const updateDoc = (update: Uint8Array) => {
     Y.applyUpdateV2(doc, update);
   };
