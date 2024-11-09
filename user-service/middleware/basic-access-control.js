@@ -110,11 +110,6 @@ export function verifyEmailToken(req, res, next) {
         return res.status(401).json({ message: "Authentication failed" });
       }
 
-      if (!user.verified) {
-        console.log(`[AUTH] Email token verification failed: Token not verified`);
-        return res.status(401).json({ message: "Code has not been verified" });
-      }
-
       const dbUser = await _findUserById(user.id);
       if (!dbUser) {
         console.log(`[AUTH] Email token verification failed: User not found - ID: ${user.id}`);
@@ -140,6 +135,11 @@ export function verifyEmailToken(req, res, next) {
         createdAt: dbUser.createdAt, 
         expireAt: dbUser.expireAt
       };
+
+      if (user.verified) {
+        req.verified = user.verified;
+      }
+      
       console.log(`[AUTH] Email token verified for user: ${dbUser.username} (${dbUser.id})`);
       next();
     } catch (error) {

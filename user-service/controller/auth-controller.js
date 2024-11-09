@@ -168,6 +168,10 @@ export async function verifyPassword(req, res) {
 }
 
 export async function confirmUser(req, res) {
+  if (!req.verified) {
+    return res.status(400).json({message: "Code is not verified"});
+  }
+
   try {
     const { id, username } = req.user;
     console.log(`[AUTH] Account confirmation attempt for user: ${username} (${id})`);
