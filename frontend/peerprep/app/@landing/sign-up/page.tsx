@@ -27,7 +27,7 @@ export default function SignUpPage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: string } | null>(
-    null,
+    null
   );
 
   // Toggle password visibility
@@ -65,9 +65,9 @@ export default function SignUpPage() {
         setTimeout(
           () =>
             router.push(
-              `sign-up/email-verification?email=${encodeURIComponent(email)}`,
+              `sign-up/email-verification?email=${encodeURIComponent(email)}`
             ),
-          500,
+          500
         );
       } else {
         setToast({
@@ -99,12 +99,8 @@ export default function SignUpPage() {
       placement="right"
       showArrow
     >
-      <div className="flex flex-row gap-1 items-center w-fit">
-        <BoxIcon
-          name="bx-info-circle"
-          size="12px"
-          className="text-white hover:text-gray-200"
-        />
+      <div className="flex flex-row gap-1 items-center w-fit dark:hover:text-gray-300 hover:text-gray-500">
+        <BoxIcon name="bx-info-circle" size="12px" />
         &nbsp;Password requirements
       </div>
     </Tooltip>
@@ -200,7 +196,7 @@ export default function SignUpPage() {
             description={passwordRequirements}
             value={password}
             onValueChange={setPassword}
-            isInvalid={!validatePassword(password)}
+            isInvalid={password.length > 0 && !validatePassword(password)}
             errorMessage={errorPasswordRequirements}
             classNames={{
               description: "text-gray-700 dark:text-gray-200",
