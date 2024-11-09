@@ -25,6 +25,7 @@ import { getSessionDetails } from "@/services/sessionAPI";
 const SessionDetailsPage: React.FC = () => {
   const [sessionData, setSessionData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const params = useParams();
   const searchParams = useSearchParams();
   const sessionId = params.sessionId as string;
@@ -42,6 +43,7 @@ const SessionDetailsPage: React.FC = () => {
           setSessionData(result.data);
         } else {
           console.error(result.message);
+          setError(result.message);
         }
       } catch (error) {
         console.error("Error fetching session details:", error);
@@ -78,7 +80,7 @@ const SessionDetailsPage: React.FC = () => {
   }
 
   if (!sessionData) {
-    return <div>Error loading session details.</div>;
+    return <div>{error}</div>;
   }
 
   const { question, attemptCode, dateCreated, language } = sessionData;
