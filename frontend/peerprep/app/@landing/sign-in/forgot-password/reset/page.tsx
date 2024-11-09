@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Input } from "@nextui-org/input";
 import { useRouter, useSearchParams } from "next/navigation";
-import { CircularProgress } from "@nextui-org/react";
+import { CircularProgress, Tooltip } from "@nextui-org/react";
 
 import BoxIcon from "@/components/boxicons";
 import { EyeFilledIcon, EyeSlashFilledIcon } from "@/components/icons";
@@ -40,8 +40,7 @@ export default function ResetPasswordPage() {
 
     if (!validatePassword(password)) {
       setToast({
-        message:
-          "Password must be at least 8 characters long and contain at least one number",
+        message: "Password does not meet requirements",
         type: "error",
       });
       setIsLoading(false);
@@ -73,16 +72,39 @@ export default function ResetPasswordPage() {
           message: response.message || "Failed to reset password",
           type: "error",
         });
+        router.push("/sign-in");
       }
     } catch (error) {
       setToast({
         message: "An error occurred. Please try again.",
         type: "error",
       });
+      router.push("/sign-in");
     }
 
     setIsLoading(false);
   };
+
+  const passwordRequirements = (
+    <Tooltip
+      content={
+        <ul className="list-disc pl-2 py-1 text-xs">
+          <li>At least 12 characters long</li>
+          <li>Contains at least one uppercase letter</li>
+          <li>Contains at least one lowercase letter</li>
+          <li>Contains at least one digit</li>
+          <li>Contains at least one special character (e.g., @$#!%*?&)</li>
+        </ul>
+      }
+      placement="right"
+      showArrow
+    >
+      <div className="flex flex-row gap-1 items-center w-fit dark:hover:text-gray-300 hover:text-gray-500">
+        <BoxIcon name="bx-info-circle" size="12px" />
+        &nbsp;Password requirements
+      </div>
+    </Tooltip>
+  );
 
   return (
     <div className="flex items-center justify-center mt-20">
@@ -109,6 +131,7 @@ export default function ResetPasswordPage() {
         </div>
 
         <div className="flex flex-col gap-4 w-fill">
+          {passwordRequirements}
           <Input
             label="New Password"
             variant="faded"
@@ -119,7 +142,7 @@ export default function ResetPasswordPage() {
                 type="button"
                 onClick={toggleVisibility}
               >
-                {isVisible ? <EyeSlashFilledIcon /> : <EyeFilledIcon />}
+                {isVisible ? <EyeFilledIcon /> : <EyeSlashFilledIcon />}
               </button>
             }
             type={isVisible ? "text" : "password"}
@@ -128,9 +151,10 @@ export default function ResetPasswordPage() {
             isInvalid={isFormSubmitted && !validatePassword(password)}
             errorMessage={
               isFormSubmitted && !validatePassword(password)
-                ? "Password must be at least 8 characters and contain at least one number"
+                ? "Password does not meet requirements"
                 : ""
             }
+            isDisabled={isLoading}
           />
 
           <Input
@@ -143,7 +167,7 @@ export default function ResetPasswordPage() {
                 type="button"
                 onClick={toggleConfirmVisibility}
               >
-                {isConfirmVisible ? <EyeSlashFilledIcon /> : <EyeFilledIcon />}
+                {isConfirmVisible ? <EyeFilledIcon /> : <EyeSlashFilledIcon />}
               </button>
             }
             type={isConfirmVisible ? "text" : "password"}
@@ -156,6 +180,7 @@ export default function ResetPasswordPage() {
                 : ""
             }
             onKeyDown={handleKeyDown}
+            isDisabled={isLoading}
           />
         </div>
 

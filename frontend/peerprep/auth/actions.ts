@@ -760,6 +760,7 @@ export const resetPassword = async (newPassword: string) => {
     });
 
     if (response.ok) {
+      await session.destroy();
       return { status: "success", message: "Password updated successfully" };
     } else {
       const errorData = await response.json();

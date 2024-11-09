@@ -293,7 +293,7 @@ export async function updateUser(req, res) {
         const salt = bcrypt.genSaltSync(10);
         hashedPassword = bcrypt.hashSync(password, salt);
       } else {
-        console.log(`[USER] Update failed - Unauthorized password update ${userId}`);
+        console.log(`[USER] Update failed - Unauthorized password update - ID: ${userId}`);
         return res.status(403).json({ message: "Unauthorized password update" });
       }
     }

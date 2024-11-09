@@ -23,7 +23,7 @@ const sendPasswordResetLink = async (email, username, resetLink) => {
       <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
       <h2 style="text-align: center; color: #6A0CE2;">Reset Your Password</h2>
       <p style="font-size: 16px;">Hello <span style="color: #6A0CE2; font-weight: bold;">${username}</span>,</p>
-      <p style="font-size: 16px;">We received a request to reset your password. Click the button below to create a new password:</p>
+      <p style="font-size: 16px;">We received a request to reset your password. Please ensure that you opening the link from the same browser you made the request. Click the button below to create a new password:</p>
       <div style="text-align: center; margin: 20px 0;">
           <a href="${resetLink}" style="background-color: #6A0CE2; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">Reset Password</a>
       </div>
