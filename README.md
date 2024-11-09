@@ -2,6 +2,8 @@
 # CS3219 Project (PeerPrep) - AY2425S1
 ## Group: G38
 
+You can view the live project here: https://peerprep.delishad.com
+
 ### Team Members:
 - [Daniel](https://github.com/dloh2236)
 - [James](https://github.com/jayllo-c)
