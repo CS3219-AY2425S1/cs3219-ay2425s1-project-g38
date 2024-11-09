@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Change BASE TAG to your Docker Hub username
-BASE_TAG=""
+BASE_TAG="peerprep38"
 VERSION_BASE="dev1.0."
 VERSION="dev"
 
