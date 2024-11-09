@@ -68,9 +68,31 @@ export const GreetingMessageHeader = ({ user }: GreetingMessageProps) => {
     );
   }
 
+  if (currentPath.startsWith("/session-history")) {
+    return (
+      <div
+        className={`${fontFun.variable} text-black dark:text-white flex items-center`}
+        style={{
+          fontFamily: "var(--font-fun)",
+          fontSize: "20px",
+          margin: "10px",
+        }}
+      >
+        Mistakes are only mistakes if you don't learn from them 🧑‍💻
+      </div>
+    );
+  }
+
   // Default message
   return (
-    <div>
+    <div
+      className={`${fontFun.variable} text-black dark:text-white flex items-center`}
+      style={{
+        fontFamily: "var(--font-fun)",
+        fontSize: "20px",
+        margin: "10px",
+      }}
+    >
       <p className="bg-gradient-to-r from-indigo-500 via-violet-500 to-fuchsia-500 bg-clip-text text-transparent font-semibold">
         {user}
       </p>
