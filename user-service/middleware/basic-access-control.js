@@ -21,6 +21,9 @@ export function verifyAccessToken(req, res, next) {
       if (!dbUser) {
         console.log(`[AUTH] Token verification failed: User not found - ID: ${user.id}`);
         return res.status(401).json({ message: "Authentication failed" });
+      } else if (!dbUser.isVerified) {
+        console.log(`[AUTH] Token verification failed: Unverified account - ${dbUser.username}`);
+        return res.status(403).json({message: "You have not verified your account"});
       }
 
       req.user = { 
@@ -29,6 +32,54 @@ export function verifyAccessToken(req, res, next) {
         email: dbUser.email, 
         isAdmin: dbUser.isAdmin 
       };
+      console.log(`[AUTH] Token verified for user: ${dbUser.username} (${dbUser.id})`);
+      next();
+    } catch (error) {
+      console.error(`[AUTH] Database error during token verification: ${error.message}`);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+}
+
+export function verifyAccessTokenForUpdate(req, res, next) {
+  const authHeader = req.headers["authorization"];
+  
+  if (!authHeader) {
+    console.log("[AUTH] Token verification failed: Missing authorization header");
+    return res.status(401).json({ message: "Authentication failed" });
+  }
+
+  const token = authHeader.split(" ")[1];
+  jwt.verify(token, process.env.JWT_SECRET, async (err, user) => {
+    if (err) {
+      console.log(`[AUTH] Token verification failed: Invalid token - ${err.message}`);
+      return res.status(401).json({ message: "Authentication failed" });
+    }
+
+    try {
+      const dbUser = await _findUserById(user.id);
+      if (!dbUser) {
+        console.log(`[AUTH] Token verification failed: User not found - ID: ${user.field}`);
+        return res.status(401).json({ message: "Authentication failed" });
+      } else if (!dbUser.isVerified) {
+        console.log(`[AUTH] Token verification failed: Unverified account - ${dbUser.username}`);
+        return res.status(403).json({message: "You have not verified your account"});
+      }
+
+      if (!user.field) {
+        console.log(`[AUTH] User update details failed: Invalid JWT payload`);
+        return res.status(401).json({ message: "Token is invalid" });
+      } else {
+        req.field = user.field;
+      }
+
+      req.user = { 
+        id: dbUser.id, 
+        username: dbUser.username, 
+        email: dbUser.email, 
+        isAdmin: dbUser.isAdmin 
+      };
+  
       console.log(`[AUTH] Token verified for user: ${dbUser.username} (${dbUser.id})`);
       next();
     } catch (error) {
@@ -57,6 +108,11 @@ export function verifyEmailToken(req, res, next) {
       if (user.id !== req.params.id) {
         console.log(`[AUTH] Email token verification failed: Token-param ID mismatch - Token: ${user.id}, Param: ${req.params.id}`);
         return res.status(401).json({ message: "Authentication failed" });
+      }
+
+      if (!user.verified) {
+        console.log(`[AUTH] Email token verification failed: Token not verified`);
+        return res.status(401).json({ message: "Code has not been verified" });
       }
 
       const dbUser = await _findUserById(user.id);

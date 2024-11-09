@@ -5,7 +5,7 @@ import { TextEncoder } from "util";
 import { getIronSession } from "iron-session";
 import { env } from "next-runtime-env";
 import { cookies } from "next/headers";
-import { jwtVerify } from "jose";
+import { jwtVerify, SignJWT } from "jose";
 
 import {
   sessionOptions,
@@ -365,10 +365,19 @@ export const verifyCode = async (code: number) => {
     }
 
     if (verificationCode === code) {
+      // Add the verified field to the payload
+      const updatedPayload = { ...payload, verified: true };
+
+      // Re-sign the token with the updated payload
+      const updatedToken = await new SignJWT(updatedPayload)
+        .setProtectedHeader({ alg: "HS256" })
+        .setExpirationTime("1m") // Set the expiration time as needed
+        .sign(secretKey);
+
       const response = await fetch(`${USER_SERVICE_URL}/auth/${payload.id}`, {
         method: "PATCH",
         headers: {
-          Authorization: `Bearer ${emailToken}`,
+          Authorization: `Bearer ${updatedToken}`, // Use the updated token
         },
       });
 
@@ -447,15 +456,25 @@ export const editUsername = async (newUsername: string) => {
   }
 
   const session = await getSession();
+  const secret = env("JWT_SECRET");
+
+  if (!session.accessToken) {
+    return { status: "error", message: "User session has expired" };
+  }
+
+  if (!secret) {
+    return { status: "error", message: "Internal application error" };
+  }
 
   try {
+    const updatedToken = await updateTokenWithField(session.accessToken, "username", secret);
     const response = await fetch(
       `${USER_SERVICE_URL}/users/${session.userId}`,
       {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${session.accessToken}`,
+          Authorization: `Bearer ${updatedToken}`,
         },
         body: JSON.stringify({
           username: newUsername,
@@ -547,6 +566,7 @@ export const editEmailRequest = async (newEmail: string) => {
 
 export const verifyEmailCode = async (code: number, newEmail: string) => {
   const session = await getSession();
+  const accessToken = await getAccessToken();
   const emailChangeSession = await getEmailChangeSession();
 
   console.log(code, newEmail);
@@ -559,6 +579,13 @@ export const verifyEmailCode = async (code: number, newEmail: string) => {
       return {
         status: "error",
         message: "Token has expired or does not exist",
+      };
+    }
+
+    if (!accessToken) {
+      return {
+        status: "error",
+        message: "User session has expired",
       };
     }
 
@@ -583,6 +610,8 @@ export const verifyEmailCode = async (code: number, newEmail: string) => {
     }
 
     if (verificationCode === code) {
+      const updatedToken = await updateTokenWithField(accessToken, "email", secret);
+
       // If code matches, update the email
       console.log(newEmail);
       const response = await fetch(
@@ -591,7 +620,7 @@ export const verifyEmailCode = async (code: number, newEmail: string) => {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${session.accessToken}`,
+            Authorization: `Bearer ${updatedToken}`, // Use the updated token
           },
           body: JSON.stringify({
             email: newEmail,
@@ -646,14 +675,26 @@ export const clearEmailChangeSession = async () => {
 export const changePassword = async (newPassword: string) => {
   const session = await getSession();
 
+  const secret = env("JWT_SECRET");
+
+  if (!session.accessToken) {
+    return { status: "error", message: "User session has expired" };
+  }
+
+  if (!secret) {
+    return { status: "error", message: "Internal application error" };
+  }
+
   try {
+    const updatedToken = await updateTokenWithField(session.accessToken, "password", secret);
+
     const response = await fetch(
       `${USER_SERVICE_URL}/users/${session.userId}`,
       {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${session.accessToken}`,
+          Authorization: `Bearer ${updatedToken}`,
         },
         body: JSON.stringify({
           password: newPassword,
@@ -705,11 +746,13 @@ export const resetPassword = async (newPassword: string) => {
 
     const userId = payload.id;
 
+    const updatedToken = await updateTokenWithField(resetToken, "password", secret);
+
     const response = await fetch(`${USER_SERVICE_URL}/users/${userId}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${session.resetToken}`,
+        Authorization: `Bearer ${updatedToken}`,
       },
       body: JSON.stringify({
         password: newPassword,
@@ -736,11 +779,24 @@ export const resetPassword = async (newPassword: string) => {
 
 export const deleteUser = async () => {
   const session = await getSession();
+  const accessToken = await getAccessToken();
+
+  const secret = env("JWT_SECRET");
+
+  if (!session.accessToken) {
+    return { status: "error", message: "User session has expired" };
+  }
+
+  if (!secret) {
+    return { status: "error", message: "Internal application error" };
+  }
+
+  const updatedToken = await updateTokenWithField(session.accessToken, "delete", secret);
 
   const response = await fetch(`${USER_SERVICE_URL}/users/${session.userId}`, {
     method: "DELETE",
     headers: {
-      Authorization: `Bearer ${session.accessToken}`,
+      Authorization: `Bearer ${updatedToken}`,
     },
   });
 
@@ -805,3 +861,26 @@ export const forgetPassword = async (identifier: string) => {
     };
   }
 };
+
+async function updateTokenWithField(token: string, field: string, secret: string): Promise<string> {
+  const secretKey = new TextEncoder().encode(secret);
+
+  try {
+    // Verify the token and extract the payload
+    const { payload } = await jwtVerify(token, secretKey);
+
+    // Add the new field to the payload
+    const updatedPayload = { ...payload, field };
+
+    // Re-sign the token with the updated payload
+    const updatedToken = await new SignJWT(updatedPayload)
+      .setProtectedHeader({ alg: "HS256" })
+      .setExpirationTime("1m") // Set the expiration time as needed
+      .sign(secretKey);
+
+    return updatedToken;
+  } catch (error) {
+    console.error("Error updating token:", error);
+    throw new Error("Failed to update token");
+  }
+}

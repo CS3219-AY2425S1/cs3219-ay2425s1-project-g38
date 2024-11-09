@@ -17,7 +17,7 @@ import {
   updateEmailRequest,
   handleGetMatchHistory,
 } from "../controller/user-controller.js";
-import { verifyAccessToken, verifyEmailToken, verifyIsAdmin, verifyIsOwnerOrAdmin } from "../middleware/basic-access-control.js";
+import { verifyAccessToken, verifyAccessTokenForUpdate, verifyEmailToken, verifyIsAdmin, verifyIsOwnerOrAdmin } from "../middleware/basic-access-control.js";
 
 const router = express.Router();
 
@@ -41,13 +41,13 @@ router.patch("/:id/resend-request", verifyEmailToken, refreshEmailToken);
 
 router.delete("/:email/request", deleteUserRequest);
 
-router.get("/:id", verifyAccessToken, verifyIsOwnerOrAdmin, getUser);
+router.get("/:id", verifyAccessTokenForUpdate, verifyIsOwnerOrAdmin, getUser);
 
-router.patch("/:id", verifyAccessToken, verifyIsOwnerOrAdmin, updateUser);
+router.patch("/:id", verifyAccessTokenForUpdate, verifyIsOwnerOrAdmin, updateUser);
 
 router.post("/:id/email-update-request", verifyAccessToken, verifyIsOwnerOrAdmin, updateEmailRequest);
 
-router.delete("/:id", verifyAccessToken, verifyIsOwnerOrAdmin, deleteUser);
+router.delete("/:id", verifyAccessTokenForUpdate, verifyIsOwnerOrAdmin, deleteUser);
 
 router.get("/:id/match-history", verifyAccessToken, handleGetMatchHistory)
 

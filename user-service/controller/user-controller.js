@@ -252,7 +252,7 @@ export async function updateUser(req, res) {
   console.log(`[USER] Update request - ID: ${userId}, New Username: ${username}, New Email: ${email}`);
 
   try {
-    if (!username && !email && !req.body.password) {
+    if (!username && !email && !password) {
       console.log(`[USER] Update failed - No fields to update - ID: ${userId}`);
       return res.status(400).json({ message: "No field to update" });
     }
@@ -286,11 +286,28 @@ export async function updateUser(req, res) {
     let hashedPassword;
     if (password) {
       if (!isValidPassword(password)) {
+        console.log(`[USER] Update failed - Password does not meet requirements`);
         return res.status(400).json({ message: "Password does not meet requirements" });
       }
-      const salt = bcrypt.genSaltSync(10);
-      hashedPassword = bcrypt.hashSync(password, salt);
+      if (req.field === "password") {
+        const salt = bcrypt.genSaltSync(10);
+        hashedPassword = bcrypt.hashSync(password, salt);
+      } else {
+        console.log(`[USER] Update failed - Unauthorized password update ${userId}`);
+        return res.status(403).json({ message: "Unauthorized password update" });
+      }
     }
+
+    if (username && req.field !== "username") {
+      console.log(`[USER] Update failed - Unauthorized username update - ID: ${userId}`);
+      return res.status(403).json({ message: "Unauthorized username update" });
+    }
+
+    if (email && req.field !== "email") {
+      console.log(`[USER] Update failed - Unauthorized email update - ID: ${userId}`);
+      return res.status(403).json({ message: "Unauthorized email update" });
+    }
+
     const updatedUser = await _updateUserById(userId, username, email, hashedPassword);
     console.log(`[USER] User updated successfully - ID: ${userId}`);
     return res.status(200).json({
@@ -345,6 +362,11 @@ export async function deleteUser(req, res) {
     if (!user) {
       console.log(`[USER] Delete failed - User not found - ID: ${userId}`);
       return res.status(404).json({ message: `User ${userId} not found` });
+    }
+
+    if (req.field !== "delete") {
+      console.log(`[USER] Delete failed - Unauthorized delete - ID: ${userId}`);
+      return res.status(403).json({ message: "Unauthorized delete" });
     }
 
     await _deleteUserById(userId);
