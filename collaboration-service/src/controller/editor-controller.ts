@@ -179,7 +179,7 @@ export async function handleDisconnect(socket: Socket, io: Server) {
                 if (yDoc) {
                     Session.findOneAndUpdate(
                         { session_id: roomId },
-                        { active: false, yDoc: Buffer.from(Y.encodeStateAsUpdateV2(yDoc)) }
+                        { active: false, yDoc: Buffer.from(Y.encodeStateAsUpdateV2(yDoc)), activeUsers: [] },
                     )
                         .then((doc) => {
                             if (!doc) {

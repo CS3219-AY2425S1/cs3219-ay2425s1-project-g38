@@ -93,6 +93,7 @@ const App: React.FC = () => {
       router,
       setUserConfirmed,
       setModalVisibility,
+      usersInRoom
     );
   };
 

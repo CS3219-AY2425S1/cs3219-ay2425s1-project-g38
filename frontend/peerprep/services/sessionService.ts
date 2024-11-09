@@ -262,9 +262,16 @@ export const confirmTermination = async (
   router: any,
   setUserConfirmed: Dispatch<any>,
   setModalVisibility: Dispatch<any>,
+  usersInRoom: string[],
 ) => {
   setUserConfirmed(true);
   if (!socket) return;
+
+  if (usersInRoom.length == 1) {
+    socket.emit("terminateSession");
+    socket.disconnect();
+    router.push("/");
+  }
 
   if (isFirstToCancel) {
     socket.emit("terminateOne");
