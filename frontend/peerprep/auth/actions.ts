@@ -467,7 +467,11 @@ export const editUsername = async (newUsername: string) => {
   }
 
   try {
-    const updatedToken = await updateTokenWithField(session.accessToken, "username", secret);
+    const updatedToken = await updateTokenWithField(
+      session.accessToken,
+      "username",
+      secret,
+    );
     const response = await fetch(
       `${USER_SERVICE_URL}/users/${session.userId}`,
       {
@@ -610,7 +614,11 @@ export const verifyEmailCode = async (code: number, newEmail: string) => {
     }
 
     if (verificationCode === code) {
-      const updatedToken = await updateTokenWithField(accessToken, "email", secret);
+      const updatedToken = await updateTokenWithField(
+        accessToken,
+        "email",
+        secret,
+      );
 
       // If code matches, update the email
       console.log(newEmail);
@@ -686,7 +694,11 @@ export const changePassword = async (newPassword: string) => {
   }
 
   try {
-    const updatedToken = await updateTokenWithField(session.accessToken, "password", secret);
+    const updatedToken = await updateTokenWithField(
+      session.accessToken,
+      "password",
+      secret,
+    );
 
     const response = await fetch(
       `${USER_SERVICE_URL}/users/${session.userId}`,
@@ -746,7 +758,11 @@ export const resetPassword = async (newPassword: string) => {
 
     const userId = payload.id;
 
-    const updatedToken = await updateTokenWithField(resetToken, "password", secret);
+    const updatedToken = await updateTokenWithField(
+      resetToken,
+      "password",
+      secret,
+    );
 
     const response = await fetch(`${USER_SERVICE_URL}/users/${userId}`, {
       method: "PATCH",
@@ -761,6 +777,7 @@ export const resetPassword = async (newPassword: string) => {
 
     if (response.ok) {
       await session.destroy();
+
       return { status: "success", message: "Password updated successfully" };
     } else {
       const errorData = await response.json();
@@ -792,7 +809,11 @@ export const deleteUser = async () => {
     return { status: "error", message: "Internal application error" };
   }
 
-  const updatedToken = await updateTokenWithField(session.accessToken, "delete", secret);
+  const updatedToken = await updateTokenWithField(
+    session.accessToken,
+    "delete",
+    secret,
+  );
 
   const response = await fetch(`${USER_SERVICE_URL}/users/${session.userId}`, {
     method: "DELETE",
@@ -863,7 +884,11 @@ export const forgetPassword = async (identifier: string) => {
   }
 };
 
-async function updateTokenWithField(token: string, field: string, secret: string): Promise<string> {
+async function updateTokenWithField(
+  token: string,
+  field: string,
+  secret: string,
+): Promise<string> {
   const secretKey = new TextEncoder().encode(secret);
 
   try {

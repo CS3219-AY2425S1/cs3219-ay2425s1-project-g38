@@ -27,7 +27,7 @@ export default function SignUpPage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: string } | null>(
-    null
+    null,
   );
 
   // Toggle password visibility
@@ -65,9 +65,9 @@ export default function SignUpPage() {
         setTimeout(
           () =>
             router.push(
-              `sign-up/email-verification?email=${encodeURIComponent(email)}`
+              `sign-up/email-verification?email=${encodeURIComponent(email)}`,
             ),
-          500
+          500,
         );
       } else {
         setToast({

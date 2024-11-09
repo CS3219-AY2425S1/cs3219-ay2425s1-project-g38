@@ -78,7 +78,7 @@ export const GreetingMessageHeader = ({ user }: GreetingMessageProps) => {
           margin: "10px",
         }}
       >
-        Mistakes are only mistakes if you don't learn from them 🧑‍💻
+        Mistakes are only mistakes if you don&apos;t learn from them 🧑‍💻
       </div>
     );
   }

@@ -1,6 +1,5 @@
 import React from "react";
 import { Card, Skeleton, Spinner } from "@nextui-org/react";
-import { useRouter } from "next/navigation";
 
 import { useMatchHistoryFetcher } from "@/services/userService";
 import SessionHistoryCard from "@/components/session-history/SessionHistoryCard";
@@ -43,7 +42,7 @@ interface Match {
 
 const SessionCard = ({ match }: { match: Match }) => {
   const { questionData, questionLoading } = useQuestionDataFetcher(
-    match.questionId
+    match.questionId,
   );
 
   if (questionLoading) {

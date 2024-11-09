@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Input } from "@nextui-org/input";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { CircularProgress, Tooltip } from "@nextui-org/react";
 
 import BoxIcon from "@/components/boxicons";
@@ -22,7 +22,7 @@ export default function ResetPasswordPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: string } | null>(
-    null
+    null,
   );
 
   const toggleVisibility = () => setIsVisible(!isVisible);
