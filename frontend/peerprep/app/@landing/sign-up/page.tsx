@@ -17,6 +17,7 @@ import {
   validateUsername,
   validatePassword,
 } from "@/utils/utils";
+import PasswordRequirementsTooltip from "@/components/PasswordRequirementsTooltip";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -27,7 +28,7 @@ export default function SignUpPage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: string } | null>(
-    null,
+    null
   );
 
   // Toggle password visibility
@@ -65,9 +66,9 @@ export default function SignUpPage() {
         setTimeout(
           () =>
             router.push(
-              `sign-up/email-verification?email=${encodeURIComponent(email)}`,
+              `sign-up/email-verification?email=${encodeURIComponent(email)}`
             ),
-          500,
+          500
         );
       } else {
         setToast({
@@ -84,27 +85,6 @@ export default function SignUpPage() {
 
     setIsLoading(false);
   };
-
-  const passwordRequirements = (
-    <Tooltip
-      content={
-        <ul className="list-disc pl-2 py-1 text-xs">
-          <li>At least 12 characters long</li>
-          <li>Contains at least one uppercase letter</li>
-          <li>Contains at least one lowercase letter</li>
-          <li>Contains at least one digit</li>
-          <li>Contains at least one special character (e.g., @$#!%*?&)</li>
-        </ul>
-      }
-      placement="right"
-      showArrow
-    >
-      <div className="flex flex-row gap-1 items-center w-fit dark:hover:text-gray-300 hover:text-gray-500">
-        <BoxIcon name="bx-info-circle" size="12px" />
-        &nbsp;Password requirements
-      </div>
-    </Tooltip>
-  );
 
   const errorPasswordRequirements = (
     <Tooltip
@@ -193,7 +173,7 @@ export default function SignUpPage() {
             labelPlacement="outside"
             label="Password"
             placeholder="Enter your password"
-            description={passwordRequirements}
+            description={<PasswordRequirementsTooltip />}
             value={password}
             onValueChange={setPassword}
             isInvalid={password.length > 0 && !validatePassword(password)}

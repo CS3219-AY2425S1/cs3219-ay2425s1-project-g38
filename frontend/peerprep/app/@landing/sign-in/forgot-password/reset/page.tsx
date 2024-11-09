@@ -12,6 +12,7 @@ import { fontFun } from "@/config/fonts";
 import { validatePassword } from "@/utils/utils";
 import Toast from "@/components/toast";
 import { resetPassword } from "@/auth/actions";
+import PasswordRequirementsTooltip from "@/components/PasswordRequirementsTooltip";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -22,7 +23,7 @@ export default function ResetPasswordPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: string } | null>(
-    null,
+    null
   );
 
   const toggleVisibility = () => setIsVisible(!isVisible);
@@ -85,27 +86,6 @@ export default function ResetPasswordPage() {
     setIsLoading(false);
   };
 
-  const passwordRequirements = (
-    <Tooltip
-      content={
-        <ul className="list-disc pl-2 py-1 text-xs">
-          <li>At least 12 characters long</li>
-          <li>Contains at least one uppercase letter</li>
-          <li>Contains at least one lowercase letter</li>
-          <li>Contains at least one digit</li>
-          <li>Contains at least one special character (e.g., @$#!%*?&)</li>
-        </ul>
-      }
-      placement="right"
-      showArrow
-    >
-      <div className="flex flex-row gap-1 items-center w-fit dark:hover:text-gray-300 hover:text-gray-500">
-        <BoxIcon name="bx-info-circle" size="12px" />
-        &nbsp;Password requirements
-      </div>
-    </Tooltip>
-  );
-
   return (
     <div className="flex items-center justify-center mt-20">
       {toast && (
@@ -131,7 +111,7 @@ export default function ResetPasswordPage() {
         </div>
 
         <div className="flex flex-col gap-4 w-fill">
-          {passwordRequirements}
+          <PasswordRequirementsTooltip />
           <Input
             label="New Password"
             variant="faded"

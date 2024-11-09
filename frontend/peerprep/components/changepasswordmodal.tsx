@@ -16,6 +16,7 @@ import BoxIcon from "./boxicons";
 
 import { validatePassword } from "@/utils/utils";
 import { EyeFilledIcon, EyeSlashFilledIcon } from "@/components/icons";
+import PasswordRequirementsTooltip from "./PasswordRequirementsTooltip";
 
 interface ChangePasswordModalProps {
   isOpen: boolean;
@@ -54,31 +55,6 @@ export function ChangePasswordModal({
     onOpenChange(false);
   };
 
-  const passwordRequirements = (
-    <Tooltip
-      content={
-        <ul className="list-disc pl-2 py-1 text-xs">
-          <li>At least 12 characters long</li>
-          <li>Contains at least one uppercase letter</li>
-          <li>Contains at least one lowercase letter</li>
-          <li>Contains at least one digit</li>
-          <li>Contains at least one special character (e.g., @$#!%*?&)</li>
-        </ul>
-      }
-      placement="right"
-      showArrow
-    >
-      <div className="flex flex-row gap-0.5 items-center w-fit text-xs">
-        <BoxIcon
-          name="bx-info-circle"
-          size="10px"
-          className="text-white hover:text-gray-200"
-        />
-        &nbsp;Password requirements
-      </div>
-    </Tooltip>
-  );
-
   return (
     <Modal isOpen={isOpen} onOpenChange={handleClose}>
       <ModalContent>
@@ -89,7 +65,7 @@ export function ChangePasswordModal({
                 <BoxIcon name="bxs-lock" size="40px" />
                 <div className="flex flex-col gap-0 items-center">
                   Change Password
-                  {passwordRequirements}
+                  <PasswordRequirementsTooltip />
                 </div>
               </div>
             </ModalHeader>
