@@ -131,10 +131,14 @@ export const sessionController = {
         const { sessionId } = req.body;
 
         try {
-            const session = await Session.findOne({ session_id: sessionId, active: false });
+            const session = await Session.findOne({ session_id: sessionId});
 
             if (!session) {
                 return res.status(404).json({ message: 'Session not found' });
+            }
+
+            if (session.active) {
+                return res.status(400).json({ message: 'Session is still ongoing' });
             }
 
             const yDoc = new Y.Doc();
