@@ -70,6 +70,19 @@ All endpoints require the client to include a JWT (JSON Web Token) under socket.
         }
         ```
 
+### Redirect To Session
+
+- This event is triggered when the session is done setting up and is ready to receive the user.
+- socket event: `redirectToSession`
+- Data:
+    - `{ sessionId : string }`
+    - Example:
+        ```json
+        {
+            "sessionId": "session123"
+        }
+        ```
+
 ### Registration Success
 
 - This event is triggered when the user successfully registers for matching.

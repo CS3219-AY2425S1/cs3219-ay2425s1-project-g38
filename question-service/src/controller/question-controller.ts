@@ -6,9 +6,9 @@
 //   },
 // };
 
-import { Request, Response } from "express";
-import Question from "../model/question-model";
-import { uploadToS3, deleteFromS3 } from "../config/s3";
+import { Request, Response } from 'express';
+import Question from '../model/question-model';
+import { uploadToS3, deleteFromS3 } from '../config/s3';
 
 export const questionController = {
   // Create a question
@@ -20,35 +20,60 @@ export const questionController = {
       complexity,
       templateCode,
       testCases,
+      language,
+      templateCodeYDocUpdate,
     } = req.body;
 
     // Check if all fields are provided
-    if (!title || !description || !category || !complexity) {
-      return res.status(400).json({ error: "All fields are required." });
+    if (!title || !description || !category || !complexity || !language) {
+      return res.status(400).json({ error: 'All fields are required.' });
     }
 
     // Enforce a character limit of 80 characters for the title
     if (title.length > 80) {
       return res
         .status(400)
-        .json({ error: "Question title cannot exceed 80 characters." });
+        .json({ error: 'Question title cannot exceed 80 characters.' });
     }
 
-    if (!templateCode || !testCases /*|| !Array.isArray(testCases)*/) {
+    if (
+      !templateCode ||
+      !testCases /*|| !Array.isArray(testCases)*/ ||
+      !templateCodeYDocUpdate
+    ) {
       return res
         .status(400)
-        .json({ error: "Invalid input for template code or test cases" });
+        .json({ error: 'Invalid input for template code or test cases' });
+    }
+
+    // Convert language to uppercase and validate
+    const languageUpperCase = language.toUpperCase();
+    const validLanguages = [
+      'TYPESCRIPT',
+      'JAVASCRIPT',
+      'PHP',
+      'CSHARP',
+      'JAVA',
+      'PYTHON',
+    ];
+
+    if (!validLanguages.includes(languageUpperCase)) {
+      return res.status(400).json({
+        error: `Invalid language. Allowed languages: ${validLanguages.join(
+          ', '
+        )}.`,
+      });
     }
 
     try {
       // Check for duplicates based on the question title
       const existingQuestion = await Question.findOne({
-        title: { $regex: `^${title}$`, $options: "i" }, // Case-insensitive exact match
+        title: { $regex: `^${title}$`, $options: 'i' }, // Case-insensitive exact match
       });
       if (existingQuestion) {
         return res
           .status(400)
-          .json({ error: "A question with this title already exists." });
+          .json({ error: 'A question with this title already exists.' });
       }
 
       // Parse the testCases if they are sent as a JSON string
@@ -76,12 +101,14 @@ export const questionController = {
         complexity: complexity.toUpperCase(),
         templateCode: templateCode,
         testCases: req.body.testCases,
+        language: languageUpperCase,
+        templateCodeYDocUpdate: templateCodeYDocUpdate,
       });
 
       const savedQuestion = await question.save();
       res.status(201).json(savedQuestion);
     } catch (err) {
-      res.status(500).json({ error: "Failed to create question" });
+      res.status(500).json({ error: 'Failed to create question' });
     }
   },
 
@@ -113,7 +140,7 @@ export const questionController = {
         filter.question_id = question_id;
       }
       if (title) {
-        filter.title = { $regex: title, $options: "i" }; // Case-insensitive search
+        filter.title = { $regex: title, $options: 'i' }; // Case-insensitive search
       }
       // if (description) {
       //   filter.description = { $regex: description, $options: "i" };
@@ -127,12 +154,12 @@ export const questionController = {
       if (category) {
         const categoriesArray = Array.isArray(category) ? category : [category];
         filter.category = {
-          $in: categoriesArray.map((cat) => new RegExp(cat as string, "i")), // Convert each category to case-insensitive regex
+          $in: categoriesArray.map((cat) => new RegExp(cat as string, 'i')), // Convert each category to case-insensitive regex
         };
       }
 
       if (complexity) {
-        filter.complexity = { $regex: complexity, $options: "i" }; // Case-insensitive;
+        filter.complexity = { $regex: complexity, $options: 'i' }; // Case-insensitive;
       }
       // if (templateCode) {
       //   filter.templateCode = { $regex: templateCode, $options: "i" };
@@ -165,16 +192,16 @@ export const questionController = {
       const complexityOrder = { EASY: 1, MEDIUM: 2, HARD: 3 }; // Numerical values for complexity ordering
 
       // Sort by title (ascending or descending)
-      if (sort === "title" || sort === "-title") {
-        sortOptions.title = sort === "title" ? 1 : -1; // Ascending (1) or Descending (-1)
+      if (sort === 'title' || sort === '-title') {
+        sortOptions.title = sort === 'title' ? 1 : -1; // Ascending (1) or Descending (-1)
       }
 
       // Sort by complexity using numerical values for ordering
-      if (sort === "complexity" || sort === "-complexity") {
-        sortOptions.complexity = sort === "complexity" ? 1 : -1; // Ascending (1) or Descending (-1)
+      if (sort === 'complexity' || sort === '-complexity') {
+        sortOptions.complexity = sort === 'complexity' ? 1 : -1; // Ascending (1) or Descending (-1)
 
         // Use aggregation to apply custom sorting for complexity field based on defined order
-        const complexitySortOrder = sort === "complexity" ? 1 : -1;
+        const complexitySortOrder = sort === 'complexity' ? 1 : -1;
 
         // Use the aggregation framework to define sorting based on custom complexity order
         const questions = await Question.aggregate([
@@ -186,15 +213,15 @@ export const questionController = {
                 $switch: {
                   branches: [
                     {
-                      case: { $eq: ["$complexity", "EASY"] },
+                      case: { $eq: ['$complexity', 'EASY'] },
                       then: complexityOrder.EASY,
                     },
                     {
-                      case: { $eq: ["$complexity", "MEDIUM"] },
+                      case: { $eq: ['$complexity', 'MEDIUM'] },
                       then: complexityOrder.MEDIUM,
                     },
                     {
-                      case: { $eq: ["$complexity", "HARD"] },
+                      case: { $eq: ['$complexity', 'HARD'] },
                       then: complexityOrder.HARD,
                     },
                   ],
@@ -233,7 +260,7 @@ export const questionController = {
 
       // Fetch only the fields you need: question_id, title, category, complexity
       const questions = await Question.find(filter)
-        .select("question_id title category complexity") // Specify fields to fetch
+        .select('question_id title category complexity') // Specify fields to fetch
         .sort(sortOptions) // Apply sorting
         .skip(skip)
         .limit(limit);
@@ -269,7 +296,7 @@ export const questionController = {
         totalPages: Math.ceil(totalQuestions / limit),
       });
     } catch (err) {
-      res.status(500).json({ error: "Failed to get questions" });
+      res.status(500).json({ error: 'Failed to get questions' });
     }
   },
 
@@ -281,10 +308,10 @@ export const questionController = {
       if (question) {
         res.status(200).json({ question });
       } else {
-        res.status(404).json({ message: "Question not found" });
+        res.status(404).json({ message: 'Question not found' });
       }
     } catch (err) {
-      res.status(500).json({ error: "Failed to get question" });
+      res.status(500).json({ error: 'Failed to get question' });
     }
   },
 
@@ -298,24 +325,49 @@ export const questionController = {
       complexity,
       templateCode,
       testCases,
+      language,
+      templateCodeYDocUpdate,
     } = req.body;
 
     // Check if all fields are provided
-    if (!title || !description || !category || !complexity) {
-      return res.status(400).json({ error: "All fields are required." });
+    if (!title || !description || !category || !complexity || !language) {
+      return res.status(400).json({ error: 'All fields are required.' });
     }
 
     // Enforce a character limit of 80 characters for the title
     if (title.length > 80) {
       return res
         .status(400)
-        .json({ error: "Question title cannot exceed 80 characters." });
+        .json({ error: 'Question title cannot exceed 80 characters.' });
     }
 
-    if (!templateCode || !testCases /*|| !Array.isArray(testCases)*/) {
+    if (
+      !templateCode ||
+      !testCases /*|| !Array.isArray(testCases)*/ ||
+      !templateCodeYDocUpdate
+    ) {
       return res
         .status(400)
-        .json({ error: "Invalid input for template code or test cases" });
+        .json({ error: 'Invalid input for template code or test cases' });
+    }
+
+    // Convert language to uppercase and validate
+    const languageUpperCase = language.toUpperCase();
+    const validLanguages = [
+      'TYPESCRIPT',
+      'JAVASCRIPT',
+      'PHP',
+      'CSHARP',
+      'JAVA',
+      'PYTHON',
+    ];
+
+    if (!validLanguages.includes(languageUpperCase)) {
+      return res.status(400).json({
+        error: `Invalid language. Allowed languages: ${validLanguages.join(
+          ', '
+        )}.`,
+      });
     }
 
     try {
@@ -327,17 +379,17 @@ export const questionController = {
 
       const question = await Question.findOne({ question_id: id });
       if (!question)
-        return res.status(404).json({ message: "Question not found" });
+        return res.status(404).json({ message: 'Question not found' });
       // Check for duplicate titles, case-insensitive, excluding the current question
       const duplicateTitleCheck = await Question.findOne({
-        title: { $regex: `^${title}$`, $options: "i" }, // Case-insensitive exact match
+        title: { $regex: `^${title}$`, $options: 'i' }, // Case-insensitive exact match
         _id: { $ne: question._id }, // Exclude the current question from the duplicate check
       });
 
       if (duplicateTitleCheck) {
         return res
           .status(400)
-          .json({ error: "A question with this title already exists." });
+          .json({ error: 'A question with this title already exists.' });
       }
 
       // let updatedDescription = description;
@@ -358,11 +410,14 @@ export const questionController = {
       question.complexity = complexity.toUpperCase() || question.complexity;
       question.templateCode = templateCode || question.templateCode;
       question.testCases = testCases || question.testCases;
+      question.language = languageUpperCase /*|| question.language*/;
+      question.templateCodeYDocUpdate =
+        templateCodeYDocUpdate || question.templateCodeYDocUpdate;
 
       await question.save();
       res.status(200).json(question);
     } catch (err) {
-      res.status(500).json({ error: "Failed to update question" });
+      res.status(500).json({ error: 'Failed to update question' });
     }
   },
 
@@ -372,7 +427,7 @@ export const questionController = {
       const { id } = req.params;
       const question = await Question.findOne({ question_id: id });
       if (!question)
-        return res.status(404).json({ message: "Question not found" });
+        return res.status(404).json({ message: 'Question not found' });
       // const deletedQuestion = await Question.findOneAndDelete({
       //   question_id: id,
       // });
@@ -389,7 +444,7 @@ export const questionController = {
       // }
 
       await question.delete();
-      res.status(200).json({ message: "Question deleted successfully" });
+      res.status(200).json({ message: 'Question deleted successfully' });
 
       // if (deletedQuestion) {
       //   res.status(200).json({ message: "Question deleted successfully" });
@@ -397,7 +452,7 @@ export const questionController = {
       //   res.status(404).json({ message: "Question not found" });
       // }
     } catch (err) {
-      res.status(500).json({ error: "Failed to delete question" });
+      res.status(500).json({ error: 'Failed to delete question' });
     }
   },
 
@@ -405,11 +460,11 @@ export const questionController = {
   getAllUniqueCategories: async (req: Request, res: Response) => {
     try {
       // Use MongoDB's distinct to retrieve unique category values
-      const uniqueCategories = await Question.distinct("category");
+      const uniqueCategories = await Question.distinct('category');
 
       res.status(200).json({ uniqueCategories });
     } catch (err) {
-      res.status(500).json({ error: "Failed to get unique categories" });
+      res.status(500).json({ error: 'Failed to get unique categories' });
     }
   },
 
@@ -417,13 +472,77 @@ export const questionController = {
   getAllUniqueComplexityLevels: async (req: Request, res: Response) => {
     try {
       // Use MongoDB's distinct to retrieve unique complexity values
-      const uniqueComplexityLevels = await Question.distinct("complexity");
+      const uniqueComplexityLevels = await Question.distinct('complexity');
 
       res.status(200).json({ uniqueComplexityLevels });
     } catch (err) {
       res.status(500).json({
-        error: "Failed to get unique complexity levels",
+        error: 'Failed to get unique complexity levels',
       });
+    }
+  },
+
+  // New: Retrieve a question based on difficulty and category
+  getQuestionByCriteria: async (req: Request, res: Response) => {
+    try {
+      const { difficulty, category } = req.body;
+
+      // Validate request body
+      if (!difficulty || !category) {
+        return res
+          .status(400)
+          .json({ error: "Both 'difficulty' and 'category' are required." });
+      }
+
+      // Helper function to select a random value from an array
+      const getRandomValue = (input: string | string[]) =>
+        Array.isArray(input)
+          ? input[Math.floor(Math.random() * input.length)]
+          : input;
+
+      // Randomly select a difficulty and category if they are arrays
+      const selectedDifficulty = getRandomValue(difficulty).toUpperCase();
+      const selectedCategory = getRandomValue(category).toUpperCase();
+
+      // Step 1: Try to find a question that matches both criteria
+      let question = await Question.aggregate([
+        {
+          $match: {
+            complexity: selectedDifficulty,
+            category: selectedCategory,
+          },
+        },
+        { $sample: { size: 1 } }, // Randomly select one question
+      ]);
+
+      // Step 2: If no question matches both criteria, match by one field
+      if (!question.length) {
+        question = await Question.aggregate([
+          {
+            $match: {
+              $or: [
+                { complexity: selectedDifficulty },
+                { category: selectedCategory },
+              ],
+            },
+          },
+          { $sample: { size: 1 } }, // Randomly select one question
+        ]);
+      }
+
+      // Step 3: Handle if no question is found even by single criteria
+      if (!question.length) {
+        return res.status(404).json({
+          error: 'No question found matching the given difficulty or category.',
+        });
+      }
+
+      res.status(200).json({ question: question[0] });
+    } catch (error) {
+      console.error('Error retrieving question:', error);
+      res
+        .status(500)
+        .json({ error: 'An error occurred while retrieving the question.' });
     }
   },
 };

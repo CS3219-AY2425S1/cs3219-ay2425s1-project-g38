@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: question-service
+  labels:
+    app: question-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: question-service
+  template:
+    metadata:
+      labels:
+        app: question-service
+    spec:
+      containers:
+        - name: question-service
+          image: asia-southeast1-docker.pkg.dev/peerprep-437117/peerprep/question-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8003
+          envFrom:
+            - configMapRef:
+                name: question-config
+            - configMapRef:
+                name: app-config
+            - secretRef:
+                name: question-secrets
+            - secretRef:
+                name: app-secrets
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "250m"

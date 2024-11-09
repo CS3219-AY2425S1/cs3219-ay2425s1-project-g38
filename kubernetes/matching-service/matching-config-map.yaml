@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: matching-config
+data:
+  REDIS_URL: "redis://matching-redis-service:6379"
+  MATCHING_TIMEOUT: "10000" # in milliseconds
+  MATCHING_SERVICE_PORT: "8002"

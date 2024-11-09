@@ -1,7 +1,13 @@
 import { io, Socket } from "socket.io-client";
 import { env } from "next-runtime-env";
 
-const MATCHING_SERVICE_URL = env("NEXT_PUBLIC_MATCHING_SERVICE_URL");
+import { getAccessToken } from "../auth/actions";
+
+const MATCHING_SERVICE_URL =
+  env("NEXT_PUBLIC_MATCHING_SOCKET_URL") ||
+  env("NEXT_PUBLIC_MATCHING_SERVICE_URL");
+const MATCHING_SERVICE_PATH =
+  env("NEXT_PUBLIC_MATCHING_SOCKET_PATH") || "/socket.io";
 let socket: Socket | null = null;
 
 export const isSocketConnected = () => {
@@ -10,7 +16,9 @@ export const isSocketConnected = () => {
 
 const createSocketConnection = (token: string): Socket => {
   const socketConnection = io(MATCHING_SERVICE_URL, {
+    path: MATCHING_SERVICE_PATH,
     auth: { token },
+    transports: ["websocket"],
     autoConnect: false, // We'll connect it manually
     reconnectionAttempts: 5, // Retry connection 5 times if it fails
     timeout: 10000, // Timeout after 10 seconds
@@ -40,9 +48,14 @@ const createSocketConnection = (token: string): Socket => {
 };
 
 // Function to initialize and connect the socket
-export const initializeSocket = () => {
-  const token = localStorage.getItem("accessToken") || "invalid"; // TODO: Replace with real JWT token
+export const initializeSocket = async () => {
+  const token = await getAccessToken();
 
+  if (!token) {
+    console.error("Access token not found");
+
+    return;
+  }
   socket = createSocketConnection(token);
   socket.connect();
 };
@@ -51,6 +64,7 @@ export const initializeSocket = () => {
 export const registerUser = (
   userParams: { difficulty: string[]; topic: string[] },
   onMatchFound: (matchData: any) => void,
+  onRedirectToSession: () => void,
   onRegistrationSuccess: () => void,
   onMatchingTimeout: () => void,
   onError: (error: any) => void,
@@ -64,6 +78,11 @@ export const registerUser = (
   // Register event listener for matchFound and registrationSuccess
   socket.on("matchFound", (matchData) => {
     onMatchFound(matchData);
+  });
+
+  socket.on("redirectToSession", (body) => {
+    console.log("Redirecting to session:", body);
+    onRedirectToSession();
   });
 
   socket.on("registrationSuccess", () => {

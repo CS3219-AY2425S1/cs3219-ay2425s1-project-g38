@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-config
+data: # Update <your-backend-url> with the URL of your ingress controller
+  NEXT_PUBLIC_USER_SERVICE_URL: "<your-ingress-url>/users"
+  NEXT_PUBLIC_MATCHING_SERVICE_URL: "<your-ingress-url>/matching"
+  NEXT_PUBLIC_QUESTION_SERVICE_URL: "<your-ingress-url>/questions"
+  NEXT_PUBLIC_COLLAB_SERVICE_URL: "<your-ingress-url>/collab"
+  NEXT_PUBLIC_MATCHING_SOCKET_URL: "<your-ingress-url>"
+  NEXT_PUBLIC_COLLAB_SOCKET_URL: "<your-ingress-url>"
+  NEXT_PUBLIC_MATCHING_SOCKET_PATH: "/matching/socket.io"
+  NEXT_PUBLIC_COLLAB_SOCKET_PATH: "/collab/socket.io"
+  FRONTEND_PORT: "3000"

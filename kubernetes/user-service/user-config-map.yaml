@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: user-config
+data:
+  USER_PORT: "8004"
+  FRONTEND_URL: "" # Set this to your frontend URL

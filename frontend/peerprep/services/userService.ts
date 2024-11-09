@@ -1,44 +1,41 @@
 import { env } from "next-runtime-env";
+import useSWR from "swr";
 
-const USER_SERVICE_URL = env("NEXT_PUBLIC_USER_SERVICE_URL");
+import { getAccessToken, getSession } from "@/auth/actions";
 
-//const fetcher = (url: string) => fetch(url).then((res) => res.json());
+const NEXT_PUBLIC_USER_SERVICE_URL = env("NEXT_PUBLIC_USER_SERVICE_URL");
 
-export const createUser = async (
-  username: string,
-  email: string,
-  password: string,
-) => {
-  const formData = {
-    username,
-    email,
-    password,
-    isAdmin: false,
-  };
+// Custom fetcher that includes auth token and handles session
+const fetcher = async (url: string) => {
+  const token = await getAccessToken();
+  const session = await getSession();
 
-  const response = await fetch(`${USER_SERVICE_URL}/users/`, {
-    method: "POST",
+  if (!session?.userId) {
+    throw new Error("No session found");
+  }
+
+  const response = await fetch(url.replace(":userId", session.userId), {
     headers: {
-      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(formData),
   });
 
-  return response;
+  if (!response.ok) {
+    throw new Error("Failed to fetch match history");
+  }
+
+  return response.json();
 };
 
-export const loginUser = async (identifier: string, password: string) => {
-  const formData = {
-    identifier,
-    password,
-  };
-  const response = await fetch(`${USER_SERVICE_URL}/auth/login`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(formData),
-  });
+export const useMatchHistoryFetcher = () => {
+  const { data, error, isLoading } = useSWR(
+    `${NEXT_PUBLIC_USER_SERVICE_URL}/users/:userId/match-history`,
+    fetcher,
+  );
 
-  return response;
+  return {
+    matchHistory: data?.data || [],
+    error,
+    isLoading,
+  };
 };

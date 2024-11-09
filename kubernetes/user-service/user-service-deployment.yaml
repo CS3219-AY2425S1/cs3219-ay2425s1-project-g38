@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+  labels:
+    app: user-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+    spec:
+      containers:
+        - name: user-service
+          image: asia-southeast1-docker.pkg.dev/peerprep-437117/peerprep/user-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8004
+          envFrom:
+            - configMapRef:
+                name: user-config
+            - configMapRef:
+                name: app-config
+            - secretRef:
+                name: app-secrets
+            - secretRef:
+                name: user-secrets
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "250m"

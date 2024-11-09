@@ -3,6 +3,8 @@ import { SharedSelection } from "@nextui-org/system";
 import { env } from "next-runtime-env";
 import useSWR from "swr";
 
+import { getAccessToken } from "@/auth/actions";
+
 const NEXT_PUBLIC_QUESTION_SERVICE_URL = env(
   "NEXT_PUBLIC_QUESTION_SERVICE_URL",
 );
@@ -99,10 +101,12 @@ export const isValidQuestionSubmission = (
   category: string[],
   templateCode: string,
   testCases: any[],
+  language: string, // New field
 ) => {
   return !(
     !title.trim() ||
     !description.trim() ||
+    !language.trim() || // Language must not be empty
     !category.length ||
     !templateCode.trim() ||
     !testCases.every(
@@ -110,6 +114,15 @@ export const isValidQuestionSubmission = (
         testCase.input.trim() !== "" && testCase.output.trim() !== "",
     )
   );
+};
+
+const createAuthHeaders = async () => {
+  const token = await getAccessToken(); // Get the token dynamically
+
+  return {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+  };
 };
 
 // Submit a new question to the API
@@ -120,6 +133,8 @@ export const submitQuestion = async (
   complexity: string,
   templateCode: string,
   testCases: any[],
+  language: string, // New field
+  templateCodeYDocUpdate: Uint8Array,
 ) => {
   const formData = {
     title,
@@ -130,15 +145,20 @@ export const submitQuestion = async (
     testCases: testCases.map(
       (testCase) => `${testCase.input} -> ${testCase.output}`,
     ),
+    language, // New field
+    templateCodeYDocUpdate: Buffer.from(templateCodeYDocUpdate),
   };
+
+  const headers = await createAuthHeaders(); // Attach token
 
   const response = await fetch(
     `${NEXT_PUBLIC_QUESTION_SERVICE_URL}/api/questions/`,
     {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      // headers: {
+      //   'Content-Type': 'application/json',
+      // },
+      headers,
       body: JSON.stringify(formData),
     },
   );
@@ -154,6 +174,8 @@ export const editQuestion = async (
   complexity: string,
   templateCode: string,
   testCases: any[],
+  language: string, // New field
+  templateCodeYDocUpdate: Uint8Array,
 ) => {
   const formData = {
     title,
@@ -164,15 +186,19 @@ export const editQuestion = async (
     testCases: testCases.map(
       (testCase) => `${testCase.input} -> ${testCase.output}`,
     ),
+    language, // Include the language field,
+    templateCodeYDocUpdate: Buffer.from(templateCodeYDocUpdate),
   };
+  const headers = await createAuthHeaders(); // Attach token
 
   const response = await fetch(
     `${NEXT_PUBLIC_QUESTION_SERVICE_URL}/api/questions/${questionId}`,
     {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      // headers: {
+      //   'Content-Type': 'application/json',
+      // },
+      headers,
       body: JSON.stringify(formData),
     },
   );
@@ -181,10 +207,12 @@ export const editQuestion = async (
 };
 
 export const deleteQuestion = async (questionId: string) => {
+  const headers = await createAuthHeaders(); // Attach token
   const response = await fetch(
     `${NEXT_PUBLIC_QUESTION_SERVICE_URL}/api/questions/${questionId}`,
     {
       method: "DELETE",
+      headers,
     },
   );
 

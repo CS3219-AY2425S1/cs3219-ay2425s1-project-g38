@@ -2,33 +2,124 @@
 
 This directory contains a [Postman collection](./User-Service%20API.postman_collection.json) for the User Service API.
 
-## Create User
+## Create User Account Request
 
-- This endpoint allows adding a new user to the database (i.e., user registration).
-
+- This endpoint initiates a new user account creation request that requires email verification.
 - HTTP Method: `POST`
-
-- Endpoint: http://localhost:3001/users
-
+- Endpoint: <api-gateway-url>/users/users
 - Body
-  - Required: `username` (string), `email` (string), `password` (string)
-
     ```json
     {
-      "username": "SampleUserName",
-      "email": "sample@gmail.com",
-      "password": "SecurePassword"
+        "username": "string",
+        "email": "string",
+        "password": "string"
     }
     ```
+- Validation Rules:
+    - Username: 2-32 characters, can contain a-z, A-Z, 0-9, _ or -
+    - Email: Must be valid email format
+    - Password: Minimum 8 characters
 
 - Responses:
 
-    | Response Code               | Explanation                                           |
-    |-----------------------------|-------------------------------------------------------|
-    | 201 (Created)               | User created successfully, created user data returned |
-    | 400 (Bad Request)           | Missing fields                                        |
-    | 409 (Conflict)              | Duplicate username or email encountered               |
-    | 500 (Internal Server Error) | Database or server error                              |
+    | Response Code               | Explanation                                                |
+    |----------------------------|------------------------------------------------------------|
+    | 201 (Created)              | Account request created, verification email sent           |
+    | 400 (Bad Request)          | Invalid input data                                        |
+    | 409 (Conflict)             | Username or email already exists                          |
+    | 500 (Internal Server Error) | Server error                                             |
+
+- Success Response Body:
+    ```json
+    {
+        "message": "Created new user {username} request successfully",
+        "data": {
+            "token": "email_verification_token",
+            "expiry": "2024-03-21T10:30:00.000Z"
+        }
+    }
+    ```
+
+## Confirm User Account
+
+- This endpoint confirms a user account after email verification.
+- HTTP Method: `PATCH`
+- Endpoint: <api-gateway-url>/users/auth/{userId}
+- Headers
+    - Required: `Authorization: Bearer <MODIFIED_EMAIL_VERIFICATION_TOKEN>`
+
+- Responses:
+
+    | Response Code               | Explanation                                                |
+    |----------------------------|------------------------------------------------------------|
+    | 200 (OK)                   | Account confirmed successfully                             |
+    | 401 (Unauthorized)         | Invalid or expired verification token                      |
+    | 500 (Internal Server Error) | Server error                                             |
+
+- Success Response Body:
+    ```json
+    {
+        "message": "{userId} registered and logged in!",
+        "data": {
+            "accessToken": "jwt_access_token",
+            "id": "user_id",
+            "username": "string",
+            "email": "string",
+            "isAdmin": boolean,
+            "isVerified": boolean,
+            "createdAt": "timestamp"
+        }
+    }
+    ```
+
+## Delete Account Creation Request
+
+- This endpoint deletes an unverified account creation request.
+- HTTP Method: `DELETE`
+- Endpoint: <api-gateway-url>/users/users/{email}
+
+- Responses:
+
+    | Response Code               | Explanation                                                |
+    |----------------------------|------------------------------------------------------------|
+    | 200 (OK)                   | Account request deleted successfully                       |
+    | 403 (Forbidden)            | Cannot delete account, unauthorised request                            |
+    | 404 (Not Found)            | User not found or invalid email                           |
+    | 500 (Internal Server Error) | Server error                                             |
+
+    - Success Response Body:
+    ```json
+    {
+        "message": "Deleted user ${userId} successfully",
+    }
+    ```
+
+## Refresh Email Verification Token
+
+- This endpoint refreshes the email verification token and sends a new verification email.
+- HTTP Method: `PATCH`
+- Endpoint: <api-gateway-url>/users/users/{userId}/resend-request
+- Headers
+    - Required: `Authorization: Bearer <OLD_EMAIL_VERIFICATION_TOKEN>`
+
+- Responses:
+
+    | Response Code               | Explanation                                                |
+    |----------------------------|------------------------------------------------------------|
+    | 201 (Created)              | New verification token generated and email sent            |
+    | 401 (Unauthorized)         | Invalid or expired verification token                      |
+    | 500 (Internal Server Error) | Server error                                             |
+
+- Success Response Body:
+    ```json
+    {
+        "message": "Token refreshed successfully",
+        "data": {
+            "token": "new_email_verification_token",
+            "expiry": "2024-03-21T10:30:00.000Z"
+        }
+    }
+    ```
 
 ## Get User
 
@@ -38,11 +129,11 @@ This directory contains a [Postman collection](./User-Service%20API.postman_coll
 
 - HTTP Method: `GET`
 
-- Endpoint: http://localhost:3001/users/{userId}
+- Endpoint: <api-gateway-url>/users/users/{userId}
 
 - Parameters
     - Required: `userId` path parameter
-    - Example: `http://localhost:3001/users/60c72b2f9b1d4c3a2e5f8b4c`
+    - Example: `<api-gateway-url>/users/users/60c72b2f9b1d4c3a2e5f8b4c`
 
 - <a name="auth-header">Headers</a>
 
@@ -66,11 +157,26 @@ This directory contains a [Postman collection](./User-Service%20API.postman_coll
     | 404 (Not Found)             | User with the specified ID not found                     |
     | 500 (Internal Server Error) | Database or server error                                 |
 
+    - Success reponse
+    ```json
+    {
+        "message": "Found user",
+        "data": {
+            "id": "user_id",
+            "username": "string",
+            "email": "string",
+            "isAdmin": boolean,
+            "isVerified": boolean,
+            "createdAt": "timestamp"
+        }
+    }
+    ```
+
 ## Get All Users
 
 - This endpoint allows retrieval of all users' data from the database.
 - HTTP Method: `GET`
-- Endpoint: http://localhost:3001/users
+- Endpoint: <api-gateway-url>/users/users
 - Headers
     - Required: `Authorization: Bearer <JWT_ACCESS_TOKEN>`
     - Auth Rules:
@@ -93,7 +199,7 @@ This directory contains a [Postman collection](./User-Service%20API.postman_coll
 
 - HTTP Method: `PATCH`
 
-- Endpoint: http://localhost:3001/users/{userId}
+- Endpoint: <api-gateway-url>/users/users/{userId}
 
 - Parameters
   - Required: `userId` path parameter
@@ -110,7 +216,7 @@ This directory contains a [Postman collection](./User-Service%20API.postman_coll
     ```
 
 - Headers
-    - Required: `Authorization: Bearer <JWT_ACCESS_TOKEN>`
+    - Required: `Authorization: Bearer <MODIFIED_JWT_ACCESS_TOKEN>`
     - Auth Rules:
 
         - Admin users: Can update any user's data. The server verifies the user associated with the JWT token is an admin user and allows the update of requested user's data.
@@ -134,7 +240,7 @@ This directory contains a [Postman collection](./User-Service%20API.postman_coll
 
 - HTTP Method: `PATCH`
 
-- Endpoint: http://localhost:3001/users/{userId}
+- Endpoint: <api-gateway-url>/users/users/{userId}
 
 - Parameters
   - Required: `userId` path parameter
@@ -168,38 +274,11 @@ This directory contains a [Postman collection](./User-Service%20API.postman_coll
     | 404 (Not Found)             | User with the specified ID not found                            |
     | 500 (Internal Server Error) | Database or server error                                        |
 
-## Delete User
-
-- This endpoint allows deletion of a user and their related data from the database using the user's ID.
-- HTTP Method: `DELETE`
-- Endpoint: http://localhost:3001/users/{userId}
-- Parameters
-
-  - Required: `userId` path parameter
-- Headers
-
-  - Required: `Authorization: Bearer <JWT_ACCESS_TOKEN>`
-
-  - Auth Rules:
-
-    - Admin users: Can delete any user's data. The server verifies the user associated with the JWT token is an admin user and allows the deletion of requested user's data.
-
-    - Non-admin users: Can only delete their own data. The server checks if the user ID in the request URL matches the ID of the user associated with the JWT token. If it matches, the server deletes the user's own data.
-- Responses:
-
-    | Response Code               | Explanation                                             |
-    |-----------------------------|---------------------------------------------------------|
-    | 200 (OK)                    | User deleted successfully                               |
-    | 401 (Unauthorized)          | Access denied due to missing/invalid/expired JWT        |
-    | 403 (Forbidden)             | Access denied for non-admin users deleting others' data |
-    | 404 (Not Found)             | User with the specified ID not found                    |
-    | 500 (Internal Server Error) | Database or server error                                |
-
 ## Login
 
 - This endpoint allows a user to authenticate with an email and password and returns a JWT access token. The token is valid for 1 day and can be used subsequently to access protected resources. For example usage, refer to the [Authorization header section in the Get User endpoint](#auth-header).
 - HTTP Method: `POST`
-- Endpoint: http://localhost:3001/auth/login
+- Endpoint: <api-gateway-url>/users/auth/login
 - Body
   - Required: `email` (string), `password` (string)
 
@@ -223,7 +302,7 @@ This directory contains a [Postman collection](./User-Service%20API.postman_coll
 
 - This endpoint allows one to verify a JWT access token to authenticate and retrieve the user's data associated with the token.
 - HTTP Method: `GET`
-- Endpoint: http://localhost:3001/auth/verify-token
+- Endpoint: <api-gateway-url>/users/auth/verify-token
 - Headers
   - Required: `Authorization: Bearer <JWT_ACCESS_TOKEN>`
 
@@ -234,3 +313,251 @@ This directory contains a [Postman collection](./User-Service%20API.postman_coll
     | 200 (OK)                    | Token verified, authenticated user's data returned |
     | 401 (Unauthorized)          | Missing/invalid/expired JWT                        |
     | 500 (Internal Server Error) | Database or server error                           |
+
+## Get User's Friends
+
+- This endpoint allows retrieval of a user's friends list.
+- HTTP Method: `GET`
+- Endpoint: <api-gateway-url>/users/users/{userId}/friends
+- Headers
+    - Required: `Authorization: Bearer <JWT_ACCESS_TOKEN>`
+    - Auth Rules:
+        - Admin users: Can retrieve any user's friends list
+        - Non-admin users: Can only retrieve their own friends list
+
+- Responses:
+
+    | Response Code               | Explanation                                      |
+    |-----------------------------|--------------------------------------------------|
+    | 200 (OK)                    | Success, friends list returned                   |
+    | 401 (Unauthorized)          | Access denied due to missing/invalid/expired JWT |
+    | 403 (Forbidden)             | Access denied for non-admin users                |
+    | 404 (Not Found)             | User with specified ID not found                 |
+    | 500 (Internal Server Error) | Database or server error                         |
+
+## Get User's Friend Requests
+
+- This endpoint allows retrieval of pending friend requests for a user.
+- HTTP Method: `GET`
+- Endpoint: <api-gateway-url>/users/users/{userId}/friendRequests
+- Headers
+    - Required: `Authorization: Bearer <JWT_ACCESS_TOKEN>`
+    - Auth Rules:
+        - Admin users: Can retrieve any user's friend requests
+        - Non-admin users: Can only retrieve their own friend requests
+
+- Responses:
+
+    | Response Code               | Explanation                                      |
+    |-----------------------------|--------------------------------------------------|
+    | 200 (OK)                    | Success, friend requests returned                |
+    | 401 (Unauthorized)          | Access denied due to missing/invalid/expired JWT |
+    | 403 (Forbidden)             | Access denied for non-admin users                |
+    | 404 (Not Found)             | User with specified ID not found                 |
+    | 500 (Internal Server Error) | Database or server error                         |
+
+## Send Friend Request
+
+- This endpoint allows sending a friend request to another user.
+- HTTP Method: `POST`
+- Endpoint: <api-gateway-url>/users/users/{userId}/addFriend
+- Headers
+    - Required: `Authorization: Bearer <JWT_ACCESS_TOKEN>`
+- Body
+    - Required: `friendId` (string)
+    ```json
+    {
+      "friendId": "60c72b2f9b1d4c3a2e5f8b4c"
+    }
+    ```
+- Auth Rules:
+    - Admin users: Can send friend requests on behalf of any user
+    - Non-admin users: Can only send friend requests from their own account
+
+- Responses:
+
+    | Response Code               | Explanation                                      |
+    |-----------------------------|--------------------------------------------------|
+    | 200 (OK)                    | Friend request sent successfully                 |
+    | 400 (Bad Request)           | Missing friendId                                 |
+    | 401 (Unauthorized)          | Access denied due to missing/invalid/expired JWT |
+    | 403 (Forbidden)             | Access denied for non-admin users                |
+    | 404 (Not Found)             | User or friend not found                         |
+    | 409 (Conflict)              | Already friends or request already sent          |
+    | 500 (Internal Server Error) | Database or server error                         |
+
+## Accept Friend Request
+
+- This endpoint allows accepting a pending friend request.
+- HTTP Method: `POST`
+- Endpoint: <api-gateway-url>/users/users/{userId}/acceptFriend
+- Headers
+    - Required: `Authorization: Bearer <JWT_ACCESS_TOKEN>`
+- Body
+    - Required: `friendId` (string)
+    ```json
+    {
+      "friendId": "60c72b2f9b1d4c3a2e5f8b4c"
+    }
+    ```
+- Auth Rules:
+    - Admin users: Can accept friend requests on behalf of any user
+    - Non-admin users: Can only accept their own friend requests
+
+- Responses:
+
+    | Response Code               | Explanation                                      |
+    |-----------------------------|--------------------------------------------------|
+    | 200 (OK)                    | Friend request accepted successfully             |
+    | 400 (Bad Request)           | Missing friendId                                 |
+    | 401 (Unauthorized)          | Access denied due to missing/invalid/expired JWT |
+    | 403 (Forbidden)             | Access denied for non-admin users                |
+    | 404 (Not Found)             | User or friend not found                         |
+    | 409 (Conflict)              | No pending friend request found                  |
+    | 500 (Internal Server Error) | Database or server error                         |
+
+## Add Match History
+
+- This endpoint allows adding a completed match to a user's match history.
+- HTTP Method: `POST`
+- Headers
+    - Required: `Authorization: Bearer <JWT_ACCESS_TOKEN>`
+- Body
+    - Required: `sessionId` (string), `questionId` (string), `partnerId` (string)
+    ```json
+    {
+      "sessionId": "session123",
+      "questionId": "question456",
+      "partnerId": "60c72b2f9b1d4c3a2e5f8b4c"
+    }
+    ```
+- Auth Rules:
+    - Admin users: Can add matches to any user's history
+    - Non-admin users: Can only add matches to their own history
+
+- Responses:
+
+    | Response Code               | Explanation                                      |
+    |-----------------------------|--------------------------------------------------|
+    | 200 (OK)                    | Match added successfully                         |
+    | 400 (Bad Request)           | Missing required fields                          |
+    | 401 (Unauthorized)          | Access denied due to missing/invalid/expired JWT |
+    | 403 (Forbidden)             | Access denied for non-admin users                |
+    | 404 (Not Found)             | User or partner not found                        |
+    | 500 (Internal Server Error) | Database or server error                         |
+
+## Update Email Request
+
+- This endpoint initiates an email change request that requires verification.
+- HTTP Method: `POST`
+- Endpoint: <api-gateway-url>/users/users/{userId}/email-update-request
+- Headers
+    - Required: `Authorization: Bearer <JWT_ACCESS_TOKEN>`
+- Body
+    ```json
+    {
+        "email": "string"
+    }
+    ```
+- Auth Rules:
+    - Admin users: Can request email updates for any user
+    - Non-admin users: Can only request email updates for their own account
+
+- Responses:
+
+    | Response Code               | Explanation                                                |
+    |----------------------------|------------------------------------------------------------|
+    | 201 (Created)              | Email update request created, verification email sent      |
+    | 400 (Bad Request)          | Invalid email format                                       |
+    | 401 (Unauthorized)         | Missing/invalid/expired JWT                                |
+    | 403 (Forbidden)            | Access denied for non-admin users updating others' emails  |
+    | 500 (Internal Server Error) | Server error                                             |
+
+- Success reponse:
+    ```json
+        {
+            "message": "Created email update request",
+            "data": {
+                "emailToken": "jwt_access_token",
+                "expiry": "2024-03-21T10:30:00.000Z"
+            }
+        }
+        ```
+
+## Forget Password
+
+- This endpoint initiates a password reset request and sends a reset link via email.
+- HTTP Method: `POST`
+- Endpoint: <api-gateway-url>/users/auth/forget-password
+- Body
+    ```json
+    {
+        "identifier": "string" // Can be either username or email
+    }
+    ```
+
+- Responses:
+
+    | Response Code               | Explanation                                                |
+    |----------------------------|------------------------------------------------------------|
+    | 200 (OK)                   | Reset link sent successfully                               |
+    | 400 (Bad Request)          | Missing identifier                                         |
+    | 401 (Unauthorized)         | User not found                                             |
+    | 403 (Forbidden)            | Account not verified                                       |
+    | 500 (Internal Server Error) | Server error                                             |
+
+- Success response:
+    ```json
+        {
+            "message": "Forget password request success",
+            "data": {
+                "token": "jwt_reset_password_token",
+            }
+        }
+        ```
+
+## Get Match History
+
+- This endpoint retrieves a user's match history.
+- HTTP Method: `GET`
+- Endpoint: <api-gateway-url>/users/users/{userId}/match-history
+- Headers
+    - Required: `Authorization: Bearer <JWT_ACCESS_TOKEN>`
+
+- Responses:
+
+    | Response Code               | Explanation                                      |
+    |-----------------------------|--------------------------------------------------|
+    | 200 (OK)                    | Success, match history returned                  |
+    | 401 (Unauthorized)          | Access denied due to missing/invalid/expired JWT |
+    | 404 (Not Found)             | User not found                                   |
+    | 500 (Internal Server Error) | Server error                                     |
+
+## Add Match
+
+- This endpoint adds a match record to a user's history.
+- HTTP Method: `POST`
+- Endpoint: <api-gateway-url>/users/users/{userId}/addMatch
+- Headers
+    - Required: `Authorization: Bearer <JWT_ACCESS_TOKEN>`
+- Body
+    ```json
+    {
+        "sessionId": "string",
+        "questionId": "string",
+        "partnerId": "string"
+    }
+    ```
+- Auth Rules:
+    - Admin users: Can add matches for any user
+    - Non-admin users: Can only add matches for their own account
+
+- Responses:
+
+    | Response Code               | Explanation                                      |
+    |-----------------------------|--------------------------------------------------|
+    | 200 (OK)                    | Match added successfully                         |
+    | 401 (Unauthorized)          | Access denied due to missing/invalid/expired JWT |
+    | 403 (Forbidden)             | Access denied for non-admin users               |
+    | 404 (Not Found)             | User or partner not found                       |
+    | 500 (Internal Server Error) | Server error                                     |

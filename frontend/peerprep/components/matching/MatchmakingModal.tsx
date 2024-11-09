@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Button, Select, SelectItem, Spinner } from "@nextui-org/react";
 import {
   Modal,
@@ -46,7 +46,7 @@ const MatchmakingModal: React.FC<StartSessionProps> = ({
 
   //TODO: Load difficulty and topic from the question-service
   const [selectedDifficultyKeys, setSelectedDifficultyKeys] = useState(
-    new Set<string>()
+    new Set<string>(),
   );
   const [selectedTopicKeys, setSelectedTopicKeys] = useState(new Set<string>());
 
@@ -130,8 +130,8 @@ const MatchmakingModal: React.FC<StartSessionProps> = ({
         </ModalBody>
         <ModalFooter className="flex flex-col pb-8 pt-3 pl-5 pr-5">
           {!isConnected && (
-            <div className="text-danger bg-danger bg-opacity-10 p-2 flex items-center rounded-full ">
-              <BoxIcon name="bx-error pr-2" size="32px" />
+            <div className="text-danger text-sm bg-danger bg-opacity-10 p-2 flex items-center justify-center rounded-lg ">
+              <BoxIcon name="bx-error pr-2" size="24px" />
               Matchmaking Service is currently unavailable. Please try again
               later.
             </div>

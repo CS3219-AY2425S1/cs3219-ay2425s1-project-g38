@@ -131,6 +131,7 @@ dist
 
 # Redis dump
 redis-data/
+collab-redis-data/
 
 frontend/peerprep/next.config.js
 
@@ -138,6 +139,7 @@ frontend/peerprep/next.config.js
 mongo-data/
 question-mongo-data/
 user-mongo-data/
+collab-mongo-data/
 
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
@@ -176,3 +178,6 @@ yarn-error.log*
 next-env.d.ts
 
 /question-service/scripts/
+
+.vscode
+

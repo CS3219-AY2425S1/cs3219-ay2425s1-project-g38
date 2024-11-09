@@ -6,13 +6,13 @@ import { IconSvgProps } from "@/types";
 import { fontLogo } from "@/config/fonts";
 
 export const Logo: React.FC = () => (
-  <div className="flex flex-row gap-1 w-fit">
+  <div className="flex flex-row gap-1 w-fit items-center">
     <PeerprepLogo />
     <div
       className={`${fontLogo.variable} text-[#6A0CE2] dark:text-white py-3`}
       style={{
         fontFamily: "var(--font-logo)",
-        fontSize: "48px",
+        fontSize: "42px",
         letterSpacing: "-7px",
       }}
     >

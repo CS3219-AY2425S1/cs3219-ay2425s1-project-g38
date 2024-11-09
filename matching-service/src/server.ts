@@ -2,10 +2,11 @@ import express from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
 import { validateSocketJWT } from './middleware/jwt-validation';
-import { initializeRedisClient } from './utils/redis-client';
+import { getRedisClient, initializeRedisClient, pubClient, subClient } from './utils/redis-client';
 import { registerEventHandlers } from './routes/socket-routes';
 import dotenv from 'dotenv';
 import { matchingRoutes } from './routes/api-routes';
+import { createAdapter } from '@socket.io/redis-adapter';
 
 dotenv.config();
 
@@ -26,11 +27,12 @@ async function startServer() {
         app.use(express.json());
         app.use('/api', matchingRoutes);
 
-        // Initialize socket.io with the HTTP server
+
         const io = new Server(server, {
             cors: {
                 origin: '*', // Adjust this based on your allowed origins
             },
+            adapter: createAdapter(pubClient, subClient),
         });
 
         // Socket.io connection handler with JWT validation
@@ -40,7 +42,8 @@ async function startServer() {
             registerEventHandlers(socket, io);
         });
 
-        const PORT = process.env.PORT || 8002;
+        const PORT = Number(process.env.MATCHING_SERVICE_PORT) || 8002;
+
         server.listen(PORT, () => {
             console.log(`Server is running on port ${PORT}`);
         });

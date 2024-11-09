@@ -2,7 +2,7 @@ version: '3'
 services:
 
   frontend:
-    image: delishad21/frontend-peerprep:milestone4
+    image: delishad21/frontend-peerprep:milestone7
     container_name: g38-frontend
     env_file:
       - .env
@@ -27,7 +27,7 @@ services:
     restart: no
 
   g38-user-service:
-    image: delishad21/user-service:milestone4
+    image: delishad21/user-service:milestone7
     container_name: user-service
     env_file:
       - .env  # Loads environment variables from .env file
@@ -55,7 +55,7 @@ services:
     restart: no
 
   g38-question-service:
-    image: delishad21/question-service:milestone4
+    image: delishad21/question-service:milestone7
     container_name: question-service
     env_file:
       - .env  # Loads environment variables from .env file
@@ -68,16 +68,16 @@ services:
 
   redis:
     image: redis:latest
-    container_name: test-redis-container
+    container_name: redis-container
     command: redis-server --save 30 1 --loglevel warning
     volumes:
       - ./redis-data:/data
     # expose ports when testing
-    # ports:
-    #   - "6379:6379"
+    ports:
+      - "6379:6379"
 
   g38-matching-service:
-    image: delishad21/matching-service:milestone4
+    image: delishad21/matching-service:milestone7
     container_name: matching-service
     env_file:
       - .env  # Loads environment variables from .env file
@@ -92,3 +92,42 @@ services:
     #   interval: 10s
     #   timeout: 5s
     #   retries: 5
+
+  collab-redis:
+    image: redis:latest
+    container_name: collab-redis
+    command: redis-server --save 30 1 --loglevel warning
+    volumes:
+      - ./collab-redis-data:/data
+    # expose ports when testing
+    ports:
+      - "6369:6379"
+
+  collab-mongodb:
+    image: mongo:latest
+    container_name: collaboration-service-mongodb
+    # expose port for testing purposes or to view database in MongoDB Compass
+    ports:
+      - "27019:27017"
+    volumes:
+      - ./collab-mongo-data:/data/db
+    env_file:
+      - .env
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${COLLAB_MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${COLLAB_MONGO_INITDB_ROOT_PASSWORD}
+    entrypoint: /bin/sh -c 'if [ -z "$COLLAB_MONGODB_URI" ]; then echo "Starting MongoDB..."; /usr/local/bin/docker-entrypoint.sh mongod; else echo "COLLAB_MONGODB_URI is set. Shutting down."; exit 1; fi'
+    restart: no
+
+  g38-collaboration-service:
+    image: delishad21/collaboration-service:milestone7
+    container_name: collaboration-service
+    env_file:
+      - .env  # Loads environment variables from .env file
+    environment:
+      - COLLAB_MONGODB_URI=${COLLAB_MONGODB_URI:-mongodb://${COLLAB_MONGO_INITDB_ROOT_USERNAME}:${COLLAB_MONGO_INITDB_ROOT_PASSWORD}@collab-mongodb:27017/collaboration-service?authSource=admin}  # Fallback to local MongoDB if MONGODB_URI is not set
+    ports:
+      - "${COLLAB_SERVICE_PORT}:${COLLAB_SERVICE_PORT}"  # Bind port using env variable
+    depends_on:
+      - collab-redis
+      - collab-mongodb

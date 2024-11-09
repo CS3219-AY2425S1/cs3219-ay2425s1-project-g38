@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 import {
   initializeSocket,
@@ -33,6 +34,8 @@ const MatchUI = ({ onClose }: MatchUIProps) => {
   const [matchmakingTime, setMatchmakingTime] = useState<number>(0);
   const [intervalID, setIntervalID] = useState<NodeJS.Timeout | null>(null);
 
+  const router = useRouter();
+
   // Initialize socket on component mount
   useEffect(() => {
     initializeSocket();
@@ -61,7 +64,7 @@ const MatchUI = ({ onClose }: MatchUIProps) => {
 
   const handleMatchingContinue = async (
     selectedDifficultyKeys: Set<string>,
-    selectedTopicKeys: Set<string>
+    selectedTopicKeys: Set<string>,
   ) => {
     // Set timer for matchmaking
     let time = 1;
@@ -86,17 +89,31 @@ const MatchUI = ({ onClose }: MatchUIProps) => {
 
   const handleMatchingError = (error: any) => {
     console.error("Error during matchmaking:", error);
-    if (error === "'User is already registered for matching.") {
+
+    if (error === "User is already registered for matching.") {
       setMatchmakingError("You are already registered for matching.");
+    } else if (error === "Failed to select question based on criteria.") {
+      setMatchmakingError(
+        "We couldn't find a suitable question. Please try again.",
+      );
+    } else if (error === "Failed to initialize session.") {
+      setMatchmakingError(
+        "An error occurred while setting up the session. Please try again.",
+      );
+    } else if (error === "Failed to save match data.") {
+      setMatchmakingError(
+        "An error occurred while saving match data. Please try again.",
+      );
     } else {
-      setMatchmakingError("An error occurred during matchmaking.");
+      setMatchmakingError("An unexpected error occurred during matchmaking.");
     }
+
     setUiState(UIState.MatchingError);
   };
 
   const handleRegisterForMatching = async (
     difficulty: Set<string>,
-    topic: Set<string>
+    topic: Set<string>,
   ) => {
     const userParams = {
       difficulty: Array.from(difficulty),
@@ -106,9 +123,10 @@ const MatchUI = ({ onClose }: MatchUIProps) => {
     registerUser(
       userParams,
       handleMatchFound,
+      handleRedirectToSession,
       () => console.log("Registration successful!"), // Handle success
       handleMatchingTimeout,
-      handleMatchingError
+      handleMatchingError,
     );
   };
 
@@ -127,6 +145,11 @@ const MatchUI = ({ onClose }: MatchUIProps) => {
     setUiState(UIState.MatchFound);
 
     // TODO: Redirect to session page
+  };
+
+  const handleRedirectToSession = async () => {
+    console.log("Redirecting to session");
+    router.push("/session");
   };
 
   const closeModal = () => {

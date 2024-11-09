@@ -31,7 +31,7 @@ import {
   Question,
   RenderCell,
   complexityOptions,
-} from "@/app/(default)/questions-management/columns";
+} from "@/app/@application/(main)/questions-management/columns";
 import {
   deleteQuestion,
   useQuestionsFetcher,
@@ -212,7 +212,7 @@ export default function QuestionsTable() {
             >
               {uniqueCategories && uniqueCategories.length > 0
                 ? uniqueCategories.map((category: string) => (
-                    <SelectItem key={category}>
+                    <SelectItem key={category} className="capitalize">
                       {capitalize(category)}
                     </SelectItem>
                   ))
@@ -325,7 +325,7 @@ export default function QuestionsTable() {
         <TableBody
           emptyContent={"No questions to display."}
           items={questionData?.questions ?? []}
-          loadingContent={<Spinner />}
+          loadingContent={<Spinner color="secondary" />}
           loadingState={questionLoadingState}
         >
           {(question: Question) => (
