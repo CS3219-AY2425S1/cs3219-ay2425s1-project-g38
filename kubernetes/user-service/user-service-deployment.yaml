@@ -31,5 +31,5 @@ spec:
                 name: user-secrets
           resources:
             requests:
-              memory: "250Mi"
-              cpu: "100m"
+              memory: "1Gi"
+              cpu: "250m"

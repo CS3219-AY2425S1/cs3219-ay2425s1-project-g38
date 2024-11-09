@@ -30,6 +30,6 @@ spec:
             - secretRef:
                 name: collab-secrets
           resources:
-            requests:
-              memory: "250Mi"
-              cpu: "100m"
+            limits:
+              memory: "1Gi"
+              cpu: "250m"
