@@ -1,0 +1,1471 @@
+<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>User Service API Guide</title>
+            <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only],
+.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
+.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+</style>
+            
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+<style>
+:root {
+  --color-note: #0969da;
+  --color-tip: #1a7f37;
+  --color-warning: #9a6700;
+  --color-severe: #bc4c00;
+  --color-caution: #d1242f;
+  --color-important: #8250df;
+}
+
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-note: #2f81f7;
+    --color-tip: #3fb950;
+    --color-warning: #d29922;
+    --color-severe: #db6d28;
+    --color-caution: #f85149;
+    --color-important: #a371f7;
+  }
+}
+
+</style>
+<style>
+.markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 16px;
+  color: inherit;
+  border-left: .25em solid #888;
+}
+
+.markdown-alert>:first-child {
+  margin-top: 0
+}
+
+.markdown-alert>:last-child {
+  margin-bottom: 0
+}
+
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1
+}
+
+.markdown-alert .markdown-alert-title .octicon {
+  margin-right: 0.5rem;
+  display: inline-block;
+  overflow: visible !important;
+  vertical-align: text-bottom;
+  fill: currentColor;
+}
+
+.markdown-alert.markdown-alert-note {
+  border-left-color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-important {
+  border-left-color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-warning {
+  border-left-color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-tip {
+  border-left-color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-caution {
+  border-left-color: var(--color-caution);
+}
+
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: var(--color-caution);
+}
+
+</style>
+        
+        </head>
+        <body class="vscode-body vscode-light">
+            <h1 id="user-service-api-guide">User Service API Guide</h1>
+<p>This directory contains a <a href="./User-Service%20API.postman_collection.json">Postman collection</a> for the User Service API.</p>
+<h2 id="create-user-account-request">Create User Account Request</h2>
+<ul>
+<li>
+<p>This endpoint initiates a new user account creation request that requires email verification.</p>
+</li>
+<li>
+<p>HTTP Method: <code>POST</code></p>
+</li>
+<li>
+<p>Endpoint: <api-gateway-url>/users/users</p>
+</li>
+<li>
+<p>Body</p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;username&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;string&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;email&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;string&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;password&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;string&quot;</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+</li>
+<li>
+<p>Validation Rules:</p>
+<ul>
+<li>Username: 2-32 characters, can contain a-z, A-Z, 0-9, _ or -</li>
+<li>Email: Must be valid email format</li>
+<li>Password: Minimum 8 characters</li>
+</ul>
+</li>
+<li>
+<p>Responses:</p>
+<table>
+<thead>
+<tr>
+<th>Response Code</th>
+<th>Explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>201 (Created)</td>
+<td>Account request created, verification email sent</td>
+</tr>
+<tr>
+<td>400 (Bad Request)</td>
+<td>Invalid input data</td>
+</tr>
+<tr>
+<td>409 (Conflict)</td>
+<td>Username or email already exists</td>
+</tr>
+<tr>
+<td>500 (Internal Server Error)</td>
+<td>Server error</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p>Success Response Body:</p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Created new user {username} request successfully&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+        <span class="hljs-attr">&quot;token&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;email_verification_token&quot;</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;expiry&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2024-03-21T10:30:00.000Z&quot;</span>
+    <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+</li>
+</ul>
+<h2 id="confirm-user-account">Confirm User Account</h2>
+<ul>
+<li>
+<p>This endpoint confirms a user account after email verification.</p>
+</li>
+<li>
+<p>HTTP Method: <code>PATCH</code></p>
+</li>
+<li>
+<p>Endpoint: <api-gateway-url>/users/auth/{userId}</p>
+</li>
+<li>
+<p>Headers</p>
+<ul>
+<li>Required: <code>Authorization: Bearer &lt;EMAIL_VERIFICATION_TOKEN&gt;</code></li>
+</ul>
+</li>
+<li>
+<p>Responses:</p>
+<table>
+<thead>
+<tr>
+<th>Response Code</th>
+<th>Explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>200 (OK)</td>
+<td>Account confirmed successfully</td>
+</tr>
+<tr>
+<td>401 (Unauthorized)</td>
+<td>Invalid or expired verification token</td>
+</tr>
+<tr>
+<td>500 (Internal Server Error)</td>
+<td>Server error</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p>Success Response Body:</p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;{userId} registered and logged in!&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+        <span class="hljs-attr">&quot;accessToken&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;jwt_access_token&quot;</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;user_id&quot;</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;username&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;string&quot;</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;email&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;string&quot;</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;isAdmin&quot;</span><span class="hljs-punctuation">:</span> boolean<span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;isVerified&quot;</span><span class="hljs-punctuation">:</span> boolean<span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;createdAt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;timestamp&quot;</span>
+    <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+</li>
+</ul>
+<h2 id="delete-account-creation-request">Delete Account Creation Request</h2>
+<ul>
+<li>
+<p>This endpoint deletes an unverified account creation request.</p>
+</li>
+<li>
+<p>HTTP Method: <code>DELETE</code></p>
+</li>
+<li>
+<p>Endpoint: <api-gateway-url>/users/users/{email}</p>
+</li>
+<li>
+<p>Responses:</p>
+<table>
+<thead>
+<tr>
+<th>Response Code</th>
+<th>Explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>200 (OK)</td>
+<td>Account request deleted successfully</td>
+</tr>
+<tr>
+<td>403 (Forbidden)</td>
+<td>Cannot delete verified accounts</td>
+</tr>
+<tr>
+<td>404 (Not Found)</td>
+<td>User not found or invalid email</td>
+</tr>
+<tr>
+<td>500 (Internal Server Error)</td>
+<td>Server error</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+<h2 id="refresh-email-verification-token">Refresh Email Verification Token</h2>
+<ul>
+<li>
+<p>This endpoint refreshes the email verification token and sends a new verification email.</p>
+</li>
+<li>
+<p>HTTP Method: <code>PATCH</code></p>
+</li>
+<li>
+<p>Endpoint: <api-gateway-url>/users/users/{userId}/resend-request</p>
+</li>
+<li>
+<p>Headers</p>
+<ul>
+<li>Required: <code>Authorization: Bearer &lt;OLD_EMAIL_VERIFICATION_TOKEN&gt;</code></li>
+</ul>
+</li>
+<li>
+<p>Responses:</p>
+<table>
+<thead>
+<tr>
+<th>Response Code</th>
+<th>Explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>201 (Created)</td>
+<td>New verification token generated and email sent</td>
+</tr>
+<tr>
+<td>401 (Unauthorized)</td>
+<td>Invalid or expired verification token</td>
+</tr>
+<tr>
+<td>500 (Internal Server Error)</td>
+<td>Server error</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p>Success Response Body:</p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Token refreshed successfully&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+        <span class="hljs-attr">&quot;token&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;new_email_verification_token&quot;</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;expiry&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2024-03-21T10:30:00.000Z&quot;</span>
+    <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+</li>
+</ul>
+<h2 id="create-user">Create User</h2>
+<ul>
+<li>
+<p>This endpoint allows adding a new user to the database (i.e., user registration).</p>
+</li>
+<li>
+<p>HTTP Method: <code>POST</code></p>
+</li>
+<li>
+<p>Endpoint: <api-gateway-url>/users/users</p>
+</li>
+<li>
+<p>Body</p>
+<ul>
+<li>
+<p>Required: <code>username</code> (string), <code>email</code> (string), <code>password</code> (string)</p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;username&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;SampleUserName&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;email&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;sample@gmail.com&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;password&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;SecurePassword&quot;</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+</li>
+</ul>
+</li>
+<li>
+<p>Responses:</p>
+<table>
+<thead>
+<tr>
+<th>Response Code</th>
+<th>Explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>201 (Created)</td>
+<td>User created successfully, created user data returned</td>
+</tr>
+<tr>
+<td>400 (Bad Request)</td>
+<td>Missing fields</td>
+</tr>
+<tr>
+<td>409 (Conflict)</td>
+<td>Duplicate username or email encountered</td>
+</tr>
+<tr>
+<td>500 (Internal Server Error)</td>
+<td>Database or server error</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+<h2 id="get-user">Get User</h2>
+<ul>
+<li>
+<p>This endpoint allows retrieval of a single user's data from the database using the user's ID.</p>
+<blockquote>
+<p>:bulb: The user ID refers to the MongoDB Object ID, a unique identifier automatically generated by MongoDB for each document in a collection.</p>
+</blockquote>
+</li>
+<li>
+<p>HTTP Method: <code>GET</code></p>
+</li>
+<li>
+<p>Endpoint: <api-gateway-url>/users/users/{userId}</p>
+</li>
+<li>
+<p>Parameters</p>
+<ul>
+<li>Required: <code>userId</code> path parameter</li>
+<li>Example: <code>&lt;api-gateway-url&gt;/users/users/60c72b2f9b1d4c3a2e5f8b4c</code></li>
+</ul>
+</li>
+<li>
+<p><a name="auth-header">Headers</a></p>
+<ul>
+<li>
+<p>Required: <code>Authorization: Bearer &lt;JWT_ACCESS_TOKEN&gt;</code></p>
+</li>
+<li>
+<p>Explanation: This endpoint requires the client to include a JWT (JSON Web Token) in the HTTP request header for authentication and authorization. This token is generated during the authentication process (i.e., login) and contains information about the user's identity. The server verifies this token to ensure that the client is authorized to access the data.</p>
+</li>
+<li>
+<p>Auth Rules:</p>
+<ul>
+<li>
+<p>Admin users: Can retrieve any user's data. The server verifies the user associated with the JWT token is an admin user and allows access to the requested user's data.</p>
+</li>
+<li>
+<p>Non-admin users: Can only retrieve their own data. The server checks if the user ID in the request URL matches the ID of the user associated with the JWT token. If it matches, the server returns the user's own data.</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>Responses:</p>
+<table>
+<thead>
+<tr>
+<th>Response Code</th>
+<th>Explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>200 (OK)</td>
+<td>Success, user data returned</td>
+</tr>
+<tr>
+<td>401 (Unauthorized)</td>
+<td>Access denied due to missing/invalid/expired JWT</td>
+</tr>
+<tr>
+<td>403 (Forbidden)</td>
+<td>Access denied for non-admin users accessing others' data</td>
+</tr>
+<tr>
+<td>404 (Not Found)</td>
+<td>User with the specified ID not found</td>
+</tr>
+<tr>
+<td>500 (Internal Server Error)</td>
+<td>Database or server error</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+<h2 id="get-all-users">Get All Users</h2>
+<ul>
+<li>
+<p>This endpoint allows retrieval of all users' data from the database.</p>
+</li>
+<li>
+<p>HTTP Method: <code>GET</code></p>
+</li>
+<li>
+<p>Endpoint: <api-gateway-url>/users/users</p>
+</li>
+<li>
+<p>Headers</p>
+<ul>
+<li>
+<p>Required: <code>Authorization: Bearer &lt;JWT_ACCESS_TOKEN&gt;</code></p>
+</li>
+<li>
+<p>Auth Rules:</p>
+<ul>
+<li>Admin users: Can retrieve all users' data. The server verifies the user associated with the JWT token is an admin user and allows access to all users' data.</li>
+<li>Non-admin users: Not allowed access.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>Responses:</p>
+<table>
+<thead>
+<tr>
+<th>Response Code</th>
+<th>Explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>200 (OK)</td>
+<td>Success, all user data returned</td>
+</tr>
+<tr>
+<td>401 (Unauthorized)</td>
+<td>Access denied due to missing/invalid/expired JWT</td>
+</tr>
+<tr>
+<td>403 (Forbidden)</td>
+<td>Access denied for non-admin users</td>
+</tr>
+<tr>
+<td>500 (Internal Server Error)</td>
+<td>Database or server error</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+<h2 id="update-user">Update User</h2>
+<ul>
+<li>
+<p>This endpoint allows updating a user and their related data in the database using the user's ID.</p>
+</li>
+<li>
+<p>HTTP Method: <code>PATCH</code></p>
+</li>
+<li>
+<p>Endpoint: <api-gateway-url>/users/users/{userId}</p>
+</li>
+<li>
+<p>Parameters</p>
+<ul>
+<li>Required: <code>userId</code> path parameter</li>
+</ul>
+</li>
+<li>
+<p>Body</p>
+<ul>
+<li>
+<p>At least one of the following fields is required: <code>username</code> (string), <code>email</code> (string), <code>password</code> (string)</p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;username&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;SampleUserName&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;email&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;sample@gmail.com&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;password&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;SecurePassword&quot;</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+</li>
+</ul>
+</li>
+<li>
+<p>Headers</p>
+<ul>
+<li>
+<p>Required: <code>Authorization: Bearer &lt;JWT_ACCESS_TOKEN&gt;</code></p>
+</li>
+<li>
+<p>Auth Rules:</p>
+<ul>
+<li>Admin users: Can update any user's data. The server verifies the user associated with the JWT token is an admin user and allows the update of requested user's data.</li>
+<li>Non-admin users: Can only update their own data. The server checks if the user ID in the request URL matches the ID of the user associated with the JWT token. If it matches, the server updates the user's own data.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>Responses:</p>
+<table>
+<thead>
+<tr>
+<th>Response Code</th>
+<th>Explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>200 (OK)</td>
+<td>User updated successfully, updated user data returned</td>
+</tr>
+<tr>
+<td>400 (Bad Request)</td>
+<td>Missing fields</td>
+</tr>
+<tr>
+<td>401 (Unauthorized)</td>
+<td>Access denied due to missing/invalid/expired JWT</td>
+</tr>
+<tr>
+<td>403 (Forbidden)</td>
+<td>Access denied for non-admin users updating others' data</td>
+</tr>
+<tr>
+<td>404 (Not Found)</td>
+<td>User with the specified ID not found</td>
+</tr>
+<tr>
+<td>409 (Conflict)</td>
+<td>Duplicate username or email encountered</td>
+</tr>
+<tr>
+<td>500 (Internal Server Error)</td>
+<td>Database or server error</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+<h2 id="update-user-privilege">Update User Privilege</h2>
+<ul>
+<li>
+<p>This endpoint allows updating a user’s privilege, i.e., promoting or demoting them from admin status.</p>
+</li>
+<li>
+<p>HTTP Method: <code>PATCH</code></p>
+</li>
+<li>
+<p>Endpoint: <api-gateway-url>/users/users/{userId}</p>
+</li>
+<li>
+<p>Parameters</p>
+<ul>
+<li>Required: <code>userId</code> path parameter</li>
+</ul>
+</li>
+<li>
+<p>Body</p>
+<ul>
+<li>
+<p>Required: <code>isAdmin</code> (boolean)</p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;isAdmin&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-keyword">true</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+</li>
+</ul>
+</li>
+<li>
+<p>Headers</p>
+<ul>
+<li>
+<p>Required: <code>Authorization: Bearer &lt;JWT_ACCESS_TOKEN&gt;</code></p>
+</li>
+<li>
+<p>Auth Rules:</p>
+<ul>
+<li>Admin users: Can update any user's privilege. The server verifies the user associated with the JWT token is an admin user and allows the privilege update.</li>
+<li>Non-admin users: Not allowed access.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>:bulb: You may need to manually assign admin status to the first user by directly editing the database document before using this endpoint.</p>
+</blockquote>
+<ul>
+<li>
+<p>Responses:</p>
+<table>
+<thead>
+<tr>
+<th>Response Code</th>
+<th>Explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>200 (OK)</td>
+<td>User privilege updated successfully, updated user data returned</td>
+</tr>
+<tr>
+<td>400 (Bad Request)</td>
+<td>Missing fields</td>
+</tr>
+<tr>
+<td>401 (Unauthorized)</td>
+<td>Access denied due to missing/invalid/expired JWT</td>
+</tr>
+<tr>
+<td>403 (Forbidden)</td>
+<td>Access denied for non-admin users</td>
+</tr>
+<tr>
+<td>404 (Not Found)</td>
+<td>User with the specified ID not found</td>
+</tr>
+<tr>
+<td>500 (Internal Server Error)</td>
+<td>Database or server error</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+<h2 id="delete-user">Delete User</h2>
+<ul>
+<li>
+<p>This endpoint allows deletion of a user and their related data from the database using the user's ID.</p>
+</li>
+<li>
+<p>HTTP Method: <code>DELETE</code></p>
+</li>
+<li>
+<p>Endpoint: <api-gateway-url>/users/users/{userId}</p>
+</li>
+<li>
+<p>Parameters</p>
+<ul>
+<li>Required: <code>userId</code> path parameter</li>
+</ul>
+</li>
+<li>
+<p>Headers</p>
+<ul>
+<li>
+<p>Required: <code>Authorization: Bearer &lt;JWT_ACCESS_TOKEN&gt;</code></p>
+</li>
+<li>
+<p>Auth Rules:</p>
+<ul>
+<li>
+<p>Admin users: Can delete any user's data. The server verifies the user associated with the JWT token is an admin user and allows the deletion of requested user's data.</p>
+</li>
+<li>
+<p>Non-admin users: Can only delete their own data. The server checks if the user ID in the request URL matches the ID of the user associated with the JWT token. If it matches, the server deletes the user's own data.</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>Responses:</p>
+<table>
+<thead>
+<tr>
+<th>Response Code</th>
+<th>Explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>200 (OK)</td>
+<td>User deleted successfully</td>
+</tr>
+<tr>
+<td>401 (Unauthorized)</td>
+<td>Access denied due to missing/invalid/expired JWT</td>
+</tr>
+<tr>
+<td>403 (Forbidden)</td>
+<td>Access denied for non-admin users deleting others' data</td>
+</tr>
+<tr>
+<td>404 (Not Found)</td>
+<td>User with the specified ID not found</td>
+</tr>
+<tr>
+<td>500 (Internal Server Error)</td>
+<td>Database or server error</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+<h2 id="login">Login</h2>
+<ul>
+<li>
+<p>This endpoint allows a user to authenticate with an email and password and returns a JWT access token. The token is valid for 1 day and can be used subsequently to access protected resources. For example usage, refer to the <a href="#auth-header">Authorization header section in the Get User endpoint</a>.</p>
+</li>
+<li>
+<p>HTTP Method: <code>POST</code></p>
+</li>
+<li>
+<p>Endpoint: <api-gateway-url>/users/auth/login</p>
+</li>
+<li>
+<p>Body</p>
+<ul>
+<li>
+<p>Required: <code>email</code> (string), <code>password</code> (string)</p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;email&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;sample@gmail.com&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;password&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;SecurePassword&quot;</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+</li>
+</ul>
+</li>
+<li>
+<p>Responses:</p>
+<table>
+<thead>
+<tr>
+<th>Response Code</th>
+<th>Explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>200 (OK)</td>
+<td>Login successful, JWT token and user data returned</td>
+</tr>
+<tr>
+<td>400 (Bad Request)</td>
+<td>Missing fields</td>
+</tr>
+<tr>
+<td>401 (Unauthorized)</td>
+<td>Incorrect email or password</td>
+</tr>
+<tr>
+<td>500 (Internal Server Error)</td>
+<td>Database or server error</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+<h2 id="verify-token">Verify Token</h2>
+<ul>
+<li>
+<p>This endpoint allows one to verify a JWT access token to authenticate and retrieve the user's data associated with the token.</p>
+</li>
+<li>
+<p>HTTP Method: <code>GET</code></p>
+</li>
+<li>
+<p>Endpoint: <api-gateway-url>/users/auth/verify-token</p>
+</li>
+<li>
+<p>Headers</p>
+<ul>
+<li>Required: <code>Authorization: Bearer &lt;JWT_ACCESS_TOKEN&gt;</code></li>
+</ul>
+</li>
+<li>
+<p>Responses:</p>
+<table>
+<thead>
+<tr>
+<th>Response Code</th>
+<th>Explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>200 (OK)</td>
+<td>Token verified, authenticated user's data returned</td>
+</tr>
+<tr>
+<td>401 (Unauthorized)</td>
+<td>Missing/invalid/expired JWT</td>
+</tr>
+<tr>
+<td>500 (Internal Server Error)</td>
+<td>Database or server error</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+<h2 id="get-users-friends">Get User's Friends</h2>
+<ul>
+<li>
+<p>This endpoint allows retrieval of a user's friends list.</p>
+</li>
+<li>
+<p>HTTP Method: <code>GET</code></p>
+</li>
+<li>
+<p>Endpoint: <api-gateway-url>/users/users/{userId}/friends</p>
+</li>
+<li>
+<p>Headers</p>
+<ul>
+<li>Required: <code>Authorization: Bearer &lt;JWT_ACCESS_TOKEN&gt;</code></li>
+<li>Auth Rules:
+<ul>
+<li>Admin users: Can retrieve any user's friends list</li>
+<li>Non-admin users: Can only retrieve their own friends list</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>Responses:</p>
+<table>
+<thead>
+<tr>
+<th>Response Code</th>
+<th>Explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>200 (OK)</td>
+<td>Success, friends list returned</td>
+</tr>
+<tr>
+<td>401 (Unauthorized)</td>
+<td>Access denied due to missing/invalid/expired JWT</td>
+</tr>
+<tr>
+<td>403 (Forbidden)</td>
+<td>Access denied for non-admin users</td>
+</tr>
+<tr>
+<td>404 (Not Found)</td>
+<td>User with specified ID not found</td>
+</tr>
+<tr>
+<td>500 (Internal Server Error)</td>
+<td>Database or server error</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+<h2 id="get-users-friend-requests">Get User's Friend Requests</h2>
+<ul>
+<li>
+<p>This endpoint allows retrieval of pending friend requests for a user.</p>
+</li>
+<li>
+<p>HTTP Method: <code>GET</code></p>
+</li>
+<li>
+<p>Endpoint: <api-gateway-url>/users/users/{userId}/friendRequests</p>
+</li>
+<li>
+<p>Headers</p>
+<ul>
+<li>Required: <code>Authorization: Bearer &lt;JWT_ACCESS_TOKEN&gt;</code></li>
+<li>Auth Rules:
+<ul>
+<li>Admin users: Can retrieve any user's friend requests</li>
+<li>Non-admin users: Can only retrieve their own friend requests</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>Responses:</p>
+<table>
+<thead>
+<tr>
+<th>Response Code</th>
+<th>Explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>200 (OK)</td>
+<td>Success, friend requests returned</td>
+</tr>
+<tr>
+<td>401 (Unauthorized)</td>
+<td>Access denied due to missing/invalid/expired JWT</td>
+</tr>
+<tr>
+<td>403 (Forbidden)</td>
+<td>Access denied for non-admin users</td>
+</tr>
+<tr>
+<td>404 (Not Found)</td>
+<td>User with specified ID not found</td>
+</tr>
+<tr>
+<td>500 (Internal Server Error)</td>
+<td>Database or server error</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+<h2 id="send-friend-request">Send Friend Request</h2>
+<ul>
+<li>
+<p>This endpoint allows sending a friend request to another user.</p>
+</li>
+<li>
+<p>HTTP Method: <code>POST</code></p>
+</li>
+<li>
+<p>Endpoint: <api-gateway-url>/users/users/{userId}/addFriend</p>
+</li>
+<li>
+<p>Headers</p>
+<ul>
+<li>Required: <code>Authorization: Bearer &lt;JWT_ACCESS_TOKEN&gt;</code></li>
+</ul>
+</li>
+<li>
+<p>Body</p>
+<ul>
+<li>Required: <code>friendId</code> (string)</li>
+</ul>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;friendId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;60c72b2f9b1d4c3a2e5f8b4c&quot;</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+</li>
+<li>
+<p>Auth Rules:</p>
+<ul>
+<li>Admin users: Can send friend requests on behalf of any user</li>
+<li>Non-admin users: Can only send friend requests from their own account</li>
+</ul>
+</li>
+<li>
+<p>Responses:</p>
+<table>
+<thead>
+<tr>
+<th>Response Code</th>
+<th>Explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>200 (OK)</td>
+<td>Friend request sent successfully</td>
+</tr>
+<tr>
+<td>400 (Bad Request)</td>
+<td>Missing friendId</td>
+</tr>
+<tr>
+<td>401 (Unauthorized)</td>
+<td>Access denied due to missing/invalid/expired JWT</td>
+</tr>
+<tr>
+<td>403 (Forbidden)</td>
+<td>Access denied for non-admin users</td>
+</tr>
+<tr>
+<td>404 (Not Found)</td>
+<td>User or friend not found</td>
+</tr>
+<tr>
+<td>409 (Conflict)</td>
+<td>Already friends or request already sent</td>
+</tr>
+<tr>
+<td>500 (Internal Server Error)</td>
+<td>Database or server error</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+<h2 id="accept-friend-request">Accept Friend Request</h2>
+<ul>
+<li>
+<p>This endpoint allows accepting a pending friend request.</p>
+</li>
+<li>
+<p>HTTP Method: <code>POST</code></p>
+</li>
+<li>
+<p>Endpoint: <api-gateway-url>/users/users/{userId}/acceptFriend</p>
+</li>
+<li>
+<p>Headers</p>
+<ul>
+<li>Required: <code>Authorization: Bearer &lt;JWT_ACCESS_TOKEN&gt;</code></li>
+</ul>
+</li>
+<li>
+<p>Body</p>
+<ul>
+<li>Required: <code>friendId</code> (string)</li>
+</ul>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;friendId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;60c72b2f9b1d4c3a2e5f8b4c&quot;</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+</li>
+<li>
+<p>Auth Rules:</p>
+<ul>
+<li>Admin users: Can accept friend requests on behalf of any user</li>
+<li>Non-admin users: Can only accept their own friend requests</li>
+</ul>
+</li>
+<li>
+<p>Responses:</p>
+<table>
+<thead>
+<tr>
+<th>Response Code</th>
+<th>Explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>200 (OK)</td>
+<td>Friend request accepted successfully</td>
+</tr>
+<tr>
+<td>400 (Bad Request)</td>
+<td>Missing friendId</td>
+</tr>
+<tr>
+<td>401 (Unauthorized)</td>
+<td>Access denied due to missing/invalid/expired JWT</td>
+</tr>
+<tr>
+<td>403 (Forbidden)</td>
+<td>Access denied for non-admin users</td>
+</tr>
+<tr>
+<td>404 (Not Found)</td>
+<td>User or friend not found</td>
+</tr>
+<tr>
+<td>409 (Conflict)</td>
+<td>No pending friend request found</td>
+</tr>
+<tr>
+<td>500 (Internal Server Error)</td>
+<td>Database or server error</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+<h2 id="add-match-history">Add Match History</h2>
+<ul>
+<li>
+<p>This endpoint allows adding a completed match to a user's match history.</p>
+</li>
+<li>
+<p>HTTP Method: <code>POST</code></p>
+</li>
+<li>
+<p>Endpoint: <api-gateway-url>/users/users/{userId}/addMatch</p>
+</li>
+<li>
+<p>Headers</p>
+<ul>
+<li>Required: <code>Authorization: Bearer &lt;JWT_ACCESS_TOKEN&gt;</code></li>
+</ul>
+</li>
+<li>
+<p>Body</p>
+<ul>
+<li>Required: <code>sessionId</code> (string), <code>questionId</code> (string), <code>partnerId</code> (string)</li>
+</ul>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;sessionId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;session123&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;questionId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;question456&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;partnerId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;60c72b2f9b1d4c3a2e5f8b4c&quot;</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+</li>
+<li>
+<p>Auth Rules:</p>
+<ul>
+<li>Admin users: Can add matches to any user's history</li>
+<li>Non-admin users: Can only add matches to their own history</li>
+</ul>
+</li>
+<li>
+<p>Responses:</p>
+<table>
+<thead>
+<tr>
+<th>Response Code</th>
+<th>Explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>200 (OK)</td>
+<td>Match added successfully</td>
+</tr>
+<tr>
+<td>400 (Bad Request)</td>
+<td>Missing required fields</td>
+</tr>
+<tr>
+<td>401 (Unauthorized)</td>
+<td>Access denied due to missing/invalid/expired JWT</td>
+</tr>
+<tr>
+<td>403 (Forbidden)</td>
+<td>Access denied for non-admin users</td>
+</tr>
+<tr>
+<td>404 (Not Found)</td>
+<td>User or partner not found</td>
+</tr>
+<tr>
+<td>500 (Internal Server Error)</td>
+<td>Database or server error</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+<h2 id="update-email-request">Update Email Request</h2>
+<ul>
+<li>
+<p>This endpoint initiates an email change request that requires verification.</p>
+</li>
+<li>
+<p>HTTP Method: <code>POST</code></p>
+</li>
+<li>
+<p>Endpoint: <api-gateway-url>/users/users/{userId}/email-update-request</p>
+</li>
+<li>
+<p>Headers</p>
+<ul>
+<li>Required: <code>Authorization: Bearer &lt;JWT_ACCESS_TOKEN&gt;</code></li>
+</ul>
+</li>
+<li>
+<p>Body</p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;email&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;string&quot;</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+</li>
+<li>
+<p>Auth Rules:</p>
+<ul>
+<li>Admin users: Can request email updates for any user</li>
+<li>Non-admin users: Can only request email updates for their own account</li>
+</ul>
+</li>
+<li>
+<p>Responses:</p>
+<table>
+<thead>
+<tr>
+<th>Response Code</th>
+<th>Explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>201 (Created)</td>
+<td>Email update request created, verification email sent</td>
+</tr>
+<tr>
+<td>400 (Bad Request)</td>
+<td>Invalid email format</td>
+</tr>
+<tr>
+<td>401 (Unauthorized)</td>
+<td>Missing/invalid/expired JWT</td>
+</tr>
+<tr>
+<td>403 (Forbidden)</td>
+<td>Access denied for non-admin users updating others' emails</td>
+</tr>
+<tr>
+<td>500 (Internal Server Error)</td>
+<td>Server error</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+<h2 id="forget-password">Forget Password</h2>
+<ul>
+<li>
+<p>This endpoint initiates a password reset request and sends a reset link via email.</p>
+</li>
+<li>
+<p>HTTP Method: <code>POST</code></p>
+</li>
+<li>
+<p>Endpoint: <api-gateway-url>/users/auth/forget-password</p>
+</li>
+<li>
+<p>Body</p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;identifier&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;string&quot;</span> <span class="hljs-comment">// Can be either username or email</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+</li>
+<li>
+<p>Responses:</p>
+<table>
+<thead>
+<tr>
+<th>Response Code</th>
+<th>Explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>200 (OK)</td>
+<td>Reset link sent successfully</td>
+</tr>
+<tr>
+<td>400 (Bad Request)</td>
+<td>Missing identifier</td>
+</tr>
+<tr>
+<td>401 (Unauthorized)</td>
+<td>User not found</td>
+</tr>
+<tr>
+<td>403 (Forbidden)</td>
+<td>Account not verified</td>
+</tr>
+<tr>
+<td>500 (Internal Server Error)</td>
+<td>Server error</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+<h2 id="get-match-history">Get Match History</h2>
+<ul>
+<li>
+<p>This endpoint retrieves a user's match history.</p>
+</li>
+<li>
+<p>HTTP Method: <code>GET</code></p>
+</li>
+<li>
+<p>Endpoint: <api-gateway-url>/users/users/{userId}/match-history</p>
+</li>
+<li>
+<p>Headers</p>
+<ul>
+<li>Required: <code>Authorization: Bearer &lt;JWT_ACCESS_TOKEN&gt;</code></li>
+</ul>
+</li>
+<li>
+<p>Responses:</p>
+<table>
+<thead>
+<tr>
+<th>Response Code</th>
+<th>Explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>200 (OK)</td>
+<td>Success, match history returned</td>
+</tr>
+<tr>
+<td>401 (Unauthorized)</td>
+<td>Access denied due to missing/invalid/expired JWT</td>
+</tr>
+<tr>
+<td>404 (Not Found)</td>
+<td>User not found</td>
+</tr>
+<tr>
+<td>500 (Internal Server Error)</td>
+<td>Server error</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+<h2 id="add-match">Add Match</h2>
+<ul>
+<li>
+<p>This endpoint adds a match record to a user's history.</p>
+</li>
+<li>
+<p>HTTP Method: <code>POST</code></p>
+</li>
+<li>
+<p>Endpoint: <api-gateway-url>/users/users/{userId}/addMatch</p>
+</li>
+<li>
+<p>Headers</p>
+<ul>
+<li>Required: <code>Authorization: Bearer &lt;JWT_ACCESS_TOKEN&gt;</code></li>
+</ul>
+</li>
+<li>
+<p>Body</p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;sessionId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;string&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;questionId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;string&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;partnerId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;string&quot;</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+</li>
+<li>
+<p>Auth Rules:</p>
+<ul>
+<li>Admin users: Can add matches for any user</li>
+<li>Non-admin users: Can only add matches for their own account</li>
+</ul>
+</li>
+<li>
+<p>Responses:</p>
+<table>
+<thead>
+<tr>
+<th>Response Code</th>
+<th>Explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>200 (OK)</td>
+<td>Match added successfully</td>
+</tr>
+<tr>
+<td>401 (Unauthorized)</td>
+<td>Access denied due to missing/invalid/expired JWT</td>
+</tr>
+<tr>
+<td>403 (Forbidden)</td>
+<td>Access denied for non-admin users</td>
+</tr>
+<tr>
+<td>404 (Not Found)</td>
+<td>User or partner not found</td>
+</tr>
+<tr>
+<td>500 (Internal Server Error)</td>
+<td>Server error</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+
+            
+            
+        </body>
+        </html>
