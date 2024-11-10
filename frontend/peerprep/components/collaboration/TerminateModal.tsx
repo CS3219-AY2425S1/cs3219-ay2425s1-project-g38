@@ -11,6 +11,7 @@ import {
 
 interface TerminateModalProps {
   isModalVisible: boolean;
+  usersInRoom: string[];
   userConfirmed: boolean;
   isCancelled: boolean;
   isFirstToCancel: boolean;
@@ -22,6 +23,7 @@ interface TerminateModalProps {
 
 export default function TerminateModal({
   isModalVisible,
+  usersInRoom = [],
   userConfirmed,
   isCancelled,
   isFirstToCancel,
@@ -30,6 +32,10 @@ export default function TerminateModal({
   handleConfirm,
   setIsCancelled,
 }: TerminateModalProps) {
+
+  
+  const terminateDescription = usersInRoom.length > 1 ? "Both users need to confirm to terminate the session." : "Other user has left, click to terminate.";
+
   return (
     <div className="flex justify-center items-center h-full w-full">
       <Button className="" variant="flat" color="danger" onClick={openModal}>
@@ -50,7 +56,7 @@ export default function TerminateModal({
           </ModalHeader>
           <ModalBody>
             <p className="text-center">
-              Both users need to confirm to terminate the session.
+              {terminateDescription}
             </p>
           </ModalBody>
           <ModalFooter>
