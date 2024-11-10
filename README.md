@@ -160,29 +160,6 @@ Issue: MongoParseError: URI malformed
       | COLLAB_REDIS_URL | URL of the Redis instance | redis://collab-redis:6379 |
       | COLLAB_API_KEY | API key for the collab service | collab-api-key |
 
-
-### Frontend
-
-1. Navigate to the frontend directory: cd frontend/peerprep
-2. Duplicate the .env.sample file and rename it to .env
-   - If you wish to, you can modify the values in the .env file
-
-      | **Variable** | **Description** | **Default Value** |
-      |--------------|-----------------|-------------------|
-      | NEXT_PUBLIC_QUESTION_SERVICE_URL | URL of the question service | http://localhost:8003 |
-      | NEXT_PUBLIC_USER_SERVICE_URL | URL of the user service | http://localhost:8004 |
-      | NEXT_PUBLIC_MATCHING_SERVICE_URL | URL of the matching service | http://localhost:8002 |
-      | NEXT_PUBLIC_COLLAB_SERVICE_URL | URL of the collab service | http://localhost:8010 |
-      | NEXT_PUBLIC_COLLAB_SOCKET_URL | URL of the collab socket service | http://localhost:8010 |
-      | NEXT_PUBLIC_MATCHING_SOCKET_URL | URL of the matching socket service | http://localhost:8002 |
-      | NEXT_PUBLIC_MATCHING_SOCKET_PATH | Path for the matching socket service | /socket.io |
-      | NEXT_PUBLIC_COLLAB_SOCKET_PATH | Path for the collab socket service | /socket.io |
-      | NEXT_PUBLIC_IMAGE_UPLOAD_KEY | AuthToken for image upload | None, you can get this from https://www.portive.com |
-      | FRONTEND_PORT | Port to run the frontend service | 3000 |
-      | JWT-SECRET | Secret for creating JWT signature (Make sure this is the same as your user service) | you-can-replace-this-with-your-own-secret |
-
-3. Run `docker-compose up` to start the frontend service.
-
 ## Building your own Docker images
 
 1. cd into the any of the service directories (question-service, user-service, frontend/peerprep)
