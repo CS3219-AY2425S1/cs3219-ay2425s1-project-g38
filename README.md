@@ -17,18 +17,18 @@ You can view the live project here: https://peerprep.delishad.com
 3. Set up environemnt variables under the config-map.yaml files and secrets.yaml files in the kubernetes directory. Each service also has its own config-map and secret file. Template files have been provided in the kubernetes directory.
 4. Run `kubectl apply -f kubernetes/ --recursive` to deploy all services to your Kubernetes cluster.
 
-## Deploying this project using docker-compose
+## Deploying project locally using docker-compose
 
 1. Clone this repository to your local machine.
 2. Ensure you have Docker installed.
 3. (Optional) Sign up for a MongoDB Atlas account
    - The docker compose file is configured to use a local MongoDB instance by default. If you would like to use a remote MongoDB instance, you can follow the instructions in the ["Remote DB Setup"](#remote-db-setup-mongodb-atlas-optional) section below.
 
-## Docker Compose for all services (including frontend)
+## Building and starting frontend
 
-1. Open a terminal and navigate to the root directory of the project.
+1. Navigate to the frontend directory: `cd frontend/peerprep`
 2. Duplicate the .env.sample file and rename it to .env
-   - If you wish to, you can modify the values in the .env file
+   - if you wish to, you can modify the values in the .env file
       | **Variable** | **Description** | **Default Value** |
       |--------------|-----------------|-------------------|
       | NEXT_PUBLIC_USER_SERVICE_URL | URL of the user service | http://localhost:8004 |
@@ -37,9 +37,22 @@ You can view the live project here: https://peerprep.delishad.com
       | NEXT_PUBLIC_COLLAB_SERVICE_URL | URL of the collab service | http://localhost:8010 |
       | NEXT_PUBLIC_COLLAB_SOCKET_URL | URL of the collab socket service | http://localhost:8010 |
       | NEXT_PUBLIC_MATCHING_SOCKET_URL | URL of the matching socket service | http://localhost:8002 |
-      | NEXT_PUBLIC_IMAGE_UPLOAD_KEY | AuthToken for image upload | None, you can get this from https://www.portive.com |
+      | NEXT_PUBLIC_IMAGE_UPLOAD_KEY | AuthToken for image upload | None, you can get this from https://www.portive.com, you need this for image uploads to work with the question editor. |
       | FRONTEND_PORT | Port to run the frontend service | 3000 |
-      | FRONTEND_URL | URL of the frontend service | http://localhost:3000 |
+      | FRONTEND_URL | URL of the frontend service (Do not change this, its fixed due to NextJS) | http://localhost:3000 |
+      | JWT_SECRET | Secret for creating JWT signature, make sure this is the same as your user service | you-can-replace-this-with-your-own-secret |
+3. do `npm install` to install the required dependencies
+4. do `npm run build` to build the frontend
+5. do `npm run start` to start the frontend
+6. Access the frontend at `http://localhost:3000`
+
+## Docker Compose for all Microservices (excluding frontend)
+
+1. Open a terminal and navigate to the root directory of the project.
+2. Duplicate the .env.sample file and rename it to .env
+   - If you wish to, you can modify the values in the .env file
+      | **Variable** | **Description** | **Default Value** |
+      |--------------|-----------------|-------------------|
       | USER_MONGODB_URI | MongoDB URI for the user service | None, commented out. If you are using a remote MongoDB instance, you can key in your connection string here |
       | USER_MONGO_INITDB_ROOT_USERNAME | MongoDB root username for the user service | userroot |
       | USER_MONGO_INITDB_ROOT_PASSWORD | MongoDB root password for the user service | userpassword |
