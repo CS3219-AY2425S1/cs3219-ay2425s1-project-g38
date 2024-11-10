@@ -66,6 +66,7 @@ export const CollabNavbar = ({
         <NavbarItem className="flex items-center justify-end gap-3">
           <TerminateModal
             isModalVisible={isModalVisible}
+            usersInRoom={usersInRoom}
             userConfirmed={userConfirmed}
             isCancelled={isCancelled}
             isFirstToCancel={isFirstToCancel}
