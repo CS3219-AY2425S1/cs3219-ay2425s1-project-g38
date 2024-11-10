@@ -1,0 +1,48 @@
+{
+	"info": {
+		"_postman_id": "457509d9-ecd7-47f2-8f5c-59bdecd475fa",
+		"name": "Collab-Service API Copy",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "38670442"
+	},
+	"item": [
+		{
+			"name": "Get Session Information",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "authorization",
+						"value": "Bearer <replace with own token>",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"sessionId\": \"<replace with own session ID>\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8010/api/session/details",
+					"host": [
+						"localhost"
+					],
+					"port": "8010",
+					"path": [
+						"api",
+						"session",
+						"details"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

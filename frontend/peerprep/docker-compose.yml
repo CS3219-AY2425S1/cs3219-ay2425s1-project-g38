@@ -1,0 +1,9 @@
+version: '3'
+services:
+  frontend:
+    image: delishad21/g38-frontend:latest
+    container_name: g38-frontend
+    ports:
+      - "${FRONTEND_PORT}:${FRONTEND_PORT}"
+    env_file:
+      - .env
