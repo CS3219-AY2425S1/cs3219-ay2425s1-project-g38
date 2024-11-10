@@ -1,14 +1,6 @@
 version: '3'
 services:
 
-  frontend:
-    image: peerprep38/frontend-peerprep:milestone7
-    container_name: g38-frontend
-    env_file:
-      - .env
-    ports:
-      - "${FRONTEND_PORT}:${FRONTEND_PORT}"
-
   user-mongodb:
     image: mongo:latest
     container_name: user-service-mongodb

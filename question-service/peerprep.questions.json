@@ -1,0 +1,557 @@
+[{
+  "_id": {
+    "$oid": "6721c27eb1978fcaa87cbe79"
+  },
+  "title": "Reverse a String",
+  "description": "Write a function that reverses a string\\. The input string is given as an array of characters s\\.\n\nYou must do this by modifying the input array in\\-place with `O(1)` extra memory\\.\n\n```text\nInput: s = [\"h\", \"e\", \"l\", \"l\", \"o\"]\nOutput: [\"o\", \"l\", \"l\", \"e\", \"h\" ]\n```\n\n**Constraints**\\:\n\n- `1 <= s.length <= 105`\n\n- `s[i]` is a printable ascii character\\.",
+  "category": [
+    "STRINGS",
+    "ALGORITHMS"
+  ],
+  "complexity": "EASY",
+  "templateCode": "/**\n * @param {character[]} s\n * @return {void} Do not return anything, modify s in-place instead.\n */\nvar reverseString = function(s) {\n    \n};",
+  "testCases": [
+    [
+      "[\"h\",\"e\",\"l\",\"l\",\"o\"] -> [\"o\",\"l\",\"l\",\"e\",\"h\"]",
+      "[\"H\",\"a\",\"n\",\"n\",\"a\",\"h\"] -> [\"h\",\"a\",\"n\",\"n\",\"a\",\"H\"]"
+    ]
+  ],
+  "language": "JAVASCRIPT",
+  "question_id": 4,
+  "__v": 0,
+  "templateCodeYDocUpdate": {
+    "$binary": {
+      "base64": "AAAEioeJIAAAAQSfAZoBY29kZS8qKg0KICogQHBhcmFtIHtjaGFyYWN0ZXJbXX0gcw0KICogQHJldHVybiB7dm9pZH0gRG8gbm90IHJldHVybiBhbnl0aGluZywgbW9kaWZ5IHMgaW4tcGxhY2UgaW5zdGVhZC4NCiAqLw0KdmFyIHJldmVyc2VTdHJpbmcgPSBmdW5jdGlvbihzKSB7DQogICAgDQp9OwSWAgEBAAABAQAA",
+      "subType": "00"
+    }
+  }
+},
+{
+  "_id": {
+    "$oid": "6721d778b1978fcaa87cbeaa"
+  },
+  "title": "Add Two Numbers",
+  "description": "Given two non\\-negative integers num1 and num2\\, return the sum of the two integers\\.\n\n```text\nInput: num1 = 12, num2 = 5\nOutput: 17\n```\n\n**Constraints**\\:\n\n- `0 <= num1, num2 <= 10000`",
+  "category": [
+    "MATH",
+    "ALGORITHMS"
+  ],
+  "complexity": "EASY",
+  "templateCode": "/**\r\n * @param {number} num1\r\n * @param {number} num2\r\n * @return {number}\r\n */\r\nvar addNumbers = function(num1, num2) {\r\n    \r\n};",
+  "testCases": [
+    [
+      "12,5 -> 15",
+      "3,2 -> 5"
+    ]
+  ],
+  "language": "JAVASCRIPT",
+  "question_id": 5,
+  "__v": 1,
+  "templateCodeYDocUpdate": {
+    "$binary": {
+      "base64": "AAAFlI6A1h4AAAEEiwGGAWNvZGUvKioNCiAqIEBwYXJhbSB7bnVtYmVyfSBudW0xDQogKiBAcGFyYW0ge251bWJlcn0gbnVtMg0KICogQHJldHVybiB7bnVtYmVyfQ0KICovDQp2YXIgYWRkTnVtYmVycyA9IGZ1bmN0aW9uKG51bTEsIG51bTIpIHsNCiAgICANCn07BIICAQEAAAEBAAA=",
+      "subType": "00"
+    }
+  }
+},
+{
+  "_id": {
+    "$oid": "6721d797b1978fcaa87cbeb1"
+  },
+  "title": "Find Maximum Element",
+  "description": "Given an array of integers\\, find the maximum element in the array\\.\n\n```text\nInput: nums = [3,7,2,9,1]\nOutput: 9\n```\n\n**Constraints**\\:\n\n- `1 <= nums.length <= 105`\n\n- `-109 <= nums[i] <= 109`",
+  "category": [
+    "ARRAYS",
+    "ALGORITHMS"
+  ],
+  "complexity": "EASY",
+  "templateCode": "/**\r\n * @param {[number]} nums\r\n * @return {number}\r\n */\r\nvar maxElement = function(nums) {\r\n    \r\n};",
+  "testCases": [
+    [
+      "[3,7,2,9,1] -> 9",
+      "[1,2,3,4,5] -> 5"
+    ]
+  ],
+  "language": "JAVASCRIPT",
+  "question_id": 6,
+  "__v": 0,
+  "templateCodeYDocUpdate": {
+    "$binary": {
+      "base64": "AAAG+9HukAERDR4MBAJSDAY0GBYaWhoGIAwGogEaEQQAhAGBAIQAxAKEAIEAhAHEd2ljb2RlLyoqDQogKiBAcGFyYW0ge251bWJlcn0gDQogKiBAcmV0dXJuIHtudW1iZXJ9DQogKi9bXW51bXMNCnZhciAgPSBmdW5jdGlvbihuKSB7DQogICAgDQp9O21heEVsZW1lbnR1bXMEEAYCGkEABAZNAAoDAQEAAgELAQ4AAfuot0gCGAAmCg==",
+      "subType": "00"
+    }
+  }
+},
+{
+  "_id": {
+    "$oid": "6721d7a8b1978fcaa87cbeb5"
+  },
+  "title": "Valid Palindrome",
+  "description": "Given a string s\\, return true if it is a palindrome\\, considering only alphanumeric characters and ignoring cases\\.\n\n```text\nInput: s = 'A man, a plan, a canal: Panama'\nOutput: true\nExplanation: 'amanaplanacanalpanama' is a palindrome.\n```\n\n**Constraints**\\:\n\n- `1 <= s.length <= 2 * 105`\n\n- `s` consists only of printable ASCII characters",
+  "category": [
+    "STRINGS",
+    "TWO POINTERS"
+  ],
+  "complexity": "EASY",
+  "templateCode": "/**\n * @param {string} s\n * @return {boolean}\n */\nvar isPalindrome = function(s) {\n    \n};",
+  "testCases": [
+    [
+      "'A man, a plan, a canal: Panama' -> true",
+      "'race a car' -> false"
+    ]
+  ],
+  "language": "JAVASCRIPT",
+  "question_id": 7,
+  "__v": 1,
+  "templateCodeYDocUpdate": {
+    "$binary": {
+      "base64": "AAAFiZKRugIAAAEEaGRjb2RlLyoqDQogKiBAcGFyYW0ge3N0cmluZ30gcw0KICogQHJldHVybiB7Ym9vbGVhbn0NCiAqLw0KdmFyIGlzUGFsaW5kcm9tZSA9IGZ1bmN0aW9uKHMpIHsNCiAgICANCn07BKABAQEAAAEBAAA=",
+      "subType": "00"
+    }
+  }
+},
+{
+  "_id": {
+    "$oid": "6721d7afb1978fcaa87cbeb9"
+  },
+  "title": "Binary Search",
+  "description": "Given an array of integers nums which is sorted in ascending order\\, and a target integer\\, write a function to search target in nums\\. If target exists\\, return its index\\. Otherwise\\, return \\-1\\.\n\n```text\nInput: nums = [-1,0,3,5,9,12], target = 9\nOutput: 4\n```\n\n**Constraints**\\:\n\n- `1 <= nums.length <= 104`\n\n- `-104 < nums[i], target < 104`\n\n- All the integers in nums are unique\n\n- nums is sorted in ascending order",
+  "category": [
+    "ARRAYS",
+    "BINARY SEARCH"
+  ],
+  "complexity": "EASY",
+  "templateCode": "/**\r\n * @param {number[]} nums\r\n * @param {number} target\r\n * @return {number}\r\n */\r\nvar search = function(nums, target) {\r\n    \r\n};",
+  "testCases": [
+    [
+      "[-1,0,3,5,9,12], 9 -> 4",
+      "[-1,0,3,5,9,12], 2 -> -1"
+    ]
+  ],
+  "language": "JAVASCRIPT",
+  "question_id": 8,
+  "__v": 1,
+  "templateCodeYDocUpdate": {
+    "$binary": {
+      "base64": "AAAFm7TIyQMAAAEEjQGIAWNvZGUvKioNCiAqIEBwYXJhbSB7bnVtYmVyW119IG51bXMNCiAqIEBwYXJhbSB7bnVtYmVyfSB0YXJnZXQNCiAqIEByZXR1cm4ge251bWJlcn0NCiAqLw0KdmFyIHNlYXJjaCA9IGZ1bmN0aW9uKG51bXMsIHRhcmdldCkgew0KICAgIA0KfTsEhAIBAQAAAQEAAA==",
+      "subType": "00"
+    }
+  }
+},
+{
+  "_id": {
+    "$oid": "6721d7b2b1978fcaa87cbebd"
+  },
+  "title": "Merge Two Sorted Lists",
+  "description": "Merge two sorted linked lists and return it as a sorted list\\.\n\n```text\nInput: l1 = [1,2,4], l2 = [1,3,4]\nOutput: [1,1,2,3,4,4]\n```\n\n**Constraints**\\:\n\n- The number of nodes in both lists is in the range \\[0\\, 50\\]\n\n- \\-100 \\<\\= Node\\.val \\<\\= 100\n\n- Both l1 and l2 are sorted in non\\-decreasing order",
+  "category": [
+    "RECURSION",
+    "LINKED LIST"
+  ],
+  "complexity": "EASY",
+  "templateCode": "/**\r\n * Definition for singly-linked list.\r\n * function ListNode(val, next) {\r\n *     this.val = (val===undefined ? 0 : val)\r\n *     this.next = (next===undefined ? null : next)\r\n * }\r\n */\r\n/**\r\n * @param {ListNode} l1\r\n * @param {ListNode} l2\r\n * @return {ListNode}\r\n */\r\nvar mergeTwoLists = function(l1, l2) {\r\n    \r\n};",
+  "testCases": [
+    [
+      "[1,2,4], [1,3,4] -> [1,1,2,3,4,4]",
+      "[], [] -> []"
+    ]
+  ],
+  "language": "JAVASCRIPT",
+  "question_id": 9,
+  "__v": 1,
+  "templateCodeYDocUpdate": {
+    "$binary": {
+      "base64": "AAAFmrTLkQ8AAAEEygLFAmNvZGUvKioNCiAqIERlZmluaXRpb24gZm9yIHNpbmdseS1saW5rZWQgbGlzdC4NCiAqIGZ1bmN0aW9uIExpc3ROb2RlKHZhbCwgbmV4dCkgew0KICogICAgIHRoaXMudmFsID0gKHZhbD09PXVuZGVmaW5lZCA/IDAgOiB2YWwpDQogKiAgICAgdGhpcy5uZXh0ID0gKG5leHQ9PT11bmRlZmluZWQgPyBudWxsIDogbmV4dCkNCiAqIH0NCiAqLw0KLyoqDQogKiBAcGFyYW0ge0xpc3ROb2RlfSBsMQ0KICogQHBhcmFtIHtMaXN0Tm9kZX0gbDINCiAqIEByZXR1cm4ge0xpc3ROb2RlfQ0KICovDQp2YXIgbWVyZ2VUd29MaXN0cyA9IGZ1bmN0aW9uKGwxLCBsMikgew0KICAgIA0KfTsEgQUBAQAAAQEAAA==",
+      "subType": "00"
+    }
+  }
+},
+{
+  "_id": {
+    "$oid": "6721d7bcb1978fcaa87cbec1"
+  },
+  "title": "Valid Parentheses",
+  "description": "Given a string s containing just the characters \\'\\(\\'\\, \\'\\)\\'\\, \\'\\{\\'\\, \\'\\}\\'\\, \\'\\[\\' and \\'\\]\\'\\, determine if the input string is valid\\.\n\n```text\nInput: s = '()[]{}' \nOutput: true\n```\n\n**Constraints**\\:\n\n- `1 <= s.length <= 104`\n\n- `s` consists of parentheses only \\'\\(\\)\\[\\]\\{\\}\\'",
+  "category": [
+    "STACK",
+    "STRINGS"
+  ],
+  "complexity": "EASY",
+  "templateCode": "/**\n * @param {string} s\n * @return {boolean}\n */\nvar isValid = function(s) {\n    \n};",
+  "testCases": [
+    [
+      "'()[]{}' -> true",
+      "'([)]' -> false"
+    ]
+  ],
+  "language": "JAVASCRIPT",
+  "question_id": 10,
+  "__v": 0,
+  "templateCodeYDocUpdate": {
+    "$binary": {
+      "base64": "AAAFsM6uvgUAAAEEY19jb2RlLyoqDQogKiBAcGFyYW0ge3N0cmluZ30gcw0KICogQHJldHVybiB7Ym9vbGVhbn0NCiAqLw0KdmFyIGlzVmFsaWQgPSBmdW5jdGlvbihzKSB7DQogICAgDQp9OwSbAQEBAAABAQAA",
+      "subType": "00"
+    }
+  }
+},
+{
+  "_id": {
+    "$oid": "6721d7cbb1978fcaa87cbec5"
+  },
+  "title": "First Unique Character",
+  "description": "Given a string s\\, find the first non\\-repeating character and return its index\\. If it does not exist\\, return \\-1\\.\n\n```text\nInput: s = 'leetcode'\nOutput: 0\nExplanation: 'l' is the first non-repeating character\n```\n\n**Constraints**\\:\n\n- `1 <= s.length <= 105`\n\n- `s` consists of only lowercase English letters",
+  "category": [
+    "STRINGS"
+  ],
+  "complexity": "EASY",
+  "templateCode": "/**\r\n * @param {string} s\r\n * @return {number}\r\n */\r\nvar firstUniqChar = function(s) {\r\n    \r\n};",
+  "testCases": [
+    [
+      "'leetcode' -> 0",
+      "'loveleetcode' -> 2"
+    ]
+  ],
+  "language": "JAVASCRIPT",
+  "question_id": 11,
+  "__v": 3,
+  "templateCodeYDocUpdate": {
+    "$binary": {
+      "base64": "AAALuu6o0wb+uNm1BQACngEAA4QAAWhkLyoqDQogKiBAcGFyYW0ge3N0cmluZ30gcw0KICogQHJldHVybiB7bnVtYmVyfQ0KICovDQp2YXIgZmlyc3RVbmlxQ2hhciA9IGZ1bmN0aW9uKHMpIHsNCiAgICANCn07Y29kZaABBAEBAAEwAgEAAQABvtzs2gIBAC8=",
+      "subType": "00"
+    }
+  }
+},
+{
+  "_id": {
+    "$oid": "6721d7d1b1978fcaa87cbec9"
+  },
+  "title": "Climbing Stairs",
+  "description": "You are climbing a staircase\\. It takes n steps to reach the top\\. Each time you can either climb 1 or 2 steps\\. In how many distinct ways can you climb to the top\\?\n\n```text\nInput: n = 3\nOutput: 3\nExplanation: There are three ways to climb to the top:\n1. 1 step + 1 step + 1 step\n2. 1 step + 2 steps\n3. 2 steps + 1 step\n```\n\n**Constraints**\\:\n\n- `1 <= n <= 45`",
+  "category": [
+    "DYNAMIC PROGRAMMING"
+  ],
+  "complexity": "EASY",
+  "templateCode": "/**\n * @param {number} n\n * @return {number}\n */\nvar climbStairs = function(n) {\n    \n};",
+  "testCases": [
+    [
+      "3 -> 3",
+      "4 -> 5"
+    ]
+  ],
+  "language": "JAVASCRIPT",
+  "question_id": 12,
+  "__v": 1,
+  "templateCodeYDocUpdate": {
+    "$binary": {
+      "base64": "AAAFkqHr6xEAAAEEZmJjb2RlLyoqDQogKiBAcGFyYW0ge251bWJlcn0gbg0KICogQHJldHVybiB7bnVtYmVyfQ0KICovDQp2YXIgY2xpbWJTdGFpcnMgPSBmdW5jdGlvbihuKSB7DQogICAgDQp9OwSeAQEBAAABAQAA",
+      "subType": "00"
+    }
+  }
+},
+{
+  "_id": {
+    "$oid": "6721d7d4b1978fcaa87cbecd"
+  },
+  "title": "Maximum Subarray",
+  "description": "Given an integer array nums\\, find the contiguous subarray \\(containing at least one number\\) which has the largest sum and return its sum\\.\n\n```text\nInput: nums = [-2,1,-3,4,-1,2,1,-5,4]\nOutput: 6\nExplanation: [4,-1,2,1] has the largest sum = 6\n```\n\n**Constraints**\\:\n\n- `1 <= nums.length <= 105`\n\n- `-104 <= nums[i] <= 104`",
+  "category": [
+    "ARRAYS"
+  ],
+  "complexity": "MEDIUM",
+  "templateCode": "/**\r\n * @param {number[]} nums\r\n * @return {number}\r\n */\r\nvar maxSubArray = function(nums) { /* insert function here */ };",
+  "testCases": [
+    [
+      "[-2,1,-3,4,-1,2,1,-5,4] -> 6",
+      "[1] -> 1"
+    ]
+  ],
+  "language": "JAVASCRIPT",
+  "question_id": 13,
+  "__v": 1,
+  "templateCodeYDocUpdate": {
+    "$binary": {
+      "base64": "AAAZvfKBlRuJ+rLWEqSx5PwSifqy1hKkseT8EgMKqAMABYEABACBggF+Y29kZS8qKg0KICogQHBhcmFtIHtudW1iZXJbXX0gbnVtcw0KICogQHJldHVybiB7bnVtYmVyfQ0KICovDQp2YXIgbWF4U3ViQXJyYXkgPSBmdW5jdGlvbihudW1zKSB7IC8qIGluc2VydCBmdW5jdGlvbiBoZXJlICovIH07BLoBAQEAAgEGAwEAAQABAAK9+cDKDQEAAIm9masJAQAF",
+      "subType": "00"
+    }
+  }
+},
+{
+  "_id": {
+    "$oid": "6721d7dab1978fcaa87cbed1"
+  },
+  "title": "Implement Queue using Stacks",
+  "description": "Implement a first in first out \\(FIFO\\) queue using only two stacks\\. The implemented queue should support all the functions of a normal queue \\(push\\, peek\\, pop\\, and empty\\)\\.\n\n```text\nInput:\n[\"MyQueue\", \"push\", \"push\", \"peek\", \"pop\", \"empty\"]\n[[], [1], [2], [], [], []]\nOutput:\n[null, null, null, 1, 1, false]\n```\n\n**Constraints**\\:\n\n- `1 <= x <= 9`\n\n- At most 100 calls will be made to push\\, pop\\, peek\\, and empty\n\n- All the calls to pop and peek are valid",
+  "category": [
+    "STACK",
+    "QUEUE",
+    "DESIGN"
+  ],
+  "complexity": "EASY",
+  "templateCode": "var MyQueue = function() {\r\n    \r\n};",
+  "testCases": [
+    [
+      "[\"MyQueue\", \"push\", \"push\", \"peek\", \"pop\", \"empty\"], [[], [1], [2], [], [], []] -> [null, null, null, 1, 1, false]"
+    ]
+  ],
+  "language": "JAVASCRIPT",
+  "question_id": 14,
+  "__v": 0,
+  "templateCodeYDocUpdate": {
+    "$binary": {
+      "base64": "AAAFl4nRrw4AAAEEKyhjb2RldmFyIE15UXVldWUgPSBmdW5jdGlvbigpIHsNCiAgICANCn07BCQBAQAAAQEAAA==",
+      "subType": "00"
+    }
+  }
+},
+{
+  "_id": {
+    "$oid": "6721d7dfb1978fcaa87cbed5"
+  },
+  "title": "Symmetric Tree",
+  "description": "Given the root of a binary tree\\, check whether it is a mirror of itself \\(i\\.e\\.\\, symmetric around its center\\)\\.\n\n```text\nInput: root = [1,2,2,3,4,4,3]\nOutput: true\n```\n\n**Constraints**\\:\n\n- The number of nodes in the tree is in the range \\[1\\, 1000\\]\n\n- `-100 <= Node.val <= 100`",
+  "category": [
+    "RECURSION"
+  ],
+  "complexity": "EASY",
+  "templateCode": "/**\n * Definition for a binary tree node.\n * function TreeNode(val, left, right) {\n *     this.val = (val===undefined ? 0 : val)\n *     this.left = (left===undefined ? null : left)\n *     this.right = (right===undefined ? null : right)\n * }\n */\n/**\n * @param {TreeNode} root\n * @return {boolean}\n */\nvar isSymmetric = function(root) {\n    \n};",
+  "testCases": [
+    [
+      "[1,2,2,3,4,4,3] -> true",
+      "[1,2,2,null,3,null,3] -> false"
+    ]
+  ],
+  "language": "JAVASCRIPT",
+  "question_id": 15,
+  "__v": 1,
+  "templateCodeYDocUpdate": {
+    "$binary": {
+      "base64": "AAAFlq/b9B0AAAEE7QLoAmNvZGUvKioNCiAqIERlZmluaXRpb24gZm9yIGEgYmluYXJ5IHRyZWUgbm9kZS4NCiAqIGZ1bmN0aW9uIFRyZWVOb2RlKHZhbCwgbGVmdCwgcmlnaHQpIHsNCiAqICAgICB0aGlzLnZhbCA9ICh2YWw9PT11bmRlZmluZWQgPyAwIDogdmFsKQ0KICogICAgIHRoaXMubGVmdCA9IChsZWZ0PT09dW5kZWZpbmVkID8gbnVsbCA6IGxlZnQpDQogKiAgICAgdGhpcy5yaWdodCA9IChyaWdodD09PXVuZGVmaW5lZCA/IG51bGwgOiByaWdodCkNCiAqIH0NCiAqLw0KLyoqDQogKiBAcGFyYW0ge1RyZWVOb2RlfSByb290DQogKiBAcmV0dXJuIHtib29sZWFufQ0KICovDQp2YXIgaXNTeW1tZXRyaWMgPSBmdW5jdGlvbihyb290KSB7DQogICAgDQp9OwSkBQEBAAABAQAA",
+      "subType": "00"
+    }
+  }
+},
+{
+  "_id": {
+    "$oid": "6721d7e9b1978fcaa87cbed9"
+  },
+  "title": "Contains Duplicate",
+  "description": "Given an integer array nums\\, return true if any value appears at least twice in the array\\, and return false if every element is distinct\\.\n\n```text\nInput: nums = [1,2,3,1]\nOutput: true\n```\n\n**Constraints**\\:\n\n- `1 <= nums.length <= 105`\n\n- `-109 <= nums[i] <= 109`",
+  "category": [
+    "ARRAYS",
+    "HASH TABLE"
+  ],
+  "complexity": "EASY",
+  "templateCode": "/**\n * @param {number[]} nums\n * @return {boolean}\n */\nvar containsDuplicate = function(nums) {\n    \n};",
+  "testCases": [
+    [
+      "[1,2,3,1] -> true",
+      "[1,2,3,4] -> false"
+    ]
+  ],
+  "language": "JAVASCRIPT",
+  "question_id": 16,
+  "__v": 1,
+  "templateCodeYDocUpdate": {
+    "$binary": {
+      "base64": "AAAFiMWc6RwAAAEEdXFjb2RlLyoqDQogKiBAcGFyYW0ge251bWJlcltdfSBudW1zDQogKiBAcmV0dXJuIHtib29sZWFufQ0KICovDQp2YXIgY29udGFpbnNEdXBsaWNhdGUgPSBmdW5jdGlvbihudW1zKSB7DQogICAgDQp9OwStAQEBAAABAQAA",
+      "subType": "00"
+    }
+  }
+},
+{
+  "_id": {
+    "$oid": "6721d829b1978fcaa87cbedd"
+  },
+  "title": "Longest Consecutive Sequence",
+  "description": "Given an unsorted array of integers nums\\, return the length of the longest consecutive elements sequence\\. The sequence must be made up of consecutive numbers and must appear in ascending order\\.\n\n```text\nInput: nums = [100,4,200,1,3,2]\nOutput: 4\nExplanation: The longest consecutive sequence is [1, 2, 3, 4].\n```\n\n**Constraints**\\:\n\n- `0 <= nums.length <= 105`\n\n- `-109 <= nums[i] <= 109`",
+  "category": [
+    "ARRAYS",
+    "UNSORTED",
+    "HASH TABLE"
+  ],
+  "complexity": "HARD",
+  "templateCode": "/**\r\n * @param {number[]} nums\r\n * @return {number}\r\n */\r\nvar longestConsecutive = function(nums) {\r\n    \r\n};",
+  "testCases": [
+    [
+      "[100,4,200,1,3,2] -> 4",
+      "[0,3,7,2,5,8,4,6,0,1] -> 9"
+    ]
+  ],
+  "language": "JAVASCRIPT",
+  "question_id": 17,
+  "__v": 1,
+  "templateCodeYDocUpdate": {
+    "$binary": {
+      "base64": "AAAFqOivihYAAAEEdXFjb2RlLyoqDQogKiBAcGFyYW0ge251bWJlcltdfSBudW1zDQogKiBAcmV0dXJuIHtudW1iZXJ9DQogKi8NCnZhciBsb25nZXN0Q29uc2VjdXRpdmUgPSBmdW5jdGlvbihudW1zKSB7DQogICAgDQp9OwStAQEBAAABAQAA",
+      "subType": "00"
+    }
+  }
+},
+{
+  "_id": {
+    "$oid": "6721d834b1978fcaa87cbee1"
+  },
+  "title": "Word Ladder",
+  "description": "Given two words\\, beginWord and endWord\\, and a dictionary wordList\\, return the length of the shortest transformation sequence from beginWord to endWord\\. Each transformed word must be in the dictionary and you may only change one letter at a time\\.\n\n&nbsp;\n\n```text\nInput: beginWord = 'hit', endWord = 'cog', wordList = ['hot','dot','dog','lot','log','cog']\nOutput: 5\nExplanation: The shortest transformation is 'hit' -> 'hot' -> 'dot' -> 'dog' -> 'cog'.\n```\n\n****\n\n**Constraints**\\:\n\n- `1 <= beginWord.length <= 10`\n\n- `endWord.length == beginWord.length`\n\n- `1 <= wordList.length <= 5000`\n\n- `beginWord`\\, `endWord`\\, and `wordList[i]` consist of lowercase English letters\\.",
+  "category": [
+    "GRAPHS",
+    "BREADTH FIRST SEARCH"
+  ],
+  "complexity": "HARD",
+  "templateCode": "/**\n * @param {string} beginWord\n * @param {string} endWord\n * @param {string[]} wordList\n * @return {number}\n */\nvar ladderLength = function(beginWord, endWord, wordList) {\n    \n};",
+  "testCases": [
+    [
+      "'hit', 'cog', ['hot','dot','dog','lot','log','cog'] -> 5",
+      "'hit', 'cog', ['hot','dot','dog','lot','log'] -> 0"
+    ]
+  ],
+  "language": "JAVASCRIPT",
+  "question_id": 18,
+  "__v": 1,
+  "templateCodeYDocUpdate": {
+    "$binary": {
+      "base64": "AAAFgPS/oAsAAAEExgHBAWNvZGUvKioNCiAqIEBwYXJhbSB7c3RyaW5nfSBiZWdpbldvcmQNCiAqIEBwYXJhbSB7c3RyaW5nfSBlbmRXb3JkDQogKiBAcGFyYW0ge3N0cmluZ1tdfSB3b3JkTGlzdA0KICogQHJldHVybiB7bnVtYmVyfQ0KICovDQp2YXIgbGFkZGVyTGVuZ3RoID0gZnVuY3Rpb24oYmVnaW5Xb3JkLCBlbmRXb3JkLCB3b3JkTGlzdCkgew0KICAgIA0KfTsEvQIBAQAAAQEAAA==",
+      "subType": "00"
+    }
+  }
+},
+{
+  "_id": {
+    "$oid": "6721d83eb1978fcaa87cbee5"
+  },
+  "title": "Minimum Window Substring",
+  "description": "Given two strings s and t\\, return the minimum window in s which will contain all characters in t\\. If there is no such window in s\\, return an empty string\\. Note that the answer may be found by shifting a substring within s\\.\n\n```text\nInput: s = 'ADOBECODEBANC', t = 'ABC'\nOutput: 'BANC'\n```\n\n**Constraints**\\:\n\n- `1 <= s.length, t.length <= 105`\n\n- `s` and `t` consist of uppercase and lowercase English letters\\.",
+  "category": [
+    "SLIDING WINDOW"
+  ],
+  "complexity": "HARD",
+  "templateCode": "/**\n * @param {string} s\n * @param {string} t\n * @return {string}\n */\nvar minWindow = function(s, t) {\n    \n};",
+  "testCases": [
+    [
+      "'ADOBECODEBANC', 'ABC' -> 'BANC'",
+      "'a', 'aa' -> ''"
+    ]
+  ],
+  "language": "JAVASCRIPT",
+  "question_id": 19,
+  "__v": 1,
+  "templateCodeYDocUpdate": {
+    "$binary": {
+      "base64": "AAAFpo/I5xAAAAEEfXljb2RlLyoqDQogKiBAcGFyYW0ge3N0cmluZ30gcw0KICogQHBhcmFtIHtzdHJpbmd9IHQNCiAqIEByZXR1cm4ge3N0cmluZ30NCiAqLw0KdmFyIG1pbldpbmRvdyA9IGZ1bmN0aW9uKHMsIHQpIHsNCiAgICANCn07BLUBAQEAAAEBAAA=",
+      "subType": "00"
+    }
+  }
+},
+{
+  "_id": {
+    "$oid": "6721d843b1978fcaa87cbee9"
+  },
+  "title": "Trapping Rain Water",
+  "description": "Given n non\\-negative integers representing an elevation map where the width of each bar is 1\\, compute how much water it can trap after raining\\.\n\n```text\nInput: height = [0,1,0,2,1,0,1,3,2,1,2,1]\nOutput: 6\nExplanation: The above elevation map [0,1,0,2,1,0,1,3,2,1,2,1] can trap 6 units of rain water.\n```\n\n**Constraints**\\:\n\n- `n == height.length`\n\n- `1 <= n <= 2 * 104`\n\n- `0 <= height[i] <= 105`",
+  "category": [
+    "ARRAYS",
+    "TWO POINTERS",
+    "DYNAMIC PROGRAMMING"
+  ],
+  "complexity": "HARD",
+  "templateCode": "/**\r\n * @param {number[]} height\r\n * @return {number}\r\n */\r\nvar trap = function(height) {\r\n    \r\n};",
+  "testCases": [
+    [
+      "[0,1,0,2,1,0,1,3,2,1,2,1] -> 6",
+      "[4,2,0,3,2,5] -> 9"
+    ]
+  ],
+  "language": "JAVASCRIPT",
+  "question_id": 20,
+  "__v": 1,
+  "templateCodeYDocUpdate": {
+    "$binary": {
+      "base64": "AAAFiOTQqx8AAAEEa2djb2RlLyoqDQogKiBAcGFyYW0ge251bWJlcltdfSBoZWlnaHQNCiAqIEByZXR1cm4ge251bWJlcn0NCiAqLw0KdmFyIHRyYXAgPSBmdW5jdGlvbihoZWlnaHQpIHsNCiAgICANCn07BKMBAQEAAAEBAAA=",
+      "subType": "00"
+    }
+  }
+},
+{
+  "_id": {
+    "$oid": "6721d848b1978fcaa87cbeed"
+  },
+  "title": "Merge Intervals",
+  "description": "Given an array of intervals where intervals\\[i\\] \\= \\[start\\, end\\]\\, merge all overlapping intervals\\, and return an array of the non\\-overlapping intervals that cover all the intervals in the input\\.\n\n```text\nInput: intervals = [[1,3],[2,6],[8,10],[15,18]]\nOutput: [[1,6],[8,10],[15,18]]\nExplanation: Intervals [1,3] and [2,6] overlap, merging into [1,6].\n```\n\n**Constraints**\\:\n\n- `1 <= intervals.length <= 104`\n\n- `intervals[i].length == 2`\n\n- `0 <= start <= end <= 104`",
+  "category": [
+    "ARRAYS",
+    "SORTING"
+  ],
+  "complexity": "MEDIUM",
+  "templateCode": "/*\r\n * Given an array of intervals where intervals[i] = [start, end], \r\n * merge all overlapping intervals, and return an array of the \r\n * non-overlapping intervals that cover all the intervals in the input.\r\n */\r\n\r\nfunction nonOverlapping(tupleOfInts) {\r\n    // enter your code here\r\n}",
+  "testCases": [
+    [
+      "[[1,3],[2,6],[8,10],[15,18]] -> [[1,6],[8,10],[15,18]]",
+      "[[1,4],[4,5]] -> [[1,5]]"
+    ]
+  ],
+  "language": "JAVASCRIPT",
+  "question_id": 21,
+  "__v": 2,
+  "templateCodeYDocUpdate": {
+    "$binary": {
+      "base64": "AAALgtanuBnnlIroB0c2jhTAFBQGGgQCAA4AFAwAAm6aAQAOAOQCAI4DBESCBhYIBmSSAgCKAYgCuAH4AbgB7g2OEAgGKbQC6gEADk4ALm6cAQAO5AK+AgEAEFABAZQGAJAC0AIBAKIFuAHIDgEBMcEAAQCEAIEAhACBAIQBwQXEAIQBxAHBAMQCwQDEAMEAxADBAMQAwQLEBMEAxADBAMS9AqMCY29kZWZ1bmN0aW9uIG5vbk92ZXJsYXBwaW5nKCl0dXBsZU9mSW50cyB7fQ0KICAgIA0KDQoNCi8qDQoqICANCiAqL0dpdmVuIGFuIGFycmF5IG9mIGludGVydmFscyB3aGVyZSBpbnRlcnZhbHNbaV0gPSBbc3RhcnQsIGVuZF0sIG1lcmdlIGFsbCBvdmVybGFwcGluZyBpbnRlcnZhbHMsIGFuZCByZXR1cm4gYW4gYXJyYXkgb2YgdGhlIG5vbi1vdmVybGFwcGluZyBpbnRlcnZhbHMgdGhhdCBjb3ZlciBhbGwgdGhlIGludGVydmFscyBpbiB0aGUgaW5wdXQuDQogKiANCiAqIC8vIGVudGVyIHlvdXIgY29kZSBoZXJlBAoNQQALAgEGAkQAAgEEAT88hAFFAAQTAQEAFAEIAwIGCgVBAAkLvwIKAzYlBQIDAgEAKAACguuT3AwBAACnioX0AwsABwoCDQECHxYKCr4BAQkEAgFfyQEBBAI=",
+      "subType": "00"
+    }
+  }
+},
+{
+  "_id": {
+    "$oid": "672c8e63fbc9b24d2073c67d"
+  },
+  "title": "Largest Rectangle in Histogram",
+  "description": "Given an array of integers heights representing the histogram\\'s bar height where the width of each bar is 1\\, return the area of the largest rectangle in the histogram\\.\n\n**Example 1\\:**\n\n![image.png](https://files.portive.com/f/peerprep/gh68rcfmt80nebxvvrudl--522x242.png?size=320x148 \"image.png\")\n\n```text\nInput heights = [2,1,5,6,2,3]\nOutput: 10\nExplanation: The above is a histogram where width of each bar is 1.\nThe largest rectangle is shown in the red area, which has an area = 10 units.\n```\n\n**Example 2\\:**\n\n![image.png](https://files.portive.com/f/peerprep/yvdj2s7yqc87tq30bx8ew--202x362.png?size=179x320 \"image.png\")\n\n```text\nInput: heights = [2,4]\nOutput: 4\n```\n\n**Constraints**\\:\n\n- 1 \\<\\= heights\\.length \\<\\= 105\n\n- 0 \\<\\= heights\\[i\\] \\<\\= 104",
+  "category": [
+    "ARRAYS",
+    "STACK",
+    "MONOTONIC STACK"
+  ],
+  "complexity": "HARD",
+  "templateCode": "/**\n * @param {number[]} heights\n * @return {number}\n */\nvar largestRectangleArea = function(heights) {\n    \n};",
+  "testCases": [
+    [
+      "[2,1,5,6,2,3] -> 10",
+      "[2,4] -> 4"
+    ]
+  ],
+  "language": "JAVASCRIPT",
+  "templateCodeYDocUpdate": {
+    "$binary": {
+      "base64": "AAAG5rWF0g4AAoQBAAMBAIR3c2NvZGUvKioKICogQHBhcmFtIHtudW1iZXJbXX0gaGVpZ2h0cwogKiBAcmV0dXJuIHtudW1iZXJ9CiAqLwp2YXIgbGFyZ2VzdFJlY3RhbmdsZUFyZWEgPSBmdW5jdGlvbihoZWlnaHRzKSB7CiAgICAKfTsErwEBAQABIwECAAHm2oKpBwEAIg==",
+      "subType": "00"
+    }
+  },
+  "question_id": 29,
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "672f7b26ab8d102809055c04"
+  },
+  "title": "Test question",
+  "description": "# Question description\n\nWrite your question description here\\!\nYou can also insert images\\!",
+  "category": [
+    "ALGORITHMS",
+    "ARRAYS"
+  ],
+  "complexity": "MEDIUM",
+  "templateCode": "''' This is python '''\ndef solvethis:",
+  "testCases": [
+    [
+      "123 -> 1"
+    ]
+  ],
+  "language": "PYTHON",
+  "templateCodeYDocUpdate": {
+    "$binary": {
+      "base64": "AAAG0PG20BETDIYBAgpMHAMBBhgCbgSIAQEFGQEAhACBAIQAwQDEAMEAxADBAMQAwQDEAIQyKWNvZGUKZGVmICcnJyBUaGlzIGlzIHB5dGhvbiAnJydzb2x2ZXRoaXM6BAEEQQAMCAoBAQAGJAUEAQMBAQ0AAdC4m+gIBgAjAQQEAwEAAQIMAA==",
+      "subType": "00"
+    }
+  },
+  "question_id": 30,
+  "__v": 0
+}]
