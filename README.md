@@ -39,7 +39,6 @@ You can view the live project here: https://peerprep.delishad.com
       | NEXT_PUBLIC_MATCHING_SOCKET_URL | URL of the matching socket service | http://localhost:8002 |
       | NEXT_PUBLIC_IMAGE_UPLOAD_KEY | AuthToken for image upload | None, you can get this from https://www.portive.com, you need this for image uploads to work with the question editor. |
       | FRONTEND_PORT | Port to run the frontend service | 3000 |
-      | FRONTEND_URL | URL of the frontend service (Do not change this, its fixed due to NextJS) | http://localhost:3000 |
       | JWT_SECRET | Secret for creating JWT signature, make sure this is the same as your user service | you-can-replace-this-with-your-own-secret |
 3. do `npm install` to install the required dependencies
 4. do `npm run build` to build the frontend
@@ -60,6 +59,7 @@ You can view the live project here: https://peerprep.delishad.com
       | GMAIL_PASS | Gmail password for verification emails | None, you can key in your Gmail password here |
       | USER_PORT | Port to run the user service | 8004 |
       | JWT_SECRET | Secret for creating JWT signature | you-can-replace-this-with-your-own-secret |
+      | FRONTEND_URL | URL of the frontend service (Do not change this, its fixed due to NextJS) | http://localhost:3000 |
       | QUESTION_MONGODB_URI | MongoDB URI for the question service | None, commented out. If you are using a remote MongoDB instance, you can key in your connection string here |
       | QUESTION_MONGO_INITDB_ROOT_USERNAME | MongoDB root username for the question service | questionroot |
       | QUESTION_MONGO_INITDB_ROOT_PASSWORD | MongoDB root password for the question service | questionpassword |
